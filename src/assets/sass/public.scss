@@ -1,0 +1,86 @@
+@import './set.scss';
+html,body{
+    -webkit-text-size-adjust: 100%; 
+    -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
+    font-family: "pingfang", "Microsoft YaHei", "SimHei", sans-serif;
+}
+html{
+    font-size: 14px !important;
+    height: 100%;
+}
+body{
+    font-size: 14px !important;
+    margin: 0;
+    padding: 0;
+    height: 100%;
+}
+div,p,ul,li,ol,table,tbody,tr,td,textarea,form,input,h1,h2,h3,h4,h5,dl,dt,dd,img,iframe,header,nav,section,article,footer,figure,figcaption,menu{
+    margin:0;
+    padding:0;
+    list-style:none;
+}
+i{
+    font-style: normal;
+}
+input, textarea{ 
+    -webkit-appearance: none; 
+    border-radius: 0; 
+    outline: none; 
+}
+a{
+    text-decoration:none; 
+    color: inherit;
+}
+*:focus {outline: none;} 
+.layer{
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 999;
+    background-color: rgba(0,0,0,.6);
+}
+.btn{
+    width: 150px;
+    line-height: 40px;
+    background-color: $pubcolor;
+    text-align: center;
+    color: #fff;
+    border: 0;
+    user-select: none;
+    cursor: pointer;
+    box-shadow: 0 2px 5px #ddd;
+    a{
+        display: block;
+        height: 100%;
+    }
+}
+.btn:active{
+    background-color: $pubcoloractive;
+}
+.btn-other{
+    width: 150px;
+    line-height: 38px;
+    text-align: center;
+    border: 1px solid $pubcolor;
+    user-select: none;
+    cursor: pointer;
+    box-sizing: border-box;
+    box-shadow: 0 2px 5px #ddd;
+    color: $pubcolor;
+    height: 40px;
+    a{
+        display: block;
+        height: 100%;
+    }
+}
+.btn-other:active{
+    background-color: #eee;
+}
+.pubbody{
+    height: 100%;
+    background-color: $pubbgcolor;
+    padding-top: .9rem;
+    box-sizing: border-box;
+}
