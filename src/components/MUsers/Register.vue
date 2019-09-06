@@ -91,7 +91,7 @@
                 <el-date-picker v-model="companyInfo.settleDate" type="date" format="MM月dd日"></el-date-picker>
                 <div class="form-label">管理员</div>
                 <el-select v-model="companyInfo.manager">
-                    <el-option v-for="item in ManagerList" :key="item" :label="item" :value="item"></el-option>
+                    <el-option v-for="item in ManagerList" :key="item.id" :label="item.name" :value="item"></el-option>
                 </el-select>
             </div>
             <div>
@@ -233,6 +233,13 @@ export default {
         .then(res => {
             if (res && res.data && res.data.status != 0) {
                 this.billFieldList = res.data.data
+            }
+        })
+        
+        this.$http.get(this.apis + '/api/account/getlist', {params: {}})
+        .then(res => {
+            if (res && res.data && res.data.status != 0) {
+                this.ManagerList = res.data.data
             }
         })
     }
