@@ -1,20 +1,18 @@
 <template>
     <div class="bill-box">
+        <SiteMap></SiteMap>
         <div class="box-bg">
             <div class="div-linebox">
                 <div class="div-labels">时间查询:</div>
-                <el-date-picker v-model="sdate" type="date"></el-date-picker>
-                <div class="div-label">至</div>
-                <el-date-picker v-model="sdate" type="date"></el-date-picker>
+                <el-date-picker v-model="sedate" type="daterange" value-format="yyyy-MM-dd" range-separator="至" start-placeholder="开始日期" end-placeholder="结束日期"> </el-date-picker>
                 <div class="div-labels">客户:</div>
-                <el-select v-model="selCompany">
-                    <el-option v-for="item in company" :key="item.value" :label="item.label" :value="item.value"></el-option>
+                <el-select v-model="selPerson" value-key="name">
+                    <el-option v-for="item in personList" :key="item.id" :label="item.name" :value="item"></el-option>
                 </el-select>
-                <div class="btn">提交</div>
+                <div class="btn" @click="searchData">搜索</div>
             </div>
         </div>
         <div class="box-bg remit-money">
-            <div class="pubtitle">汇款列表</div>
             <table class="table-list" cellspacing="0" cellpadding="0">
                 <thead class="table-list-head">
                     <tr>
@@ -57,9 +55,9 @@
             </div>
         </div>
 
-        <div class="layer">
+        <div class="layer" v-if="showLayer">
             <div class="layer-box">
-                <div class="title">账单详情<i class="el-icon-error"></i></div>
+                <div class="title">账单详情<i class="el-icon-error" @click="showLayer = false"></i></div>
                 <div class="bill-info" cellspacing="0" cellpadding="0">
                     <table>
                         <tbody>
@@ -152,41 +150,96 @@
 </template>
 
 <script>
+import SiteMap from '@/components/Common/SiteMap.vue'
 export default {
     name: 'Bill',
     data () {
         return {
             money: '',
             selCompany: '',
-            sdate: '',
+            sedate: '',
             other: '',
-            company: [],
-            dataList: []
+            selPerson: '',
+            personList: [],
+            dataList: [],
+            showLayer: true,
+            page: 1,
+            pageNum: 5,
+            pageCount: 1,
         }
     },
+    components: {
+        SiteMap
+    },
     methods: {
-        handleCurrentChange: function () {
-
+        searchData () {
+            this.page = 1
+            this.getDataList()
+        },
+        handleCurrentChange (v) {
+            this.page = v
+            this.getDataList()
+        },
+        getDataList () {
+            this.$http.get(this.apis + '/api/order/getorderperson', {params: {
+                cid: this.selCompany.id,
+                page: this.page,
+                pagenum: this.pageNum,
+                filterdate: this.sedate.join(','),
+                filtername: this.selPerson.name
+            }})
+            .then(res => {
+                if (res && res.data && res.data.status != 0) {
+                    this.dataList = res.data.data.data
+                    if (res.data.data.pagecount) {
+                        this.pageCount = res.data.data.pagecount
+                    }
+                }
+            })
+        },
+        getAllPer () {
+            this.$http.get(this.apis + '/api/passenger/getalllist', {params: {
+                cid: this.selCompany.id
+            }})
+            .then(res => {
+                if (res && res.data && res.data.status != 0) {
+                    this.personList = res.data.data
+                }
+            })
         }
     },
     created () {
-        let arr = []
-        for (let i = 0; i < 5; i++) {
-            arr.push({
-                name: '王平',
-                flight: '鞍山-北京',
-                flightNO: 'CZ6113',
-                datetime: '2018-1-22',
-                site: '经济舱',
-                price: 980,
-                tax: 5,
-                money: 100000,
-                ticketNO: '010-12345678978',
-                discount: '6.6折',
-                other: ''
-            })
+        this.selCompany = this.$store.state.selCompany
+        let account = sessionStorage.getItem('loginData')
+        if (account) {
+            this.user = JSON.parse(account)
+            let com = sessionStorage.getItem('selCompany')
+            if (com) {
+                let c = JSON.parse(com)
+                this.selCompany = c
+                this.getDataList ()
+                this.getAllPer()
+            }
         }
-        this.dataList = arr
+
+
+        // let arr = []
+        // for (let i = 0; i < 5; i++) {
+        //     arr.push({
+        //         name: '王平',
+        //         flight: '鞍山-北京',
+        //         flightNO: 'CZ6113',
+        //         datetime: '2018-1-22',
+        //         site: '经济舱',
+        //         price: 980,
+        //         tax: 5,
+        //         money: 100000,
+        //         ticketNO: '010-12345678978',
+        //         discount: '6.6折',
+        //         other: ''
+        //     })
+        // }
+        // this.dataList = arr
     }
 }
 </script>
@@ -231,6 +284,7 @@ export default {
                 float: right;
                 margin-top: 7px;
                 font-size: 26px;
+                cursor: pointer;
             }
         }
         .bill-info{

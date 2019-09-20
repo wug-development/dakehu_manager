@@ -40,6 +40,7 @@ export default {
         },
         checkParent: function (v) {
             this.isCheck = v
+            v = v === 'index'? '' : v
             this.$router.push({
                 path: '/main/' + v
             })

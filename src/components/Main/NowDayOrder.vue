@@ -4,11 +4,11 @@
         <div class="box-bg search-box">
             <div class="div-box">
                 <div>公司名称:</div>
-                <el-select v-model="selCompany" filterable @change="checkCompany" :remote-method="remoteMethod" placeholder="请选择企业">
-                    <el-option v-for="item in company" :key="item.shortname" :label="item.shortname" :value="item"></el-option>
+                <el-select v-model="selCompany" value-key="name" filterable @change="checkCompany" :remote-method="remoteMethod" placeholder="请选择企业">
+                    <el-option v-for="item in company" :key="item.id" :label="item.name" :value="item"></el-option>
                 </el-select>
                 <el-select v-model="selChildCompany" filterable placeholder="请选择子公司">
-                    <el-option v-for="item in childCompany" :key="item.shortname" :label="item.shortname" :value="item"></el-option>
+                    <el-option v-for="item in childCompany" :key="item.id" :label="item.shortname" :value="item"></el-option>
                 </el-select>
                 <div class="btn-gj" @click="gjsearch">
                     国际行程
@@ -17,11 +17,11 @@
             <div class="div-box div-gn">
                 <div>出发城市:</div>
                 <el-select v-model="selStartCity" filterable placeholder="请选择">
-                    <el-option v-for="item in cityList" :key="item.code" :label="item.name" :value="item.name"></el-option>
+                    <el-option v-for="item in cityList" :key="item.id" :label="item.name" :value="item.name"></el-option>
                 </el-select>
                 <div>到达城市:</div>
                 <el-select v-model="selEndCity" filterable placeholder="请选择">
-                    <el-option v-for="item in cityList" :key="item.code" :label="item.name" :value="item.name"></el-option>
+                    <el-option v-for="item in cityList" :key="item.id" :label="item.name" :value="item.name"></el-option>
                 </el-select>
                 <div>出发日期:</div>
                 <el-date-picker v-model="sdate" type="date" placeholder="请选择"></el-date-picker>
@@ -54,7 +54,7 @@
                 <tbody class="table-list-body">
                     <tr v-for="(item, i) in orderList" :key="i">
                         <td><div :class='"check-box" + (checkOrder.indexOf(item.OrderID) > -1?" el-icon-check cur":"")' @click="checkItem(item.OrderID)"></div></td>
-                        <td class="active">{{item.OrderID}}</td>
+                        <td class="active" @click="toDetail(item.OrderID)">{{item.OrderID}}</td>
                         <td>{{item.JCPY}}</td>
                         <td>{{item.PName}}</td>
                         <td>{{item.PNR}}</td>
@@ -217,6 +217,7 @@ export default {
                 name: v
             }})
             .then(res => {
+                console.log(res)
                 if (res && res.data && res.data.status != 0) {
                     let arr = res.data.data
                     arr.sort((x, y) => {
@@ -235,6 +236,11 @@ export default {
                     this.childCompany = res.data.data
                 }
             })
+        },
+        toDetail (id) {            
+            this.$router.push({
+                path: '/main/gjorderdetail?id=' + id
+            })
         }
     },
     components: {
@@ -242,7 +248,7 @@ export default {
     },
     created () {
         // 获取订单列表
-        // this.getOrderList()
+        this.getOrderList()
 
         //获取企业列表
         this.remoteMethod('')

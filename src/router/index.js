@@ -30,6 +30,7 @@ export default new Router({
         },
         {
             path: '/main',
+            name: '首页',
             component: Index,
             meta: {
                 keepAlive: true,// 此组件需要被缓存                
@@ -38,37 +39,32 @@ export default new Router({
             children: [
                 {
                     path: '',
-                    name: 'NowDayOrder',
-                    component: NowDayOrder,
-                },
-                {
-                    path: 'index',
-                    name: 'NowDayOrder',
+                    name: '首页',
                     component: NowDayOrder,
                 },
                 {
                     path: 'gjorderlist',
-                    name: 'GJOrderList',
+                    name: '国际订单列表',
                     component: GJOrderList,
                 },
                 {
                     path: 'gjorderdetail',
-                    name: 'GJOrderDetail',
+                    name: '国际订单详情',
                     component: GJOrderDetail,
                 },
                 {
                     path: 'gnorderlist',
-                    name: 'GNOrderList',
+                    name: '国内订单列表',
                     component: GNOrderList,
                 },
                 {
                     path: 'gnorderdetail',
-                    name: 'GNOrderDetail',
+                    name: '国内订单详情',
                     component: GNOrderDetail,
                 },
                 {
                     path: 'pnrcreat',
-                    name: 'PNRCreat',
+                    name: 'PNR生成',
                     component: PNRCreat,
                 },
                 {
@@ -78,37 +74,38 @@ export default new Router({
                 },
                 {
                     path: 'manager',
-                    name: 'Manager',
+                    name: '管理员管理',
                     component: ManagerList,
                 },
                 {
                     path: 'register',
-                    name: 'Register',
+                    name: '用户注册',
                     component: Register,
                 },
                 {
                     path: 'sendemail',
-                    name: 'SendEmail',
+                    name: '发送邮件',
                     component: SendEmail,
                 },
                 {
                     path: 'muser',
+                    name: '用户管理',
                     component: UserList,
                     children: MyUser
                 },
                 {
                     path: 'edituser',
-                    name: 'EditUser',
+                    name: '编辑用户',
                     component: EditUser
                 },
                 {
                     path: 'card',
-                    name: 'NotPurchased',
+                    name: '连续30天未出票客户',
                     component: NotPurchased,
                 },
                 {
                     path: 'nuser',
-                    name: 'PressMoney',
+                    name: '需要催款客户',
                     component: PressMoney,
                 }
             ]

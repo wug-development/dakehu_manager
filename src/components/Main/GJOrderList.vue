@@ -4,8 +4,8 @@
         <div class="box-bg search-box">
             <div class="div-box">
                 <div>公司名称:</div>
-                <el-select v-model="selCompany" filterable @change="checkCompany" :remote-method="remoteMethod" placeholder="请选择企业">
-                    <el-option v-for="item in company" :key="item.shortname" :label="item.shortname" :value="item"></el-option>
+                <el-select v-model="selCompany" value-key="name" filterable @change="checkCompany" :remote-method="remoteMethod" placeholder="请选择企业">
+                    <el-option v-for="item in company" :key="item.id" :label="item.name" :value="item"></el-option>
                 </el-select>
                 <el-select v-model="selChildCompany" filterable placeholder="请选择子公司">
                     <el-option v-for="item in childCompany" :key="item.shortname" :label="item.shortname" :value="item"></el-option>
@@ -14,9 +14,9 @@
             <div class="div-box div-gn">
                 <div>行程说明:</div>
                 <div class="div-textarea">
-                    <textarea name="" id="" cols="30" rows="10"></textarea>
+                    <textarea v-model="other" id="" cols="30" rows="10"></textarea>
                 </div>
-                <div class="btn-search">
+                <div class="btn-search" @click="search">
                     国际查询
                 </div>
             </div>
@@ -26,7 +26,7 @@
             <table class="table-list" cellspacing="0" cellpadding="0">
                 <thead class="table-list-head">
                     <tr>
-                        <th width="50"><div class="check-box"></div></th>
+                        <th width="50"><div :class='"check-box" + (isCheckAll? " el-icon-check cur" : "")' @click="checkAll"></div></th>
                         <th>订单号</th>
                         <th>用户简称</th>
                         <th>乘机人</th>
@@ -40,70 +40,18 @@
                     </tr>
                 </thead>
                 <tbody class="table-list-body">
-                    <tr>
-                        <td><div class="check-box el-icon-check cur"></div></td>
-                        <td class="active">75763</td>
-                        <td>M妙奇艺</td>
-                        <td>任永军</td>
-                        <td>KW2TWE</td>
-                        <td>宁波-北京</td>
-                        <td>2018/06/08</td>
-                        <td>1410</td>
-                        <td>2018/07/05</td>
-                        <td class="wait">候补等待</td>
-                        <td>张伟玲</td>
-                    </tr>
-                    <tr>
-                        <td><div class="check-box"></div></td>
-                        <td class="active">75763</td>
-                        <td>M妙奇艺</td>
-                        <td>任永军</td>
-                        <td>KW2TWE</td>
-                        <td>宁波-北京</td>
-                        <td>2018/06/08</td>
-                        <td>1410</td>
-                        <td>2018/07/05</td>
-                        <td class="deal">等待处理</td>
-                        <td>张伟玲</td>
-                    </tr>
-                    <tr>
-                        <td><div class="check-box"></div></td>
-                        <td class="active">75763</td>
-                        <td>M妙奇艺</td>
-                        <td>任永军</td>
-                        <td>KW2TWE</td>
-                        <td>宁波-北京</td>
-                        <td>2018/06/08</td>
-                        <td>1410</td>
-                        <td>2018/07/05</td>
-                        <td>候补等待</td>
-                        <td>张伟玲</td>
-                    </tr>
-                    <tr>
-                        <td><div class="check-box"></div></td>
-                        <td class="active">75763</td>
-                        <td>M妙奇艺</td>
-                        <td>任永军</td>
-                        <td>KW2TWE</td>
-                        <td>宁波-北京</td>
-                        <td>2018/06/08</td>
-                        <td>1410</td>
-                        <td>2018/07/05</td>
-                        <td>候补等待</td>
-                        <td>张伟玲</td>
-                    </tr>
-                    <tr>
-                        <td><div class="check-box"></div></td>
-                        <td class="active">75763</td>
-                        <td>M妙奇艺</td>
-                        <td>任永军</td>
-                        <td>KW2TWE</td>
-                        <td>宁波-北京</td>
-                        <td>2018/06/08</td>
-                        <td>1410</td>
-                        <td>2018/07/05</td>
-                        <td>候补等待</td>
-                        <td>张伟玲</td>
+                    <tr v-for="(item, i) in orderList" :key="i">
+                        <td><div :class='"check-box" + (checkOrder.indexOf(item.orderid) > -1?" el-icon-check cur":"")' @click="checkItem(item.orderid)"></div></td>
+                        <td class="active" @click="toDetail(item.orderid, item.cid)">{{item.orderid}}</td>
+                        <td>{{item.cname}}</td>
+                        <td>{{item.pername}}</td>
+                        <td>{{item.ordercode}}</td>
+                        <td>{{item.scity}}-{{item.ecity}}</td>
+                        <td>{{item.sdate}}</td>
+                        <td>{{item.totalprice}}</td>
+                        <td>{{item.addtime.substr(0,10)}}</td>
+                        <td :class='item.status == "2"? "deal" : (item.status == "5"? "" : "wait")'>{{checkstatus(item.status)}}</td>
+                        <td>{{item.adminname}}</td>
                     </tr>
                 </tbody>
             </table>
@@ -124,6 +72,9 @@ export default {
     name: 'GJOrderList',
     data () {
         return {
+            orderList: [],
+            isCheckAll: false,
+            checkOrder: [],
             company: [],
             childCompany: [],
             selCompany: '',
@@ -134,14 +85,33 @@ export default {
             EndCity: [],
             pickerOptions: {},
             sdate: '',
+            other: '',
             page: 1,
             pageNum: 5,
             pageCount: 1
         }
     },
     methods: {
+        search () {
+            this.page = 1
+            this.getOrderList()
+        },
         getOrderList: function () {
-
+            this.$http.get(this.apis + '/api/orderlist/getgjorder', {params: {
+                cid: this.selCompany.id,
+                page: this.page,
+                pagenum: this.pageNum,
+                other: this.other
+            }})
+            .then(res => {
+                if (res && res.data && res.data.status != 0) {
+                    console.log(res.data.data.data)
+                    this.orderList = res.data.data.data
+                    if (res.data.data.pagecount) {
+                        this.pageCount = res.data.data.pagecount
+                    }
+                }
+            })
         },
         handleCurrentChange: function (v) {
             this.page = v
@@ -170,6 +140,37 @@ export default {
                     this.childCompany = res.data.data
                 }
             })
+        },
+        checkItem: function (v) {
+            let i = this.checkOrder.indexOf(v)
+            if(i > -1) {
+                this.checkOrder.splice(i, 1)
+            } else {
+                this.checkOrder.push(v)
+            }
+        },
+        checkAll: function () {
+            this.isCheckAll = !this.isCheckAll
+            if(this.isCheckAll) {
+                for (let i in this.orderList) {
+                    this.checkOrder.push(this.orderList[i].orderid)
+                }
+            } else {
+                this.checkOrder = []
+            }
+        },
+        checkstatus: function (v) {
+            let txt = ''
+            switch (v) {
+                case '2': txt = '待确认'; break;
+                default: txt = '出票完成'; break;
+            }
+            return txt
+        },
+        toDetail (id, cid) {
+            this.$router.push({
+                path: '/main/gjorderdetail?id=' + id + '&cid=' + cid
+            })
         }
     },
     components: {
@@ -188,6 +189,8 @@ export default {
         
         //获取企业列表
         this.remoteMethod('')
+
+        this.getOrderList()
     }
 }
 </script>

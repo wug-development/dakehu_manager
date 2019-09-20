@@ -57,6 +57,7 @@
                     margin: 0 5px;
                     cursor: pointer;
                     user-select: none;
+                    white-space: nowrap;
                 }
                 div[class^="btn-"]:active{
                     background-color: #eee;
@@ -68,6 +69,10 @@
                 div.btn-warn{
                     color: #f8b551;
                     border: 1px solid #f8b551;
+                }
+                div.btn-save{
+                    color: #67c23a;
+                    border: 1px solid #67c23a;
                 }
             }
         }
@@ -156,6 +161,7 @@
                         margin: 0 5px;
                         cursor: pointer;
                         user-select: none;
+                        white-space: nowrap;
                     }
                     div[class^="btn-"]:active{
                         background-color: #eee;

@@ -1,19 +1,16 @@
 <template>
     <div class="userlist-box">
         <TopMenu></TopMenu>
-        <SiteMap></SiteMap>
         <router-view/>
     </div>
 </template>
 
 <script>
 import TopMenu from '@/components/Common/TopMenu'
-import SiteMap from '@/components/Common/SiteMap.vue'
 export default {
     name: 'UserList',
     components: {
-        TopMenu,
-        SiteMap
+        TopMenu
     }
 }
 </script>

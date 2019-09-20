@@ -9,7 +9,9 @@ const state = {
     menu: true,
     menuCur: 2,
     openID: '',
-    siteMap: ['首页']
+    siteMap: ['首页'],
+    topmenu: 'user',
+    selCompany: {}
 }
 
 const getters = {
@@ -27,6 +29,12 @@ const getters = {
     },
     getSiteMap () {
         return state.siteMap
+    },
+    getTopMenu () {
+        return state.topmenu
+    },
+    getSelCompany () {
+        return state.selCompany
     }
 }
 
@@ -45,6 +53,12 @@ const mutations = {
     },
     setSiteMap (v) {
         state.siteMap = v
+    },
+    setTopMenu (v) {
+        state.topmenu = v
+    },
+    setSelCompany (v) {
+        state.selCompany = v
     }
 }
 
@@ -63,6 +77,12 @@ const actions = {
     },
     setSiteMap (context, v) {
         context.commit('setSiteMap', v)
+    },
+    setTopMenu (context, v) {
+        context.commit('setTopMenu', v)
+    },
+    setSelCompany (context, v) {
+        context.commit('setSelCompany', v)
     }
 }
 

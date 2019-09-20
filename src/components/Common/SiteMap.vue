@@ -2,9 +2,9 @@
     <div class="sitemap-box">
         <div> 当前位置：</div>
         <div class="site-labels">
-            <span v-for="(item, i) in $store.state.siteMap" :key="i" :class='(i > 0 ? "el-icon-arrow-right" : "") + ($store.state.siteMap.length - 1 == i? " cur" : "")'>
-                <i>{{item}}</i>
-                <template v-if='$store.state.siteMap.length-1 == i && i > 0'><label class="el-icon-close" @click="closeCurrent"></label></template>
+            <span v-for="(item, i) in maplist" :key="i" :class='(i > 0 ? "el-icon-arrow-right" : "") + (maplist.length - 1 == i? " cur" : "")'>
+                <i>{{item.name}}</i>
+                <template v-if='maplist.length-1 == i && i > 0'><label class="el-icon-close" @click="closeCurrent"></label></template>
             </span>
         </div>
     </div>
@@ -13,11 +13,31 @@
 <script>
 export default {
     name: 'SiteMap',
+    data () {
+        return {
+            maplist: []
+        }
+    },
     methods: {
         closeCurrent: function () {
-            let arr = this.$store.state.siteMap
-            arr.splice(arr.length - 1, 1)
+            this.$router.push({
+                path: this.maplist[this.maplist.length-2].path
+            })
+            this.$store.state.topmenu = 'user'
         }
+    },
+    created () {
+        let arr = this.$route.matched
+        let obj = []
+        for (let i = 1; i < arr.length; i++) {
+            if (arr[i].name) {
+                obj.push({
+                    name: arr[i].name,
+                    path: arr[i].path
+                })
+            }
+        }
+        this.maplist = obj
     }
 }
 </script>

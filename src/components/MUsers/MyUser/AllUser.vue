@@ -1,5 +1,6 @@
 <template>
     <div class="alluser-box">
+        <SiteMap></SiteMap>
         <div class="box-bg search-box">
             <el-select class="ddl"
                 v-model="username"
@@ -73,6 +74,7 @@
 </template>
 
 <script>
+import SiteMap from '@/components/Common/SiteMap.vue'
 export default {
     name: 'AllName',
     data () {
@@ -85,6 +87,7 @@ export default {
             phone: '',
             dataList: [],
             options: [],
+            comList: [],
             username: '',
             searchVal: '',
             page: 1,
@@ -93,8 +96,10 @@ export default {
         }
     },
     created () {
-        this.$store.state.siteMap = ["用户管理"]
         this.getList()
+    },
+    components: {
+        SiteMap
     },
     methods: {
         getList: function () {
@@ -145,6 +150,7 @@ export default {
         },
         searchData: function (v) {
             this.searchVal = this.username
+            this.page = 1
             this.getList()
         },
         del: function (v) {
