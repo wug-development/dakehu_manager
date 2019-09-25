@@ -50,7 +50,7 @@
                         <td>{{item.sdate}}</td>
                         <td>{{item.totalprice}}</td>
                         <td>{{item.addtime.substr(0,10)}}</td>
-                        <td :class='item.status == "2"? "deal" : (item.status == "5"? "" : "wait")'>{{checkstatus(item.status)}}</td>
+                        <td :class='item.status == "0"? "deal" : (item.status == "1"? "" : "wait")'>{{utils.checkStatus(item.status)}}</td>
                         <td>{{item.adminname}}</td>
                     </tr>
                 </tbody>
@@ -105,7 +105,6 @@ export default {
             }})
             .then(res => {
                 if (res && res.data && res.data.status != 0) {
-                    console.log(res.data.data.data)
                     this.orderList = res.data.data.data
                     if (res.data.data.pagecount) {
                         this.pageCount = res.data.data.pagecount
@@ -158,14 +157,6 @@ export default {
             } else {
                 this.checkOrder = []
             }
-        },
-        checkstatus: function (v) {
-            let txt = ''
-            switch (v) {
-                case '2': txt = '待确认'; break;
-                default: txt = '出票完成'; break;
-            }
-            return txt
         },
         toDetail (id, cid) {
             this.$router.push({

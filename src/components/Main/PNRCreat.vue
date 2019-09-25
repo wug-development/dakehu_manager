@@ -4,11 +4,11 @@
         <div class="box-bg search-box">
             <div class="div-box">
                 <div>公司名称:</div>
-                <el-select v-model="selCompany" placeholder="请选择企业">
-                    <el-option v-for="item in company" :key="item.value" :label="item.label" :value="item.value"></el-option>
+                <el-select v-model="selCompany" value-key="name" filterable @change="checkCompany" :remote-method="remoteMethod" placeholder="请选择企业">
+                    <el-option v-for="item in company" :key="item.id" :label="item.name" :value="item"></el-option>
                 </el-select>
-                <el-select v-model="selChildCompany" placeholder="请选择子公司">
-                    <el-option v-for="item in childCompany" :key="item.value" :label="item.label" :value="item.value"></el-option>
+                <el-select v-model="selChildCompany" filterable placeholder="请选择子公司">
+                    <el-option v-for="item in childCompany" :key="item.id" :label="item.shortname" :value="item"></el-option>
                 </el-select>
             </div>
             <div class="div-box div-gn">
@@ -127,10 +127,39 @@ export default {
     methods: {
         handleCurrentChange: function (v) {
             console.log(v)
-        }
+        },
+        remoteMethod: function (v) {
+            this.$http.get(this.apis + '/api/company/getfiltercompany', {params: {
+                name: v
+            }})
+            .then(res => {
+                console.log(res)
+                if (res && res.data && res.data.status != 0) {
+                    let arr = res.data.data
+                    arr.sort((x, y) => {
+                        return x.shortname.charCodeAt(0) - y.shortname.charCodeAt(0)
+                    })
+                    this.company = arr
+                }
+            })
+        },
+        checkCompany: function () {
+            this.$http.get(this.apis + '/api/company/getfiltersubcompany', {params: {
+                id: this.selCompany.id
+            }})
+            .then(res => {
+                if (res && res.data && res.data.status != 0) {
+                    this.childCompany = res.data.data
+                }
+            })
+        },
     },
     components: {
         SiteMap
+    },
+    created () {        
+        //获取企业列表
+        this.remoteMethod('')
     }
 }
 </script>

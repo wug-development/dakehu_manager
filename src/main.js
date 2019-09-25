@@ -10,7 +10,10 @@ import 'element-ui/lib/theme-chalk/index.css';
 import Notification from 'element-ui/lib/notification'
 import MessageBox from 'element-ui/lib/message-box'
 
+import common from '../common/common'
+
 Vue.config.productionTip = false
+Vue.prototype.utils = common.utils
 Vue.prototype.$http = Axios
 Vue.prototype.apis = process.env.APIS_URL
 Vue.prototype.Notification = Notification

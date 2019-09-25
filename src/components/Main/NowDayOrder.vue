@@ -28,7 +28,7 @@
                 <div class="btn-search" @click="gnsearch">
                     国内查询
                 </div>
-                <div class="btn-gj">
+                <div class="btn-gj" @click="toPNR">
                     PNR生成
                 </div>
             </div>
@@ -240,6 +240,11 @@ export default {
         toDetail (id) {            
             this.$router.push({
                 path: '/main/gjorderdetail?id=' + id
+            })
+        },
+        toPNR () {
+            this.$router.push({
+                path: '/main/pnrcreat'
             })
         }
     },

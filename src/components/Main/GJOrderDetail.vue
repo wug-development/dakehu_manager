@@ -1,7 +1,7 @@
 <template>
     <div class="gjorderdetail-box">
         <SiteMap></SiteMap>
-        <div class="box-bg detail-info" v-if="!isBack">
+        <div class="box-bg detail-info">
             <div class="title" @click="backPage"><span class="icon-back el-icon-back"></span></div>
             <table cellspacing="0" cellpadding="0" v-if="orderinfo && orderinfo.dcOrderID">
                 <tbody>
@@ -32,86 +32,30 @@
                         </td>
                         <td>行程：</td>
                         <td>
-                            <el-input v-model="orderinfo.dcStartCity + '-' + orderinfo.dcBackCity"></el-input>
+                            <el-input readonly v-model="orderinfo.dcStartCity + '-' + orderinfo.dcBackCity"></el-input>
                         </td>
                         <td>票号：</td>
                         <td>                            
-                            <el-input v-model="orderinfo.dnTicketNO"></el-input>
+                            <el-input v-model="orderinfo.dcTicketNO"></el-input>
                         </td>
                     </tr>
-                    <tr>
+                    <tr v-if="orderinfo.dnOrderStatus == 1">
                         <td>订单金额：</td>
                         <td colspan="7">
                             <input class="txt" type="text" v-model="orderinfo.dnTotalPrice"> ( <input class="txt" type="text" @change="countPrice" v-model="orderinfo.dnPrice">  + 税金 <input class="txt" type="text" @change="countPrice" v-model="orderinfo.dnTax"> + 服务费 <input class="txt" type="text" @change="countPrice" v-model="orderinfo.dnServicePrice"> +保险 <input class="txt" type="text" @change="countPrice" v-model="orderinfo.dnSafePrice"> ) * {{personlist.length}}人
                         </td>
                     </tr>
-                    <tr>
-                        <td>备注：</td>
-                        <td colspan="7">
-                            <textarea class="txt-other" v-model="orderinfo.dcContent" id="" cols="30" rows="10"></textarea>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td>行程：</td>
-                        <td colspan="3">
-                            <textarea class="txt-trip" v-model="flightinfo" readonly id="" cols="30" rows="10"></textarea>
-                        </td>
-                        <td>乘机人信息：</td>
-                        <td colspan="3">
-                            <textarea  id="" v-model="personinfo" readonly cols="30" rows="10"></textarea>
-                        </td>
-                    </tr>
-                </tbody>
-            </table>
-            <div class="btn-box">
-                <div class="btn" @click="save">保存</div>
-                <div class="btn-other" @click="isBack = true">退票</div>
-                <div class="btn-other" @click="isChange = true">改期</div>
-                <div class="btn-other">国际出票单</div>
-            </div>
-        </div>
-        <div class="box-bg detail-info detail-info-back" v-else>
-            <div class="div-title"><span class="icon-back el-icon-back" @click="backPage">(退票)</span></div>
-            <table cellspacing="0" cellpadding="0">
-                <tbody>
-                    <tr>
-                        <td>订单号：</td>
-                        <td><span class="blue">{{orderinfo.dcOrderID}}</span>  <span class="orange">{{orderinfo.dcAdminName}}</span></td>
-                        <td>预订时间：</td>
-                        <td>{{orderinfo.dtAddTime.replace("T", " ")}}</td>
-                        <td>订单状态：</td>
-                        <td>
-                            <el-select v-model="orderStatus" value-key="value" placeholder="请选择">
-                                <el-option v-for="item in ddlOrderStatus" :key="item.id" :label="item.value" :value="item"></el-option>
-                            </el-select>
-                        </td>
-                        <td>出发日期：</td>
-                        <td>
-                            <el-date-picker v-model="orderinfo.dcStartDate" type="date" placeholder="请选择"></el-date-picker>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td>记录编号：</td>
-                        <td>
-                            <el-input v-model="orderinfo.dcOrderCode"></el-input>
-                        </td>
-                        <td>联系人：</td>
-                        <td>
-                            <el-input v-model="orderinfo.dcLinkName"></el-input>
-                        </td>
-                        <td>行程：</td>
-                        <td>
-                            <el-input v-model="orderinfo.dcStartCity + '-' + orderinfo.dcBackCity"></el-input>
-                        </td>
-                        <td>票号：</td>
-                        <td>                            
-                            <el-input v-model="orderinfo.dnTicketNO"></el-input>
-                        </td>
-                    </tr>
-                    <tr>
+                    <tr v-else-if="orderinfo.dnOrderStatus == 2">
                         <td class="orange">实退金额：</td>
                         <td colspan="7">
-                            <el-input v-model="backMoney"></el-input>
+                            <el-input v-model="orderinfo.dnChangePrice"></el-input>
+                        </td>
+                    </tr>
+                    <tr v-else-if="orderinfo.dnOrderStatus == 3">
+                        <td class="orange">改期金额：</td>
+                        <td colspan="7">
+                            <el-input v-model="orderinfo.dnChangePrice"></el-input>
+                            （改期费<input type="text" class="txt" @change="countChangePrice" v-model="orderinfo.dnChangeDatePrice"></input>+差价<input class="txt" @change="countChangePrice" type="text" v-model="orderinfo.dnChaPrice"></input>）
                         </td>
                     </tr>
                     <tr>
@@ -134,165 +78,194 @@
             </table>
             <div class="btn-box">
                 <div class="btn" @click="save">保存</div>
-                <div class="btn-other" @click="isBack = false">取消退票</div>
+                <div class="btn-other" @click="orderinfo.dnOrderStatus = 2">退票</div>
+                <div class="btn-other" @click="orderinfo.dnOrderStatus = 3">改期</div>
+                <div class="btn-other" @click="showTicket">国际出票单</div>
             </div>
         </div>
-        <div class="trip-bill" v-if="isChange">
+        <div class="trip-bill" v-show="orderinfo.dnIsTicket > 0">
             <table cellspacing="1" cellpadding="0">
                 <tbody>
                     <tr>
                         <td>航空公司</td>
                         <td>
-                            <input class="txt" type="text">
+                            <input class="txt" type="text" v-model="ticketinfo.dcAirCompanyName"></input>
                         </td>
-                        <td>记录 编号</td>
+                        <td>记录编号</td>
                         <td>
-                            <input class="txt" type="text">
+                            <input class="txt" type="text" v-model="ticketinfo.dcOrderCode">
                         </td>
                         <td>行 程</td>
                         <td>
-                            <input class="txt" type="text">
+                            <input class="txt" type="text" v-model="ticketinfo.dcStartCity">
                         </td>
                     </tr>
                     <tr>
                         <td>销售价</td>
                         <td>
-                            <input class="txt" type="text">
+                            <input class="txt" type="text" @change="countAutoPrice" v-model="ticketinfo.dnSellPrice">
                         </td>
                         <td>返     点</td>
                         <td>
-                            <input class="txt txt-small" type="text"> + <input class="txt txt-small" type="text"> + <input class="txt txt-small" type="text">
+                            <input class="txt txt-small" type="text"  @change="countAutoPrice" v-model="ticketinfo.dnReturnPoint1"> + <input class="txt txt-small" type="text"  @change="countAutoPrice" v-model="ticketinfo.dnReturnPoint2"> + <input class="txt txt-small" type="text"  @change="countAutoPrice" v-model="ticketinfo.dnReturnPoint3">
                         </td>
                         <td>税      金</td>
                         <td>
-                            <input class="txt" type="text">
+                            <input class="txt" type="text" @change="countAutoPrice" v-model="ticketinfo.dnTax">
                         </td>
                     </tr>
                     <tr>
                         <td>人     数</td>
                         <td>
-                            <input class="txt txt-small" type="text"> 要位费 <input class="txt txt-small" type="text">
-                            <select><option value="0">请选择</option></select>
+                            <input class="txt txt-small" type="text" @change="countAutoPrice" v-model="ticketinfo.dnPersonNumber"> 要位费 <input class="txt txt-small" type="text" @change="countAutoPrice" v-model="ticketinfo.dnYaoWeiPrice">
+                            <select v-model="selPeople">
+                                <option value="">请选择</option>
+                                <option v-for="item in Persons" :value="item">{{item.name}}</option>
+                            </select>
                         </td>
                         <td>实       收</td>
                         <td>
-                            <input class="txt txt-small" type="text"> &nbsp;返：<input class="txt txt-small" type="text">
+                            <input class="txt txt-small" type="text"  @change="countAutoPrice" v-model="ticketinfo.dnShiShouPrice"> &nbsp;返：<input class="txt txt-small" type="text"  @change="countAutoPrice" v-model="ticketinfo.dnReturnPrice">
                         </td>
                         <td class="red">实际到账</td>
                         <td>
-                            0
+                            {{ticketinfo.dnShiJiDaoZhang}}
                         </td>
                     </tr>
                     <tr>
                         <td>出票点</td>
                         <td>
-                            <select><option value="0">宝盛</option></select>
+                            <select v-model="selOutTicket">
+                                <option value="">请选择</option>
+                                <option v-for="item in OutTicket" :value="item">{{item.name}}</option>
+                            </select>
                         </td>
                         <td>票      价</td>
                         <td>
-                            <input class="txt" type="text">
+                            <input class="txt" type="text" v-model="ticketinfo.dnTotalPrice">
                         </td>
                         <td class="red">结算价</td>
                         <td>
-                            0
+                            {{ticketinfo.dnJieSuanPrice}}
                         </td>
                     </tr>
                     <tr>
                         <td>客 户</td>
                         <td>
-                            <input class="txt" type="text">
+                            <select v-model="ticketinfo.dcLinkName">
+                                <option :value="orderinfo.dcCompanyName">{{orderinfo.dcCompanyName}}</option>
+                                <option v-for="item in Chengjiren" :value="orderinfo.dcCompanyName + ' ' + item.name">{{orderinfo.dcCompanyName + ' ' + item.name}}</option>
+                            </select>
                         </td>
                         <td>行程单金额</td>
                         <td>
-                            <input class="txt" type="text">
+                            <input class="txt" type="text" v-model="ticketinfo.dnFlightPrice">
                         </td>
                         <td class="red">利      润</td>
                         <td>
-                            0
+                            {{ticketinfo.dnLiRun}}
                         </td>
                     </tr>
                     <tr>
                         <td>票      号</td>
                         <td>
-                            <input class="txt" type="text">
+                            <input class="txt" type="text" v-model="ticketinfo.dcTicketNO">
                         </td>
                         <td>订单号</td>
                         <td>
-                            <input class="txt" type="text">
+                            <input class="txt" type="text" v-model="ticketinfo.dcOrderID">
                         </td>
                         <td class="red">底      价</td>
                         <td>
-                            <input class="txt" readonly type="text" placeholder="自动计算">
+                            <input class="txt" type="text" placeholder="" v-model="ticketinfo.dnDiJia">
                         </td>
                     </tr>
                     <tr>
                         <td>服务费</td>
                         <td>
-                            <input class="txt" type="text">
+                            <input class="txt" type="text" v-model="ticketinfo.dnServicePrice">
                         </td>
                         <td>出发日期</td>
                         <td>
-                            <input class="txt" type="text">
+                            <input class="txt" type="text" v-model="ticketinfo.dcStartDate">
                         </td>
                         <td class="red">返点金额</td>
                         <td>
-                            <input class="txt" readonly type="text" placeholder="自动计算">
+                            <input class="txt" type="text" placeholder="" v-model="ticketinfo.dnFandianPrice">
                         </td>
                     </tr>
                     <tr>
                         <td>账单票价</td>
                         <td>
-                            <input class="txt" type="text">
+                            <input class="txt" type="text" v-model="ticketinfo.dnTicketPrice">
                         </td>
                         <td>舱位等级</td>
                         <td>
-                            <input class="txt" type="text">
+                            <input class="txt" type="text" v-model="ticketinfo.dcRakedClass">
                         </td>
                         <td class="red">航协结算</td>
                         <td>
-                            <input class="txt" readonly type="text" placeholder="自动计算">
+                            <input class="txt" type="text" placeholder="" v-model="ticketinfo.dnHangXiePrice">
                         </td>
                     </tr>
                     <tr>
                         <td>乘 机 人</td>
                         <td>
-                            <input class="txt" type="text">
+                            <input class="txt" type="text" v-model="ticketinfo.dcPersonName">
                         </td>
                         <td>航  班 号</td>
                         <td>
-                            
+                            <input class="txt" type="text" v-model="ticketinfo.dcFlightNumber">
                         </td>
                         <td>起飞时间</td>
                         <td>
-                            
+                            <input class="txt" type="text" v-model="ticketinfo.dcFlightTime">
                         </td>
                     </tr>
                     <tr>
                         <td>备注</td>
                         <td colspan="5">
-                            <input class="txt txt-max" type="text">
+                            <input class="txt txt-max" type="text" v-model="ticketinfo.dcOther">
                         </td>
                     </tr>
                     <tr>
-                        <td rowspan="2">收款方式</td>
-                        <td colspan="5">
-                            <select><option value="0">请选择</option></select>
-                            <select><option value="0">请选择</option></select>
-                            <select><option value="0">请选择</option></select>
-                            <select><option value="0">请选择</option></select>                            
-                        </td>
-                    </tr>
-                    <tr>
-                        <td class="endtd" colspan="5">
-                            已收款金额:<input class="txt" type="text">
-                            已收款金额:<input class="txt" type="text">
-                            已收款金额:<input class="txt" type="text">
-                            已收款金额:<input class="txt" type="text">
+                        <td>收款方式</td>
+                        <td colspan="5" class="endtd">
+                            <div class="div_pricemethod">
+                                <div>
+                                    <select v-model="ticketinfo.dcPaymentMethod1">
+                                        <option value="">请选择</option>
+                                        <option v-for="(item, i) in dllMethod" :key="i" :value="item">{{item}}</option>
+                                    </select>
+                                    <div>已收款金额：<input class="txt" type="text" v-model="ticketinfo.dnPaymentPrice1"></div>
+                                </div>
+                                <div>
+                                    <select v-model="ticketinfo.dcPaymentMethod2">
+                                        <option value="">请选择</option>
+                                        <option v-for="(item, i) in dllMethod" :key="i" :value="item">{{item}}</option>
+                                    </select>
+                                    <div>已收款金额：<input class="txt" type="text" v-model="ticketinfo.dnPaymentPrice2"></div>
+                                </div>
+                                <div>
+                                    <select v-model="ticketinfo.dcPaymentMethod3">
+                                        <option value="">请选择</option>
+                                        <option v-for="(item, i) in dllMethod" :key="i" :value="item">{{item}}</option>
+                                    </select>
+                                    <div>已收款金额：<input class="txt" type="text" v-model="ticketinfo.dnPaymentPrice3"></div>
+                                </div>
+                                <div>
+                                    <select v-model="ticketinfo.dcPaymentMethod4">
+                                        <option value="">请选择</option>
+                                        <option v-for="(item, i) in dllMethod" :key="i" :value="item">{{item}}</option>
+                                    </select>
+                                    <div>已收款金额：<input class="txt" type="text" v-model="ticketinfo.dnPaymentPrice4"></div>
+                                </div>
+                            </div>                         
                         </td>
                     </tr>
                 </tbody>
             </table>
-            <div class="btn">提交</div>
+            <div class="btn" @click="submitTicket">保存</div>
         </div>
     </div>
 </template>
@@ -304,22 +277,38 @@ export default {
     data () {
         return {
             ddlOrderStatus: [{key:0,value:'等待处理'},{key:1,value:'处理完成'},{key:2,value:'后补等待'}],
+            dllMethod: ['预收款', '抵退票', '欠款'],
+            company: [],
+            OutTicket: [],
+            Persons: [],
+            Chengjiren: [],
             orderStatus: '',
-            startDate: '2018/6/17',
-            recordNO: 'KW2TWE',
-            trip: '宁波-北京',
-            person: '任永军',
-            ticketNO: '996-564758112248',
-            backMoney: 0,
             orderid: '',
             cid: '',
+            ticketid: '',
+            selCompany: '',
+            selOutTicket: '',
+            selPeople: '',
             orderinfo: {},
+            ticketinfo: {
+                dnSellPrice: 0,
+                dnDiJia: 0,
+                dnReturnPoint1: 0,
+                dnReturnPoint2: 0,
+                dnReturnPoint3: 0,
+                dnTax: 0,
+                dnPersonNumber: 1,
+                dnJieSuanPrice: 0,
+                dnShiJiDaoZhang: 0,
+                dnLiRun: 0,
+                dnShiShouPrice: 0,
+                dnYaoWeiPrice: 0,
+                dnReturnPrice: 0
+            },
             flightlist: [],
             personlist: [],
             flightinfo: '',
             personinfo: '',
-            isBack: false,
-            isChange: false
         }
     },
     components: {
@@ -327,29 +316,123 @@ export default {
     },
     methods: {
         save () {
+            this.orderinfo.dnStatus = this.orderStatus.key
             this.$http.post(this.apis + '/api/order/editorder', this.orderinfo)
             .then(res => {
                 if (res && res.data && res.data.status != 0) {
-                    this.MessageBox('保存成功！').ther(() => {
+                    this.MessageBox('保存成功！').then(() => {
                         this.backPage()
                     })
                 }
             })
         },
+        submitTicket () {
+            this.ticketinfo.dcCompanyID = this.selCompany.id
+            this.ticketinfo.dcCompany = this.selCompany.name
+            if (this.selOutTicket) {
+                this.ticketinfo.dcOutTicketID = this.selOutTicket.id
+                this.ticketinfo.dcOutTicketName = this.selOutTicket.name
+            }
+            if (this.selPeople) {
+                this.ticketinfo.dnHKYWID = this.selOutTicket.id
+                this.ticketinfo.dcLXR = this.selOutTicket.name
+            }
+            if (!this.ticketinfo.dcTSID) {
+                this.ticketinfo.dcAddUser = this.orderinfo.dcAdminName
+            }
+            this.$http.post(this.apis + '/api/ticket/submitticket', this.ticketinfo)
+            .then(res => {
+                if (res && res.data && res.data.status != 0) {
+                    this.MessageBox('保存成功！').then(() => {
+                        this.backPage()
+                    })
+                }
+            })
+        },
+        getTicket () {
+            this.$http.get(this.apis + '/api/ticket/getticketinfo', {params: {
+                tid: this.ticketid
+            }})
+            .then(res => {
+                if (res && res.data && res.data.status != 0) {
+                    this.ticketinfo = res.data.data[0]
+                    this.ticketinfo.dcStartCity = this.ticketinfo.dcStartCity + '-' + this.ticketinfo.dcBackCity
+                }
+            })
+        },
+        showTicket () {
+            if (this.orderinfo.dnIsTicket < 1) {
+                this.orderinfo.dnIsTicket = 1
+                this.ticketinfo.dcOrderCode = this.orderinfo.dcOrderCode
+                this.ticketinfo.dcTicketNO = this.orderinfo.dcTicketNO
+                this.getOutTicket()
+                this.getGJPeople()
+                this.getChengjiren()
+            }
+        },
+        countAutoPrice () {
+            let _js = Number(this.ticketinfo.dnSellPrice)
+            this.ticketinfo.dnDiJia = Number(this.ticketinfo.dnSellPrice)
+            if (this.ticketinfo.dnReturnPoint1 && this.ticketinfo.dnReturnPoint1 != '0') {
+                this.ticketinfo.dnDiJia = (_js - Number(this.ticketinfo.dnReturnPoint1 / 100.0 * _js)) || 0
+                _js =  (_js - parseInt(Number(this.ticketinfo.dnReturnPoint1) / 100.0 * _js)) || 0
+            }
+            if (this.ticketinfo.dnReturnPoint2 && this.ticketinfo.dnReturnPoint2 != '0') {
+                _js =  (_js - parseInt(Number(this.ticketinfo.dnReturnPoint2) / 100.0 * _js)) || 0
+            }
+            if (this.ticketinfo.dnReturnPoint2 && this.ticketinfo.dnReturnPoint2 != '0') {
+                _js =  (_js + Number(this.ticketinfo.dnReturnPoint3)) || 0
+            }
+            if (this.ticketinfo.dnTax && this.ticketinfo.dnTax != '0' ){
+                _js = _js + Number(this.ticketinfo.dnTax)
+            }
+            this.ticketinfo.dnJieSuanPrice = _js * (Number(this.ticketinfo.dnPersonNumber) || 1)
+            this.ticketinfo.dnShiJiDaoZhang = Number(this.ticketinfo.dnShiShouPrice) || 0
+            this.ticketinfo.dnLiRun = (Number(this.ticketinfo.dnShiShouPrice) - Number(this.ticketinfo.dnJieSuanPrice) + (Number(this.ticketinfo.dnYaoWeiPrice) || 0) - (Number(this.ticketinfo.dnReturnPrice) || 0)) || 0
+        },
         backPage () {
             this.$router.go(-1)
         },
-        checkStatus (v) {
-            let s = ''
-            switch (v) {
-                case 0: s = '等待处理'; break;
-                case 1: s = '处理完成'; break;
-                case 2: s = '后补等待'; break;
-            }
-            return s
-        },
         countPrice () {
             this.orderinfo.dnTotalPrice = (Number(this.orderinfo.dnPrice) + Number(this.orderinfo.dnTax) + Number(this.orderinfo.dnServicePrice) + Number(this.orderinfo.dnSafePrice)) * this.personlist.length
+        },
+        countChangePrice () {
+            this.orderinfo.dnChangePrice = (Number(this.orderinfo.dnChangeDatePrice) + Number(this.orderinfo.dnChaPrice))
+        },
+        getOutTicket () {
+            //获取出票点
+            this.$http.get(this.apis + '/api/ticket/getgjoutticket', {params: {}})
+            .then(res => {
+                if (res && res.data && res.data.status != 0) {
+                    let arr = res.data.data
+                    arr.sort((x, y) => {
+                        return x.name.charCodeAt(0) - y.name.charCodeAt(0)
+                    })
+                    this.OutTicket = arr
+                }
+            })
+        },
+        getGJPeople () {
+            //获取人
+            this.$http.get(this.apis + '/api/ticket/getgjpeople', {params: {}})
+            .then(res => {
+                if (res && res.data && res.data.status != 0) {
+                    let arr = res.data.data
+                    this.Persons = arr
+                }
+            })
+        },
+        getChengjiren () {
+            //乘机人
+            this.$http.get(this.apis + '/api/passenger/getalllist', {params: {
+                cid: this.cid
+            }})
+            .then(res => {
+                if (res && res.data && res.data.status != 0) {
+                    let arr = res.data.data
+                    this.Chengjiren = arr
+                }
+            })
         }
     },
     created () {
@@ -362,12 +445,21 @@ export default {
         .then(res => {
             if (res && res.data && res.data.status != 0) {
                 let _d = res.data.data
-                console.log(_d)
                 if (_d.info && _d.info.length > 0) {
                     this.orderinfo = _d.info[0]
+                    if (this.orderinfo.dnIsTicket > 0) {
+                        this.ticketid = this.orderinfo.dcTicketNO
+                        this.getTicket()
+                        this.getOutTicket()
+                        this.getGJPeople()
+                        this.getChengjiren()
+                    } else {
+                        this.ticketinfo.dcOrderID = this.orderid
+                    }
+
                     this.orderStatus = {
-                        id: this.orderinfo.dnStatus,
-                        value: this.checkStatus(this.orderinfo.dnStatus)
+                        key: this.orderinfo.dnStatus,
+                        value: this.utils.checkStatus(this.orderinfo.dnStatus)
                     }
                     if (_d.flight && _d.flight.length > 0){
                         this.flightlist = _d.flight
@@ -392,7 +484,7 @@ export default {
                     }
                 }
             }
-        })
+        })        
     }
 }
 </script>
@@ -417,6 +509,8 @@ export default {
                 line-height: 40px;
                 .el-input{
                     width: 180px;
+                }
+                .el-input__inner{
                     background-color: #f8f8f8;
                 }
                 .txt{
@@ -428,6 +522,9 @@ export default {
                     padding: 0 5px;
                     border-radius: 4px;
                     background-color: #f8f8f8;
+                }
+                .txt:focus{
+                    border-color: #409EFF;
                 }
                 textarea{
                     width: 95%;
@@ -489,16 +586,16 @@ export default {
                 height: 40px;
                 line-height: 40px;
                 .txt{
+                    width: 120px;
                     height: 30px;
                     line-height: 30px;
                     border: 1px solid $pubcolor;
                     box-sizing: border-box;
-                    text-indent: 1em;
+                    text-indent: 5px;
                 }
                 .txt-small{
-                    text-indent: 0;
-                    text-align: center;
                     width: 50px;
+                    text-indent: 5px;
                 }
                 .txt-max{
                     width: 95%;
@@ -508,6 +605,13 @@ export default {
                     line-height: 30px;
                     border: 1px solid $pubcolor;
                     box-sizing: border-box;
+                }
+                .div_pricemethod{
+                    display: flex;
+                    justify-content: space-around;
+                    select {
+                        width: 185px;
+                    }
                 }
             }
             td:nth-child(odd){
