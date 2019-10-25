@@ -374,7 +374,7 @@ export default {
             let _js = Number(this.ticketinfo.dnSellPrice)
             this.ticketinfo.dnDiJia = Number(this.ticketinfo.dnSellPrice)
             if (this.ticketinfo.dnReturnPoint1 && this.ticketinfo.dnReturnPoint1 != '0') {
-                this.ticketinfo.dnDiJia = (_js - Number(this.ticketinfo.dnReturnPoint1 / 100.0 * _js)) || 0
+                this.ticketinfo.dnDiJia = ((_js - Number(this.ticketinfo.dnReturnPoint1 / 100.0 * _js)) || 0) * (Number(this.ticketinfo.dnPersonNumber) || 1)
                 _js =  (_js - parseInt(Number(this.ticketinfo.dnReturnPoint1) / 100.0 * _js)) || 0
             }
             if (this.ticketinfo.dnReturnPoint2 && this.ticketinfo.dnReturnPoint2 != '0') {
@@ -388,7 +388,7 @@ export default {
             }
             this.ticketinfo.dnJieSuanPrice = _js * (Number(this.ticketinfo.dnPersonNumber) || 1)
             this.ticketinfo.dnShiJiDaoZhang = Number(this.ticketinfo.dnShiShouPrice) || 0
-            this.ticketinfo.dnLiRun = (Number(this.ticketinfo.dnShiShouPrice) - Number(this.ticketinfo.dnJieSuanPrice) + (Number(this.ticketinfo.dnYaoWeiPrice) || 0) - (Number(this.ticketinfo.dnReturnPrice) || 0)) || 0
+            this.ticketinfo.dnLiRun = (Number(this.ticketinfo.dnShiShouPrice) - Number(this.ticketinfo.dnJieSuanPrice) - (Number(this.ticketinfo.dnYaoWeiPrice) || 0) - (Number(this.ticketinfo.dnReturnPrice) || 0)) || 0
         },
         backPage () {
             this.$router.go(-1)
