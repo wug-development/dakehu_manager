@@ -12,6 +12,7 @@ import WriteInfo from '@/components/Main/WriteInfo'
 import ManagerList from '@/components/Manager/ManagerList'
 import Register from '@/components/MUsers/Register'
 import SendEmail from '@/components/MUsers/SendEmail'
+import AllUser from '@/components/MUsers/AllUser'
 import UserList from '@/components/MUsers/UserList'
 import EditUser from '@/components/MUsers/EditUser'
 import NotPurchased from '@/components/DealWith/NotPurchased'
@@ -89,6 +90,11 @@ export default new Router({
                 },
                 {
                     path: 'muser',
+                    name: '用户管理',
+                    component: AllUser
+                },
+                {
+                    path: 'userbll',
                     name: '用户管理',
                     component: UserList,
                     children: MyUser

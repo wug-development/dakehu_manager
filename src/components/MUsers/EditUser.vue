@@ -85,13 +85,15 @@
 
         <div class="box-bg credit-box">
             <div>
+                <div class="form-label">服务费</div>
+                <el-input v-model="companyInfo.servicePirce"></el-input>
                 <div class="form-label">信用额度</div>
                 <el-input v-model="companyInfo.credit"></el-input>
                 <div class="form-label">结账日期</div>
-                <el-date-picker v-model="companyInfo.settleDate" type="date" format="MM月dd日"></el-date-picker>
+                <el-date-picker v-model="companyInfo.settleDate" type="date" value-format="MM-dd" format="MM-dd"></el-date-picker>
                 <div class="form-label">管理员</div>
-                <el-select v-model="companyInfo.manager">
-                    <el-option v-for="item in ManagerList" :key="item" :label="item" :value="item"></el-option>
+                <el-select v-model="companyInfo.manager" value-key="name">
+                    <el-option v-for="item in ManagerList" :key="item.id" :label="item.name" :value="item"></el-option>
                 </el-select>
             </div>
             <div>
@@ -104,7 +106,7 @@
             <div class="title">设置账单显示字段 <span>（最多选择10个）</span></div>
             <div class="check-list">
                 <el-checkbox-group v-model="billCheckList" :min="1">
-                    <el-checkbox v-for="(item, i) in billFieldList" :key="i" :label="item.name"></el-checkbox>
+                    <el-checkbox v-for="(item, i) in billFieldList" :key="i" :label="item.name" :checked="checkItem(item.name)" :disabled="checkItem(item.name)"></el-checkbox>
                 </el-checkbox-group>
             </div>
         </div>
@@ -122,6 +124,7 @@ export default {
     name: 'EditUser',
     data () {
         return {
+            d: '',
             companyid: '',
             comShorthand: '',
             comPass: '',
@@ -145,10 +148,14 @@ export default {
                 licenseAddr: '',
                 bankAccount: '',
                 bankName: '',
+                servicePirce: '',
                 credit: '',
                 settleDate: '',
-                manager: '',
-                other: ''
+                other: '',
+                manager: {
+                    id: '',
+                    name: '',
+                }
             },
             ManagerList: [],
             billCheckList: [],
@@ -205,17 +212,18 @@ export default {
                     subcompany: this.subCompany,
                     billfields: this.billCheckList.join(',')
                 }
+                console.log(formdata)
 
-                this.$http.post(this.apis + '/api/company/addcompany', formdata)
+                this.$http.post(this.apis + '/api/company/editcompany', formdata)
                 .then(res => {
-                    if (res && res.data && res.data.status != 0) {                        
-                        this.MessageBox('注册成功！', '温馨提示').then(() => {
+                    if (res && res.data && res.data.status != 0) {
+                        this.MessageBox('保存成功！', '温馨提示').then(() => {
                             this.$router.push({
                                 path: '/main/muser'
                             })
                         })
                     } else {
-                        this.MessageBox('注册失败，请检查数据！', '温馨提示') 
+                        this.MessageBox('保存失败，请检查数据！', '温馨提示') 
                     }
                 })
             }
@@ -233,9 +241,16 @@ export default {
             .then(res => {
                 if (res && res.data && res.data.status != 0) {
                     let _d = res.data.data
+                    console.log(_d)
                     this.comShorthand = _d.ds[0].comShorthand
                     this.comPass = _d.ds[0].comPass
                     this.companyInfo = _d.ds[0]
+                    if (_d.ds[0] && _d.ds[0].mid) {
+                        this.companyInfo.manager = {
+                            id : _d.ds[0].mid,
+                            name : _d.ds[0].mname
+                        }
+                    }
 
                     this.LinkmanList = _d.ds2
 
@@ -253,6 +268,14 @@ export default {
                     this.billCheckList = arr
                 }
             })
+        },
+        checkItem (v) {
+            let arr = ['乘机人','行程','航班号','出发日期','舱位','票价','机建税金','合计','票号','折扣','备注']
+            if (arr.indexOf(v) > -1) {
+                return true
+            } else {
+                return false
+            }
         }
     },
     created () {
@@ -266,6 +289,13 @@ export default {
         .then(res => {
             if (res && res.data && res.data.status != 0) {
                 this.billFieldList = res.data.data
+            }
+        })
+
+        this.$http.get(this.apis + '/api/manager/getlist', {params: {}})
+        .then(res => {
+            if (res && res.data && res.data.status != 0) {
+                this.ManagerList = res.data.data
             }
         })
     }
@@ -325,6 +355,13 @@ export default {
                     color: #fff;
                     background-color: $pubbtncolor;
                     cursor: pointer;
+                }
+            }
+            .link-man{
+                position: relative;
+                .btn-del{
+                    position: absolute;
+                    right: 5px;
                 }
             }
         }

@@ -151,6 +151,7 @@ export default {
         this.selCompany = this.$store.state.selCompany
         let account = sessionStorage.getItem('loginData')
         if (account) {
+            this.$store.state.topmenu = "mpersons"
             this.user = JSON.parse(account)
             this.getAlllist()
             let com = sessionStorage.getItem('selCompany')

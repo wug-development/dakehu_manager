@@ -1,4 +1,4 @@
-import AllUser from '@/components/MUsers/MyUser/AllUser'
+import OrderList from '@/components/MUsers/MyUser/OrderList'
 import MPersons from '@/components/MUsers/MyUser/MPersons'
 import PayRecord from '@/components/MUsers/MyUser/PayRecord'
 import Bill from '@/components/MUsers/MyUser/Bill'
@@ -6,8 +6,8 @@ import Bill from '@/components/MUsers/MyUser/Bill'
 export default [
     {
         path: '/',
-        name: '',
-        component: AllUser
+        name: '订单列表',
+        component: OrderList
     },
     {
         path: 'mpersons',

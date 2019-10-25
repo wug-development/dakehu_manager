@@ -3,29 +3,8 @@
         <SiteMap></SiteMap>
         <div class="box-bg search-box">
             <div class="div-box">
-                <div>公司名称:</div>
-                <el-select v-model="selCompany" value-key="name" filterable @change="checkCompany(1)" :remote-method="remoteMethod" placeholder="请选择企业">
-                    <el-option v-for="item in company" :key="item.id" :label="item.name" :value="item"></el-option>
-                </el-select>
-                <el-select v-model="selChildCompany" @change="checkCompany(0)" filterable placeholder="请选择子公司">
-                    <el-option value="">请选择</el-option>
-                    <el-option v-for="item in childCompany" :key="item.shortname" :label="item.shortname" :value="item"></el-option>
-                </el-select>
-            </div>
-            <div class="div-box div-gn">
-                <div>行程说明:</div>
-                <div class="div-textarea">
-                    <textarea v-model="other" id="" cols="30" rows="10"></textarea>
-                </div>
-                <div class="btn-creat" @click="saveDingzhi">
-                    生成国际订单
-                </div>
-            </div>
-        </div>
-        <div class="box-bg search-box div-search">
-            <div class="div-box">
                 <div>预定时间:</div>
-                <el-date-picker v-model="filterParams.sdate" type="date" placeholder="请选择"></el-date-picker>
+                <el-date-picker v-model="filterParams.sdate" value-format="yyyy-MM-dd" type="date" placeholder="请选择"></el-date-picker>
                 <div>至</div> 
                 <el-date-picker v-model="filterParams.edate" type="date" placeholder="请选择"></el-date-picker>
                 <el-input v-model="filterParams.fname" placeholder="姓名"></el-input>
@@ -54,7 +33,7 @@
                 </thead>
                 <tbody class="table-list-body">
                     <tr v-for="(item, i) in orderList" :key="i">
-                        <td><div :class='"check-box" + (checkOrder.indexOf(item.orderid) > -1?" el-icon-check cur":"")' @click="checkItem(item.orderid)"></div></td>
+                        <td><div v-if="item.status == 0" :class='"check-box" + (checkOrder.indexOf(item.orderid) > -1?" el-icon-check cur":"")' @click="checkItem(item.orderid)"></div></td>
                         <td class="active" @click="toDetail(item.orderid, item.cid)">{{item.orderid}}</td>
                         <td>{{item.cname}}</td>
                         <td>{{item.pername}}</td>
@@ -79,7 +58,7 @@
 </template>
 
 <script>
-import SiteMap from '../Common/SiteMap.vue'
+import SiteMap from '@/components/Common/SiteMap.vue'
 
 export default {
     name: 'GJOrderList',
@@ -99,16 +78,16 @@ export default {
             pickerOptions: {},
             filterParams: {
                 cid: '',
-                type: 1,
+                type: 2,
                 sdate: '',
                 edate: '',
                 fname: '',
                 ftno: '',
                 page: 1,
-                pageNum: 5,
+                pageNum: 10,
             },
             other: '',
-            pageCount: 1
+            pageCount: 0
         }
     },
     methods: {
@@ -118,10 +97,9 @@ export default {
         },
         getOrderList: function () {
             let _cid = this.selCompany.id
-            if (this.selChildCompany) {
-                _cid = this.selChildCompany.id
-            }
             this.filterParams.cid = _cid
+            this.filterParams.sdate = this.filterParams.sdate || ''
+            this.filterParams.edate = this.filterParams.edate || ''
             this.$http.get(this.apis + '/api/orderlist/getorderlist', {params: this.filterParams})
             .then(res => {
                 if (res && res.data && res.data.status != 0) {
@@ -133,40 +111,8 @@ export default {
             })
         },
         handleCurrentChange: function (v) {
-            this.page = v
+            this.filterParams.page = v
             this.getOrderList()
-        },
-        remoteMethod: function (v) {
-            this.$http.get(this.apis + '/api/company/getfiltercompany', {params: {
-                name: v
-            }})
-            .then(res => {
-                if (res && res.data && res.data.status != 0) {
-                    let arr = res.data.data
-                    arr.sort((x, y) => {
-                        return x.shortname.charCodeAt(0) - y.shortname.charCodeAt(0)
-                    })
-                    this.company = arr
-                }
-            })
-        },
-        checkCompany: function (v) {
-            if (v) {
-                if (v != 2) {
-                    this.selChildCompany = ''
-                }
-                this.$http.get(this.apis + '/api/company/getfiltersubcompany', {params: {
-                    id: this.selCompany.id
-                }})
-                .then(res => {
-                    if (res && res.data && res.data.status != 0) {
-                        this.childCompany = res.data.data
-                    }
-                })
-                this.search()
-            } else {
-                this.search()
-            }
         },
         checkItem: function (v) {
             let i = this.checkOrder.indexOf(v)
@@ -180,7 +126,9 @@ export default {
             this.isCheckAll = !this.isCheckAll
             if(this.isCheckAll) {
                 for (let i in this.orderList) {
-                    this.checkOrder.push(this.orderList[i].orderid)
+                    if (this.orderList[i].status == 0) {
+                        this.checkOrder.push(this.orderList[i].orderid)
+                    }
                 }
             } else {
                 this.checkOrder = []
@@ -216,25 +164,18 @@ export default {
         SiteMap
     },
     created () {
-        let obj = sessionStorage.getItem('gjsearch')
-        let _d = JSON.parse(obj)
-        if (_d.cp) {
-            this.selCompany = _d.cp
-            if (_d.cc) {
-                this.selChildCompany = _d.cc
-            }
-            this.checkCompany(2)
-        }
-        
-        //获取企业列表
-        this.remoteMethod('')
+        this.$store.state.topmenu = 'index'
+
+        this.selCompany = this.$store.state.selCompany
+
+        this.getOrderList()
     }
 }
 </script>
 
 <style lang="scss">
-@import '../../assets/sass/set.scss';
-@import '../../assets/sass/table-list.scss';
+@import '@/assets/sass/set.scss';
+@import '@/assets/sass/table-list.scss';
 .gjorderlist-box{
     height: 100%;
     display: flex;

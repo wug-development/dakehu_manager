@@ -1,13 +1,16 @@
 <template>
     <div class="topmenu-box" @click="handleClick($event)">
-        <el-dropdown id="user" :class='$store.state.topmenu == "user"? "cur" : ""' @command="composeValue">
+        <!-- <el-dropdown id="user" :class='$store.state.topmenu == "user"? "cur" : ""' @command="composeValue">
             <span class="el-dropdown-link">
-                {{selCompany.name}}<i class="el-icon-arrow-down el-icon-caret-bottom"></i>
+                {{selCompany.name}} <i class="el-icon-arrow-down el-icon-caret-bottom"></i>
             </span>
             <el-dropdown-menu slot="dropdown">
                 <el-dropdown-item v-for="(item, i) in comList" :key="i"  :command='item'>{{item.name}}</el-dropdown-item>
             </el-dropdown-menu>
-        </el-dropdown>
+        </el-dropdown> -->
+        <div class="el-dropdown-link">
+            {{selCompany.name}}
+        </div>
         <div id="index" :class='$store.state.topmenu == "index"? "cur" : ""'>机票订单</div>
         <div id="payrecord" :class='$store.state.topmenu == "payrecord"? "cur" : ""'>付款记录</div>
         <div id="mpersons" :class='$store.state.topmenu == "mpersons"? "cur" : ""'>乘机人管理</div>
@@ -51,22 +54,22 @@ export default {
     },
     methods: {
         getAlllist () {
-            this.$http.get(this.apis + '/api/company/getfiltercompany', {params: {
-                name: ''
-            }})
-            .then(res => {
-                if (res && res.data && res.data.status != 0) {
-                    this.comList = res.data.data
-                    let com = sessionStorage.getItem('selCompany')
-                    if (com) {
-                        this.selCompany = JSON.parse(com)
-                    } else {
-                        this.selCompany = res.data.data[0]
-                        sessionStorage.setItem('selCompany', JSON.stringify(this.selCompany))
-                    }
-                    this.getAccount(this.selCompany.id)
-                }
-            })
+            // this.$http.get(this.apis + '/api/company/getfiltercompany', {params: {
+            //     name: ''
+            // }})
+            // .then(res => {
+            //     if (res && res.data && res.data.status != 0) {
+            //         this.comList = res.data.data
+            //         let com = sessionStorage.getItem('selCompany')
+            //         if (com) {
+            //             this.selCompany = JSON.parse(com)
+            //         } else {
+            //             this.selCompany = res.data.data[0]
+            //             sessionStorage.setItem('selCompany', JSON.stringify(this.selCompany))
+            //         }
+            //         this.getAccount(this.selCompany.id)
+            //     }
+            // })
         },
         getAccount (id) {
             this.$http.get(this.apis + '/api/company/getcompanyaccount', {params: {
@@ -81,10 +84,10 @@ export default {
         handleClick: function (v) {
             let path = '/main';
             switch(v.target.id){
-                case 'index': path += '/'; break;
-                case 'payrecord': path += '/muser/payrecord'; break;
-                case 'mpersons': path += '/muser/mpersons'; break;
-                case 'bill': path += '/muser/bill'; break;
+                case 'index': path += '/userbll'; break;
+                case 'payrecord': path += '/userbll/payrecord'; break;
+                case 'mpersons': path += '/userbll/mpersons'; break;
+                case 'bill': path += '/userbll/bill'; break;
             }
             if (path != '/main') {
                 this.$router.push({
@@ -93,20 +96,20 @@ export default {
                 this.$store.state.topmenu = v.target.id
             }      
             if (v.target.id === 'user') {
-                this.$store.topmenu = 'user'
+                this.$store.state.topmenu = 'user'
             }  
-        },
-        composeValue (v) {
-            this.selCompany = v
-            sessionStorage.setItem('selCompany', JSON.stringify(v))
-            this.$store.state.selCompany = v
-            this.getAccount(v.id)
         }
     },
     created () {
         let data = sessionStorage.getItem('loginData')
         if (data) {
-            this.getAlllist()
+            this.selCompany = this.$store.state.selCompany
+            console.log(this.selCompany)
+            if (!this.selCompany || !this.selCompany.id){
+                this.selCompany = JSON.parse(sessionStorage.getItem('selCompany'))
+                this.$store.state.selCompany = this.selCompany
+            }
+            this.getAccount(this.$store.state.selCompany.id)
         }
     }
 }
@@ -124,6 +127,9 @@ export default {
     padding: 0 60px 0 30px;
     box-sizing: border-box;
     margin-bottom: 20px;
+    .el-dropdown-link{
+        color: $pubcolor;
+    }
     >div{
         margin-left: 3.5%;
         height: 100%;

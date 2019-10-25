@@ -23,7 +23,7 @@ export default {
             this.$router.push({
                 path: this.maplist[this.maplist.length-2].path
             })
-            this.$store.state.topmenu = 'user'
+            this.$store.state.topmenu = 'index'
         }
     },
     created () {

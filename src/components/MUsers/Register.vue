@@ -85,6 +85,8 @@
 
         <div class="box-bg credit-box">
             <div>
+                <div class="form-label">服务费</div>
+                <el-input v-model="companyInfo.servicePirce"></el-input>
                 <div class="form-label">信用额度</div>
                 <el-input v-model="companyInfo.credit"></el-input>
                 <div class="form-label">结账日期</div>
@@ -101,10 +103,10 @@
         </div>
 
         <div class="bill-box">
-            <div class="title">设置账单显示字段 <span>（最多选择10个）</span></div>
+            <div class="title">设置账单显示字段 <span></span></div>
             <div class="check-list">
-                <el-checkbox-group v-model="billCheckList" :min="1">
-                    <el-checkbox v-for="(item, i) in billFieldList" :key="i" :label="item.name"></el-checkbox>
+                <el-checkbox-group v-model="billCheckList">
+                    <el-checkbox v-for="(item, i) in billFieldList" :key="i" :label="item.name" :checked="checkItem(item.name)" :disabled="checkItem(item.name)"></el-checkbox>
                 </el-checkbox-group>
             </div>
         </div>
@@ -144,6 +146,7 @@ export default {
                 licenseAddr: '',
                 bankAccount: '',
                 bankName: '',
+                servicePirce: '',
                 credit: '',
                 settleDate: '',
                 manager: '',
@@ -224,6 +227,14 @@ export default {
                 path: '/main/sendemail'
             })
             sessionStorage.setItem('sendemail', this.LinkmanList[0].email)
+        },
+        checkItem (v) {
+            let arr = ['乘机人','行程','航班号','出发日期','舱位','票价','机建税金','合计','票号','折扣','备注']
+            if (arr.indexOf(v) > -1) {
+                return true
+            } else {
+                return false
+            }
         }
     },
     created () {

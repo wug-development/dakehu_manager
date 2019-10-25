@@ -18,7 +18,6 @@ export default {
 <style lang="scss">
 @import '../../assets/sass/set.scss';
 .userlist-box{
-    height: 100%;
     display: flex;
     flex-direction: column;
     .topmenu-box{

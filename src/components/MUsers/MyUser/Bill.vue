@@ -212,6 +212,7 @@ export default {
         this.selCompany = this.$store.state.selCompany
         let account = sessionStorage.getItem('loginData')
         if (account) {
+            this.$store.state.topmenu = "bill"
             this.user = JSON.parse(account)
             let com = sessionStorage.getItem('selCompany')
             if (com) {

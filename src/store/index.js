@@ -10,7 +10,7 @@ const state = {
     menuCur: 2,
     openID: '',
     siteMap: ['首页'],
-    topmenu: 'user',
+    topmenu: 'index',
     selCompany: {}
 }
 
