@@ -32,7 +32,7 @@
                         </td>
                         <td>行程：</td>
                         <td>
-                            <el-input readonly v-model="orderinfo.dcStartCity + '-' + orderinfo.dcBackCity"></el-input>
+                            <input readonly class="txt" v-model="orderinfo.dcStartCity"> - <input readonly class="txt" v-model="orderinfo.dcBackCity">
                         </td>
                         <td>票号：</td>
                         <td>                            
@@ -48,14 +48,14 @@
                     <tr v-else-if="orderinfo.dnOrderStatus == 2">
                         <td class="orange">实退金额：</td>
                         <td colspan="7">
-                            <el-input v-model="orderinfo.dnChangePrice"></el-input>
+                            <el-input v-model="orderinfo.dnTotalPrice"></el-input>
                         </td>
                     </tr>
                     <tr v-else-if="orderinfo.dnOrderStatus == 3">
                         <td class="orange">改期金额：</td>
                         <td colspan="7">
-                            <el-input v-model="orderinfo.dnChangePrice"></el-input>
-                            （改期费<input type="text" class="txt" @change="countChangePrice" v-model="orderinfo.dnChangeDatePrice"></input>+差价<input class="txt" @change="countChangePrice" type="text" v-model="orderinfo.dnChaPrice"></input>）
+                            <el-input v-model="orderinfo.dnTotalPrice"></el-input>
+                            （改期费<input type="text" class="txt" @change="countChangePrice" v-model="orderinfo.dnChangeDatePrice">+差价<input class="txt" @change="countChangePrice" type="text" v-model="orderinfo.dnChaPrice">）
                         </td>
                     </tr>
                     <tr>
@@ -64,7 +64,7 @@
                             <textarea class="txt-other" v-model="orderinfo.dcContent" id="" cols="30" rows="10"></textarea>
                         </td>
                     </tr>
-                    <tr>
+                    <tr v-if="!orderinfo.dcContent">
                         <td>行程：</td>
                         <td colspan="3">
                             <textarea class="txt-trip" v-model="flightinfo" readonly id="" cols="30" rows="10"></textarea>
@@ -78,9 +78,9 @@
             </table>
             <div class="btn-box">
                 <div class="btn" @click="save">保存</div>
-                <div class="btn-other" @click="orderinfo.dnOrderStatus = 2">退票</div>
-                <div class="btn-other" @click="orderinfo.dnOrderStatus = 3">改期</div>
-                <div class="btn-other" @click="showTicket">国际出票单</div>
+                <div class="btn-other" v-if="checkOrderStatus == 1 && orderinfo.dnOrderStatus == 1" @click="changeOrderType(2)">退票</div>
+                <div class="btn-other" v-if="checkOrderStatus == 1 && orderinfo.dnOrderStatus == 1" @click="changeOrderType(3)">改期</div>
+                <div class="btn-other" v-if="checkOrderStatus == 1" @click="showTicket">国际出票单</div>
             </div>
         </div>
         <div class="trip-bill" v-show="orderinfo.dnIsTicket > 0">
@@ -89,7 +89,7 @@
                     <tr>
                         <td>航空公司</td>
                         <td>
-                            <input class="txt" type="text" v-model="ticketinfo.dcAirCompanyName"></input>
+                            <input class="txt" type="text" v-model="ticketinfo.dcAirCompanyName">
                         </td>
                         <td>记录编号</td>
                         <td>
@@ -120,7 +120,7 @@
                             <input class="txt txt-small" type="text" @change="countAutoPrice" v-model="ticketinfo.dnPersonNumber"> 要位费 <input class="txt txt-small" type="text" @change="countAutoPrice" v-model="ticketinfo.dnYaoWeiPrice">
                             <select v-model="selPeople">
                                 <option value="">请选择</option>
-                                <option v-for="item in Persons" :value="item">{{item.name}}</option>
+                                <option v-for="(item, i) in Persons" :key="i" :value="item">{{item.name}}</option>
                             </select>
                         </td>
                         <td>实       收</td>
@@ -135,9 +135,9 @@
                     <tr>
                         <td>出票点</td>
                         <td>
-                            <select v-model="selOutTicket">
+                            <select v-model="selOutTicket" @change="countAutoPrice">
                                 <option value="">请选择</option>
-                                <option v-for="item in OutTicket" :value="item">{{item.name}}</option>
+                                <option v-for="(item, i) in OutTicket" :key="i" :value="item">{{item.name}}</option>
                             </select>
                         </td>
                         <td>票      价</td>
@@ -152,10 +152,11 @@
                     <tr>
                         <td>客 户</td>
                         <td>
-                            <select v-model="ticketinfo.dcLinkName">
+                            <input class="txt" type="text" v-model="orderinfo.dcCompanyName">
+                            <!-- <select v-model="ticketinfo.dcLinkName">
                                 <option :value="orderinfo.dcCompanyName">{{orderinfo.dcCompanyName}}</option>
-                                <option v-for="item in Chengjiren" :value="orderinfo.dcCompanyName + ' ' + item.name">{{orderinfo.dcCompanyName + ' ' + item.name}}</option>
-                            </select>
+                                <option v-for="(item, i) in Chengjiren" :key="i" :value="orderinfo.dcCompanyName + ' ' + item.name">{{orderinfo.dcCompanyName + ' ' + item.name}}</option>
+                            </select> -->
                         </td>
                         <td>行程单金额</td>
                         <td>
@@ -217,7 +218,7 @@
                         <td>
                             <input class="txt" type="text" v-model="ticketinfo.dcFlightNumber">
                         </td>
-                        <td>起飞时间</td>
+                        <td>起落时间</td>
                         <td>
                             <input class="txt" type="text" v-model="ticketinfo.dcFlightTime">
                         </td>
@@ -265,7 +266,7 @@
                     </tr>
                 </tbody>
             </table>
-            <div class="btn" @click="submitTicket">保存</div>
+            <div class="btn" v-if="orderinfo.dnIsTicket == 0" @click="submitTicket">保存</div>
         </div>
     </div>
 </template>
@@ -283,6 +284,7 @@ export default {
             Persons: [],
             Chengjiren: [],
             orderStatus: '',
+            checkOrderStatus: 0,
             orderid: '',
             cid: '',
             ticketid: '',
@@ -309,6 +311,7 @@ export default {
             personlist: [],
             flightinfo: '',
             personinfo: '',
+            isChangeType: false
         }
     },
     components: {
@@ -316,15 +319,32 @@ export default {
     },
     methods: {
         save () {
-            this.orderinfo.dnStatus = this.orderStatus.key
-            this.$http.post(this.apis + '/api/order/editorder', this.orderinfo)
-            .then(res => {
-                if (res && res.data && res.data.status != 0) {
-                    this.MessageBox('保存成功！').then(() => {
-                        this.backPage()
-                    })
-                }
-            })
+            if (!this.isChangeType) {
+                console.log('editorder')
+                this.orderinfo.dnStatus = this.orderStatus.key
+                this.$http.post(this.apis + '/api/order/editorder', this.orderinfo)
+                .then(res => {
+                    if (res && res.data && res.data.status != 0) {
+                        if (this.orderStatus.key == 1) {
+                            this.checkOrderStatus = this.orderinfo.dnStatus
+                        }
+                        this.MessageBox('保存成功！').then(() => {
+                            this.backPage()
+                        })
+                    }
+                })
+            } else {
+                console.log('changeorder')
+                this.orderinfo.dnStatus = this.orderStatus.key
+                this.$http.post(this.apis + '/api/order/changeorder', this.orderinfo)
+                .then(res => {
+                    if (res && res.data && res.data.status != 0) {
+                        this.MessageBox('保存成功！').then(() => {
+                            this.backPage()
+                        })
+                    }
+                })
+            }
         },
         submitTicket () {
             this.ticketinfo.dcCompanyID = this.selCompany.id
@@ -357,6 +377,10 @@ export default {
                 if (res && res.data && res.data.status != 0) {
                     this.ticketinfo = res.data.data[0]
                     this.ticketinfo.dcStartCity = this.ticketinfo.dcStartCity + '-' + this.ticketinfo.dcBackCity
+                    this.selOutTicket = {
+                        id: this.ticketinfo.dcOutTicketID,
+                        name: this.ticketinfo.dcOutTicketName
+                    }
                 }
             })
         },
@@ -389,6 +413,13 @@ export default {
             this.ticketinfo.dnJieSuanPrice = _js * (Number(this.ticketinfo.dnPersonNumber) || 1)
             this.ticketinfo.dnShiJiDaoZhang = Number(this.ticketinfo.dnShiShouPrice) || 0
             this.ticketinfo.dnLiRun = (Number(this.ticketinfo.dnShiShouPrice) - Number(this.ticketinfo.dnJieSuanPrice) - (Number(this.ticketinfo.dnYaoWeiPrice) || 0) - (Number(this.ticketinfo.dnReturnPrice) || 0)) || 0
+            if (this.selOutTicket.name === 'K凯行网') {
+                this.ticketinfo.dnHangXiePrice = ((parseFloat(myconverFloat(parseFloat(this.ticketinfo.dnSellPrice) * (1 - parseFloat(this.ticketinfo.dnReturnPoint1) / 100) + "")) + parseFloat(this.ticketinfo.dnTax)) * parseInt(this.ticketinfo.dnPersonNumber)).toFixed(2)
+                this.ticketinfo.dnFandianPrice = parseFloat(this.ticketinfo.dnJieSuanPrice).toFixed(2) - parseFloat(this.ticketinfo.dnHangXiePrice).toFixed(2)
+            } else {
+                this.ticketinfo.dnFandianPrice = 0
+                this.ticketinfo.dnHangXiePrice = 0
+            }
         },
         backPage () {
             this.$router.go(-1)
@@ -397,7 +428,7 @@ export default {
             this.orderinfo.dnTotalPrice = (Number(this.orderinfo.dnPrice) + Number(this.orderinfo.dnTax) + Number(this.orderinfo.dnServicePrice) + Number(this.orderinfo.dnSafePrice)) * this.personlist.length
         },
         countChangePrice () {
-            this.orderinfo.dnChangePrice = (Number(this.orderinfo.dnChangeDatePrice) + Number(this.orderinfo.dnChaPrice))
+            this.orderinfo.dnTotalPrice = (Number(this.orderinfo.dnChangeDatePrice) + Number(this.orderinfo.dnChaPrice))
         },
         getOutTicket () {
             //获取出票点
@@ -433,6 +464,13 @@ export default {
                     this.Chengjiren = arr
                 }
             })
+        },
+        changeOrderType (v) {
+            console.log(this.isChangeType)
+            this.orderinfo.dnOrderStatus = v
+            // this.orderStatus = {key : 0, value : '等待处理'}
+            this.orderinfo.dtAddTime = ''
+            this.isChangeType = tr
         }
     },
     created () {
@@ -461,6 +499,7 @@ export default {
                         key: this.orderinfo.dnStatus,
                         value: this.utils.checkStatus(this.orderinfo.dnStatus)
                     }
+                    this.checkOrderStatus = this.orderinfo.dnStatus
                     if (_d.flight && _d.flight.length > 0){
                         this.flightlist = _d.flight
                         let ishave = true
@@ -484,8 +523,28 @@ export default {
                     }
                 }
             }
-        })        
+        })
     }
+}
+
+
+function myconverFloat(floatstr)
+{
+    var newstr = floatstr;
+    if (floatstr.split('.').length == 1) {
+        newstr = floatstr;
+    }
+    if (floatstr.split('.').length == 2) {
+        if (floatstr.split('.')[1].toString().length <= 2) {
+            newstr = floatstr;
+        }
+        else {
+            var fs1 = floatstr.split('.')[0].toString() + "." + floatstr.split('.')[1].toString().substring(0,2);
+            var fs2 = parseFloat(fs1) + 0.01;
+            newstr = fs2;
+        }
+    }
+    return newstr;
 }
 </script>
 

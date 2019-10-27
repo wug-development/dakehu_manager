@@ -106,12 +106,12 @@ export default new Router({
                 },
                 {
                     path: 'card',
-                    name: '连续30天未出票客户',
+                    name: '需要催款客户',
                     component: NotPurchased,
                 },
                 {
                     path: 'nuser',
-                    name: '需要催款客户',
+                    name: '连续30天未出票客户',
                     component: PressMoney,
                 }
             ]

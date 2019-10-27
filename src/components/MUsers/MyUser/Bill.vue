@@ -5,10 +5,10 @@
             <div class="div-linebox">
                 <div class="div-labels">时间查询:</div>
                 <el-date-picker v-model="sedate" type="daterange" value-format="yyyy-MM-dd" range-separator="至" start-placeholder="开始日期" end-placeholder="结束日期"> </el-date-picker>
-                <div class="div-labels">客户:</div>
+                <!-- <div class="div-labels">客户:</div>
                 <el-select v-model="selPerson" value-key="name">
                     <el-option v-for="item in personList" :key="item.id" :label="item.name" :value="item"></el-option>
-                </el-select>
+                </el-select> -->
                 <div class="btn" @click="searchData">搜索</div>
             </div>
         </div>
@@ -33,17 +33,17 @@
                 <tbody class="table-list-body">
                     <tr v-for="(item, i) in dataList" :key="i">
                         <td></td>
-                        <td>{{item.name}}</td>
-                        <td>{{item.flight}}</td>
-                        <td>{{item.flightNO}}</td>
-                        <td>{{item.datetime}}</td>
-                        <td>{{item.site}}</td>
-                        <td>{{item.price}}</td>
-                        <td>{{item.tax}}</td>
-                        <td>{{item.money}}</td>
-                        <td>{{item.ticketNO}}</td>
-                        <td>{{item.discount}}</td>
-                        <td>{{item.other}}</td>
+                        <td class="active" @click="showBillLayer(item)">{{item.dcPersonName}}</td>
+                        <td>{{item.dcStartCity}}-{{item.dcBackCity}}</td>
+                        <td>{{item.dcFlightNumber}}</td>
+                        <td>{{item.dcStartDate}}</td>
+                        <td>{{item.dcRakedClass}}</td>
+                        <td>{{item.dnTotalPrice}}</td>
+                        <td>{{item.dnTax}}</td>
+                        <td>{{item.dnJieSuanPrice}}</td>
+                        <td>{{item.dcTicketNO}}</td>
+                        <td>{{item.dnReturnPoint1}}%</td>
+                        <td>{{item.dcOther}}</td>
                     </tr>
                 </tbody>
             </table>
@@ -51,7 +51,7 @@
                 <div class="btns">
                     <div class="btn-label btn-export">导出</div>
                 </div>
-                <el-pagination background layout="prev, pager, next" :page-size="5" @current-change="handleCurrentChange" :total="1000"></el-pagination>
+                <el-pagination background layout="prev, pager, next" :page-size="pageNum" @current-change="handleCurrentChange" :total="pageCount"></el-pagination>
             </div>
         </div>
 
@@ -63,49 +63,49 @@
                         <tbody>
                             <tr>
                                 <td>航空公司：</td>
-                                <td>CA</td>
+                                <td>{{billinfo.dcAirCompanyName}}</td>
                                 <td>记录编号：</td>
-                                <td>JM0ZNY</td>
+                                <td>{{billinfo.dcOrderCode}}</td>
                                 <td>行程：</td>
-                                <td>鞍山-北京</td>
+                                <td>{{billinfo.dcStartCity}}-{{billinfo.dcBackCity}}</td>
                                 <td>票价：</td>
-                                <td>980</td>
+                                <td>{{billinfo.dnTotalPrice}}</td>
                             </tr>
                             <tr>
                                 <td>代理费：</td>
-                                <td>150</td>
+                                <td>{{billinfo.dnServicePrice}}</td>
                                 <td>基建税金：</td>
-                                <td>60</td>
+                                <td>{{billinfo.dnTax}}</td>
                                 <td>人数：</td>
-                                <td>1</td>
+                                <td>{{billinfo.dnPersonNumber}}</td>
                                 <td>保险：</td>
-                                <td>50</td>
+                                <td>{{billinfo.dnServicePrice}}</td>
                             </tr>
                             <tr>
                                 <td>应收：</td>
-                                <td>1030</td>
+                                <td>{{billinfo.dnSellPrice}}</td>
                                 <td>服务费：</td>
-                                <td>50</td>
+                                <td>{{billinfo.dnServicePrice}}</td>
                                 <td>合计：</td>
-                                <td>1340</td>
+                                <td>{{billinfo.dnJieSuanPrice}}</td>
                                 <td>实际到账：</td>
-                                <td></td>
+                                <td>{{billinfo.dnShiJiDaoZhang}}</td>
                             </tr>
                             <tr>
                                 <td>结算价：</td>
-                                <td>0</td>
+                                <td>{{billinfo.dnJieSuanPrice}}</td>
                                 <td>利润：</td>
-                                <td>0</td>
+                                <td>{{billinfo.dnLiRun}}</td>
                                 <td>出票点：</td>
-                                <td>K凯行网</td>
+                                <td>{{billinfo.dcOutTicketName}}</td>
                                 <td>票号：</td>
-                                <td>999-3451265478</td>
+                                <td>{{billinfo.dcTicketNO}}</td>
                             </tr>
                             <tr>
                                 <td>起落时间：</td>
-                                <td>12:50-17:20</td>
+                                <td>{{billinfo.dcFlightTime}}</td>
                                 <td>客户：</td>
-                                <td>M妙奇艺</td>
+                                <td>{{billinfo.dcCompanyName}}</td>
                                 <td>送票方式：</td>
                                 <td>不送</td>
                                 <td>送票员：</td>
@@ -113,33 +113,33 @@
                             </tr>
                             <tr>
                                 <td>乘机人：</td>
-                                <td>王平</td>
+                                <td>{{billinfo.dcPersonName}}</td>
                                 <td>航班号：</td>
-                                <td>CZ6113</td>
+                                <td>{{billinfo.dcFlightNumber}}</td>
                                 <td>出发日期：</td>
-                                <td>2019-1-20</td>
+                                <td>{{billinfo.dcStartDate}}</td>
                                 <td>账单票价：</td>
-                                <td></td>
+                                <td>{{billinfo.dnFlightPrice}}</td>
                             </tr>
                             <tr>
                                 <td>舱位：</td>
-                                <td>经济舱</td>
+                                <td>{{billinfo.dcRakedClass}}</td>
                                 <td>折扣：</td>
-                                <td>6.6折</td>
+                                <td>{{billinfo.dnReturnPoint1}}%</td>
                                 <td>订单号：</td>
-                                <td>010-564678956</td>
+                                <td>{{billinfo.dcOrderID}}</td>
                                 <td>奖金：</td>
                                 <td></td>
                             </tr>
                             <tr>
                                 <td>收款方式：</td>
-                                <td></td>
-                                <td>备注：</td>
-                                <td>李阳</td>
+                                <td>{{billinfo.dcPaymentMethod1}}</td>
                                 <td>订票日期：</td>
-                                <td></td>
-                                <td></td>
-                                <td></td>
+                                <td>{{billinfo.dtAddTime.split('T')[0]}}</td>
+                            </tr>
+                            <tr>
+                                <td>备注：</td>
+                                <td colspan = "7">{{billinfo.dcOther}}</td>
                             </tr>
                         </tbody>
                     </table>
@@ -157,15 +157,16 @@ export default {
         return {
             money: '',
             selCompany: '',
-            sedate: '',
+            sedate: [],
             other: '',
             selPerson: '',
             personList: [],
             dataList: [],
-            showLayer: true,
+            showLayer: false,
             page: 1,
-            pageNum: 5,
+            pageNum: 10,
             pageCount: 1,
+            billinfo: {}
         }
     },
     components: {
@@ -181,15 +182,15 @@ export default {
             this.getDataList()
         },
         getDataList () {
-            this.$http.get(this.apis + '/api/order/getorderperson', {params: {
+            this.$http.get(this.apis + '/api/ticket/getticketlist', {params: {
                 cid: this.selCompany.id,
                 page: this.page,
                 pagenum: this.pageNum,
-                filterdate: this.sedate.join(','),
-                filtername: this.selPerson.name
+                filterdate: this.sedate.join(',')
             }})
             .then(res => {
                 if (res && res.data && res.data.status != 0) {
+                    console.log(res.data)
                     this.dataList = res.data.data.data
                     if (res.data.data.pagecount) {
                         this.pageCount = res.data.data.pagecount
@@ -206,6 +207,10 @@ export default {
                     this.personList = res.data.data
                 }
             })
+        },
+        showBillLayer (v) {
+            this.showLayer = true
+            this.billinfo = v
         }
     },
     created () {
@@ -270,10 +275,10 @@ export default {
         position: absolute;
         left: 50%;
         top: 50%;
-        width: 800px;
-        height: 350px;
-        margin-left: -400px;
-        margin-top: -175px;
+        width: 1000px;
+        height: 360px;
+        margin-left: -500px;
+        margin-top: -180px;
         background-color: #fff;
         .title{
             background-color: $pubcolor;
