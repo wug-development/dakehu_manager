@@ -16,6 +16,7 @@ Vue.config.productionTip = false
 Vue.prototype.utils = common.utils
 Vue.prototype.$http = Axios
 Vue.prototype.apis = process.env.APIS_URL
+Vue.prototype.apiw = process.env.APIBook_URL
 Vue.prototype.Notification = Notification
 Vue.prototype.MessageBox = MessageBox
 

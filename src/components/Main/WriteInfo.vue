@@ -3,36 +3,36 @@
         <SiteMap></SiteMap>
         <div class="box-bg flight-info">
             <div class="title">
-                <div>单程：上海-北京</div>
-                <div>出发日期：<span>2019-06-09</span></div>
+                <div>单程：{{search.scity.name}}-{{search.ecity.name}}</div>
+                <div>出发日期：<span>{{search.sdate}}</span></div>
             </div>
             <div class="info-box">
                 <div class="air-no">
-                    <div><img src="../../assets/images/icon_flight_logo.png" alt=""></div>
+                    <div><img :src="'/static/icons/' + (flight.flightNo.substr(0,2)) + '.gif'" alt=""></div>
                     <div class="div_company">
-                        <div class="air-company"><span>东方航空</span>DL186</div>
-                        <div class="air-type">机型：<span>77L</span> （特价经济舱位）</div>
+                        <div class="air-company"><span>{{flight.airCompanyName}}</span>{{flight.flightNo}}</div>
+                        <div class="air-type">机型：<span>{{flight.planeType}}</span> （{{seat.seatMsg.replace("特价舱","特价经济舱")}}）</div>
                     </div>
                 </div>
                 <div class="air-time">
                     <div>
-                        <div>21:20<span>出发</span></div>
-                        <div>18:00<span>到达</span></div>
+                        <div>{{flight.depTime.substr(0,2) + ':' + flight.depTime.substr(2,2)}}<span>出发</span></div>
+                        <div>{{flight.arriTime.substr(0,2) + ':' + flight.arriTime.substr(2,2)}}<span>到达</span></div>
                     </div>
                 </div>
                 <div class="air-port">
                     <div>
-                        <div>上海浦东机场</div>
-                        <div>北京首都机场T3</div>
+                        <div>{{flight.sAirPort}}{{flight.orgJetquay || ''}}</div>
+                        <div>{{flight.eAirPort}}{{flight.dstJetquay || ''}}</div>
                     </div>
                 </div>
                 <div class="air-price">
-                    ￥50+￥0                                
+                    ￥{{flight.airportTax}}+￥{{flight.fuelTax}}
                 </div>
                 <div class="air-handle">
-                    <span><i>￥950</i>/成人</span>
-                    <span><i>￥950</i>/儿童</span>
-                    <span><i>￥305</i>/婴儿</span>
+                    <span><i>￥{{seat.parPrice + flight.airportTax}}</i>/成人</span>
+                    <span><i>￥{{childPrice}}</i>/儿童</span>
+                    <span><i>￥{{yingerPrice}}</i>/婴儿</span>
                 </div>
             </div>
         </div>
@@ -43,14 +43,14 @@
             </div>
         </div>
 
-        <div :class='"box-bg person-form" + (i > 0? " person-mTop": "")' v-for="(item, i) in personList" :key="i">
+        <div :class='"box-bg person-form" + (i > 0? " person-mTop": "")' v-for="(item, i) in selPersonList" :key="i">
             <div>
                 <div class="form-label">乘客姓名：</div>
                 <el-select v-model="item.ptype" placeholder="成人">
                     <el-option v-for="item in personType" :key="item" :label="item" :value="item"></el-option>
                 </el-select>
                 <el-input v-model="item.name" class="form-input" placeholder="请输入乘客姓名"></el-input>
-                <div class="btn-del el-icon-minus"></div>
+                <div class="btn-del el-icon-minus" @click="del(i)"></div>
             </div>
             <div>
                 <div class="form-label">证件信息：</div>
@@ -69,20 +69,22 @@
             </div>
             <div>
                 <div class="form-label">购买保险：</div>
-                <div><el-input-number v-model="item.safenum" controls-position="right" @change="handleChange" :min="1" :max="20"></el-input-number></div>
+                <div><el-input-number v-model="item.safenum" controls-position="right" :min="1" :max="20"></el-input-number></div>
                 <div> 份 <span class="form-tip">（每份20元）</span></div>
             </div>
+        </div>
+        <div class="person-form">            
             <div class="btn-box">
-                <div class="btn-person">添加乘机人</div>
-                <div class="btn-person">常用乘机人</div>
+                <div class="btn-person" @click="addItem">添加乘机人</div>
+                <div class="btn-person" v-if="personAllList.length" @click="showPerson = true">常用乘机人</div>
             </div>
         </div>
 
-        <div class="table-persons">
+        <div class="table-persons" v-show="showPerson && personAllList.length">
             <table>
                 <thead>
                     <tr>
-                        <td><div class="check-box"></div></td>
+                        <td><div></div></td>
                         <td>乘机人姓名</td>
                         <td>证件号码</td>
                         <td>乘机人手机</td>
@@ -91,29 +93,13 @@
                     </tr>
                 </thead>
                 <tbody>
-                    <tr>
-                        <td><div class="check-box"></div></td>
-                        <td><input type="text" :readonly="status ? false : 'readonly'" value="王丽" /></td>
-                        <td><input type="text" :readonly="status ? false : 'readonly'" value="2134657846845646611366" /></td>
-                        <td><input type="text" :readonly="status ? false : 'readonly'" value="11234585412" /></td>
-                        <td><input type="text" :readonly="status ? false : 'readonly'" value="13254678945" /></td>
-                        <td><span class="btn-edit">修改</span><span class="btn-save">保存</span></td>
-                    </tr>
-                    <tr class="cur">
-                        <td><div class="check-box el-icon-check"></div></td>
-                        <td><input type="text" value="王丽" /></td>
-                        <td><input type="text" value="2134657846845646611366" /></td>
-                        <td><input type="text" value="11234585412" /></td>
-                        <td><input type="text" value="13254678945" /></td>
-                        <td><span class="btn-edit">修改</span><span class="btn-save">保存</span></td>
-                    </tr>
-                    <tr>
-                        <td><div class="check-box"></div></td>
-                        <td>王丽</td>
-                        <td>2134657846845646611366</td>
-                        <td>11234585412</td>
-                        <td>13254678945</td>
-                        <td>修改</td>
+                    <tr v-for="(item, i) in personAllList" :key="i" :class="isEdit===i?'cur':''">
+                        <td><div :class='"check-box" + (selPerson.indexOf(item.id) > -1? " el-icon-check":"")' @click="checkPerson(i, item.id)"></div></td>
+                        <td><input type="text" :readonly="isEdit===i ? false : 'readonly'" maxlength="50" v-model="item.name" /></td>
+                        <td><input type="text" :readonly="isEdit===i ? false : 'readonly'" maxlength="50" v-model="item.idcard" /></td>
+                        <td><input type="text" :readonly="isEdit===i ? false : 'readonly'" maxlength="50" v-model="item.phone" /></td>
+                        <td><input type="text" :readonly="isEdit===i ? false : 'readonly'" maxlength="50" v-model="item.jjphone" /></td>
+                        <td><span v-if="isEdit===i" @click="savePerson(i)" class="btn-save">保存</span><span v-else class="btn-edit" @click="isEdit = i">修改</span></td>
                     </tr>
                 </tbody>
             </table>
@@ -121,7 +107,7 @@
         </div>
 
         <div class="div_btn">
-            <div class="btn">提交订单</div>
+            <div class="btn" @click="submitOrder">提交订单</div>
         </div>
     </div>
 </template>
@@ -133,9 +119,16 @@ export default {
     name: 'WriteInfo',
     data () {
         return {
-            personType: ['成人', '儿童'],
+            search: {},
+            flight: {},
+            seat: {},
+            childPrice: 0,
+            yingerPrice: 0,
+            status: false,
+            personType: ['成人', '儿童', '婴儿'],
             cardType: ['身份证', '军官证', '港澳通行证'],
-            personList: [{
+            person: {
+                id: '',
                 ptype: '成人',
                 name: '',
                 cardtype: '身份证',
@@ -143,19 +136,181 @@ export default {
                 mobile: '',
                 urgentphone: '',
                 safenum: 1
-            },{
-                ptype: '成人',
-                name: '',
-                cardtype: '身份证',
-                cardno: '',
-                mobile: '',
-                urgentphone: '',
-                safenum: 1
-            }]
+            },
+            selPersonList: [],
+            personAllList: [],
+            selPerson: [],
+            isEdit: '',
+            isCheckAll: false,
+            showPerson: false,
+            selCompany: {}
         }
     },
     components: {
         SiteMap
+    },
+    methods: {
+        addItem () {
+            this.selPersonList.push(JSON.parse(JSON.stringify(this.person)))
+        },
+        checkAll () {
+            if (this.isCheckAll) {
+                this.selPerson = []
+                this.isCheckAll = false
+            } else {
+                for(let i=0; i<this.personAllList.length; i++){
+                    this.selPerson.push(i)
+                }
+                this.isCheckAll = true
+            }
+        },
+        checkPerson (v, id) {
+            let _index = this.selPerson.indexOf(id)
+            if (_index > -1) {
+                this.selPerson.splice(_index, 1)
+                this.isCheckAll = false
+                let _i = this.selPersonList.findIndex(item => {
+                    return item.id === id
+                })
+                this.selPersonList.splice(_i, 1)
+                if (this.selPersonList.length < 1) {
+                    this.addItem()
+                }
+            } else {
+                this.selPerson.push(id)
+                if (this.selPerson.length === this.personAllList.length) {
+                    this.isCheckAll = true
+                }
+                if (this.selPerson.length) {
+                    let obj = this.personAllList[v]
+                    let p = {
+                        id: obj.id,
+                        ptype: obj.type == 1? "成人": "儿童",
+                        name: obj.name,
+                        cardtype: "身份证",
+                        cardno: obj.idcard,
+                        mobile: obj.phone,
+                        urgentphone: obj.jjphone,
+                        safenum: 1
+                    }
+                    if (this.selPersonList.length < 2 && this.selPersonList[0].name === '') {
+                        this.selPersonList = []
+                    }
+                    this.selPersonList.push(p)
+                }
+            }
+        },
+        getServerChildPrice () {
+            this.$http.get(this.apis + '/api/flight/getchildprice', {params: {
+                scity: this.search.scity.code,
+                ecity: this.search.ecity.code,
+                sdate: this.search.sdate,
+                flightNo: this.flight.flightNo,
+                seat: this.seat.seatCode
+            }})
+            .then(res => {
+                if (res && res.data && res.data.status != 0) {
+                    this.childPrice = parseInt(res.data.data.flightDataList[0].seatAndPolicyList[0].ticketPrice)
+                    this.yingerPrice = parseInt(this.childPrice * 0.2)
+                }
+            });
+        },
+        getCountChildPrice () {
+            let _code = 'Y'
+            if (this.seat.seatMsg == '商务舱') {
+                _code = ''
+            } else if (this.seat.seatMsg == '头等舱') {
+                _code = ''
+            }
+            for (let i=0; i < this.flight.seatItems.length; i++) {
+                if (this.flight.seatItems[i].seatCode == _code) {
+                    this.childPrice = parseInt(this.flight.seatItems[i].parPrice) / 2
+                    this.yingerPrice = parseInt(this.flight.seatItems[i].parPrice * 0.1)
+                    break
+                }
+            }
+        },
+        getCountYChildPrice () {
+            for (let i=0; i < this.flight.seatItems.length; i++) {
+                if (this.flight.seatItems[i].seatCode == 'Y') {
+                    this.childPrice = parseInt(this.flight.seatItems[i].parPrice) / 2
+                    this.yingerPrice = parseInt(this.flight.seatItems[i].parPrice * 0.1)
+                    break
+                }
+            }
+        },
+        getPersonList () {
+            this.$http.get(this.apis + '/api/passenger/GetPersonList', {params: {
+                cid: this.selCompany.id
+            }})
+            .then(res => {
+                if (res && res.data && res.data.status != 0) {
+                    this.personAllList = res.data.data
+                }
+            });
+        },
+        savePerson (i) {
+            this.$http.post(this.apis + '/api/passenger/saveperson', this.personAllList[i])
+            .then(res => {
+                console.log(res)
+                if (res && res.data && res.data.status != 0) {
+                    this.MessageBox(res.data.msg, '温馨提示')
+                }
+                this.isEdit = ''
+            });
+        },
+        del(i) {
+            let _id = this.selPersonList[i].id
+            this.selPersonList.splice(i, 1)
+            let _index = this.selPerson.findIndex(item => {
+                return item === _id
+            })
+            if (_index > -1) {
+                this.selPerson.splice(_index, 1)
+                this.isCheckAll = false
+            }
+        },
+        submitOrder () {
+            let orderBody = {
+                cid: this.selCompany.id,
+                scity: this.search.scity,
+                ecity: this.search.ecity,
+                sdate: this.search.sdate,
+                cname: this.selCompany.name,
+                personlist: this.selPersonList,
+                airbody: this.flight,
+                airseat: this.seat
+            }
+            console.log(orderBody)
+            this.$http.post(this.apis + '/api/gnorder/submitordercn', orderBody)
+            .then(res => {
+                if (res && res.data && res.data.status != 0) {
+                    this.MessageBox("下单成功！", '温馨提示')
+                } else {
+                    this.MessageBox("下单失败，请检查数据！", '温馨提示')
+                }
+            });
+        },
+    },
+    created () {
+        this.flight = JSON.parse(sessionStorage.getItem('bookFlight'))
+        this.seat = JSON.parse(sessionStorage.getItem('bookFlightSeat'))
+        this.search = JSON.parse(sessionStorage.getItem('gnsearch'))
+        console.log(this.search)
+        this.selCompany = this.search.selCompany
+        if (this.search.selChildCompany && this.search.selChildCompany.id) {
+            this.selCompany = this.search.selChildCompany
+        }
+        // 通过第三方接口获取
+        // this.getServerChildPrice()
+        // 通过计算获取
+        // this.getCountChildPrice()
+        // 通过计算获取经济舱Y的儿童价
+        this.getCountYChildPrice()
+
+        this.getPersonList()
+
+        this.addItem()
     }
 }
 </script>
@@ -165,6 +320,9 @@ export default {
 @import '../../assets/sass/table-list.scss';
 .writeinfo-box{
     height: 100%;
+    .el-input{
+        width: auto;
+    }
     .flight-info{
         border: 1px dotted $pubcolor;
         box-sizing: border-box;
@@ -297,7 +455,6 @@ export default {
             }
         }
         .btn-box{
-            display: none;
             padding: 10px 0 40px 130px;
             .btn-person{
                 height: 40px;
@@ -341,11 +498,17 @@ export default {
                     height: 30px;
                     line-height: 30px;
                     .check-box{
+                        cursor: pointer;
                         margin: 0 auto;
                         width: 16px;
                         height: 16px;
                         border: 1px solid #8f8d8d;
                         box-sizing: border-box;
+                    }
+                    .el-icon-check{
+                        border: 1px solid $pubcolor;
+                        background-color: $pubcolor;
+                        color: #fff;
                     }
                     .btn-edit{
                         display: block;
@@ -356,7 +519,6 @@ export default {
                         margin: 0 auto;
                     }
                     .btn-save{
-                        display: none;
                         width: 40px;
                         height: 20px;
                         line-height: 20px;
@@ -366,7 +528,7 @@ export default {
                     input{
                         text-align: center;
                         border: 1px solid #d5dce0;
-                        background-color: #eff5f9;
+                        background-color: #fff;
                     }
                     input:read-only{
                         background-color: #e8f1f7;
@@ -378,14 +540,6 @@ export default {
                 }
             }
             .cur{
-                .check-box{
-                    border: 1px solid $pubcolor;
-                    background-color: $pubcolor;
-                    color: #fff;
-                }
-                .btn-edit{
-                    display: none;
-                }
                 .btn-save{
                     display: block;
                     background-color: #fe7122;
@@ -394,6 +548,7 @@ export default {
             }
         }
         .btn{
+            display: none;
             margin: 20px 0 0 40px;
             width: 80px;
             height: 30px;

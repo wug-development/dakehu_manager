@@ -70,7 +70,7 @@ export default new Router({
                 },
                 {
                     path: 'writeinfo',
-                    name: 'WriteInfo',
+                    name: '填写信息',
                     component: WriteInfo,
                 },
                 {

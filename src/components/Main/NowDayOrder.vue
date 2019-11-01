@@ -7,7 +7,7 @@
                 <el-select v-model="selCompany" value-key="name" filterable @change="checkCompany" :remote-method="remoteMethod" placeholder="请选择企业">
                     <el-option v-for="item in company" :key="item.id" :label="item.name" :value="item"></el-option>
                 </el-select>
-                <el-select v-model="selChildCompany" filterable placeholder="请选择子公司">
+                <el-select v-model="selChildCompany" value-key="name" filterable placeholder="请选择子公司">
                     <el-option v-for="item in childCompany" :key="item.id" :label="item.shortname" :value="item"></el-option>
                 </el-select>
                 <div class="btn-gj" @click="gjsearch">
@@ -16,15 +16,15 @@
             </div>
             <div class="div-box div-gn">
                 <div>出发城市:</div>
-                <el-select v-model="selStartCity" filterable placeholder="请选择">
-                    <el-option v-for="item in cityList" :key="item.id" :label="item.name" :value="item.name"></el-option>
+                <el-select v-model="selStartCity" value-key="name" filterable placeholder="请选择">
+                    <el-option v-for="item in cityList" :key="item.id" :label="item.name" :value="item"></el-option>
                 </el-select>
                 <div>到达城市:</div>
-                <el-select v-model="selEndCity" filterable placeholder="请选择">
-                    <el-option v-for="item in cityList" :key="item.id" :label="item.name" :value="item.name"></el-option>
+                <el-select v-model="selEndCity" value-key="name" filterable placeholder="请选择">
+                    <el-option v-for="item in cityList" :key="item.id" :label="item.name" :value="item"></el-option>
                 </el-select>
                 <div>出发日期:</div>
-                <el-date-picker v-model="sdate" type="date" placeholder="请选择"></el-date-picker>
+                <el-date-picker v-model="sdate" type="date" value-format="yyyy-MM-dd" placeholder="请选择"></el-date-picker>
                 <div class="btn-search" @click="gnsearch">
                     国内查询
                 </div>
@@ -195,18 +195,24 @@ export default {
             }
         },
         gnsearch: function () {
-            if (this.selStartCity == '') {
+            if (this.selCompany == '') {
+                this.MessageBox('请选择公司名称', '温馨提示')
+            } else if (this.selStartCity == '') {
                 this.MessageBox('请选择出发城市', '温馨提示')
             } else if (this.selEndCity == '') {
                 this.MessageBox('请选择出发城市', '温馨提示')
             } else if (this.sdate == '') {
                 this.MessageBox('请选择出发日期', '温馨提示')
             } else {
-                sessionStorage.setItem('gnsearch', JSON.stringify({
+                var _str = JSON.stringify({
+                    selCompany: this.selCompany,
+                    selChildCompany: this.selChildCompany,
                     scity: this.selStartCity,
                     ecity: this.selEndCity,
                     sdate: this.sdate
-                }))
+                });
+                console.log(_str);
+                sessionStorage.setItem('gnsearch', _str)
                 this.$router.push({
                     path: '/main/gnorderlist'
                 })
@@ -228,6 +234,7 @@ export default {
             })
         },
         checkCompany: function () {
+            this.selChildCompany = ''
             this.$http.get(this.apis + '/api/company/getfiltersubcompany', {params: {
                 id: this.selCompany.id
             }})

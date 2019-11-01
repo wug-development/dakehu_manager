@@ -6,6 +6,13 @@ module.exports = {
             pathRewrite: {
                 '^/apis': ''
             }
+        },
+        '/apibook': {
+            target: 'http://api.51book.com/',
+            changeOrigin: true,
+            pathRewrite: {
+                '^/apibook': ''
+            }
         }
     }
 }
