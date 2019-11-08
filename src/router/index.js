@@ -31,7 +31,7 @@ export default new Router({
         },
         {
             path: '/main',
-            name: '首页',
+            name: '',
             component: Index,
             meta: {
                 keepAlive: true,// 此组件需要被缓存                
@@ -40,28 +40,18 @@ export default new Router({
             children: [
                 {
                     path: '',
-                    name: '首页',
+                    name: '今日订单',
                     component: NowDayOrder,
                 },
                 {
                     path: 'gjorderlist',
-                    name: '国际订单列表',
+                    name: '国际航班预定',
                     component: GJOrderList,
                 },
                 {
-                    path: 'gjorderdetail',
-                    name: '国际订单详情',
-                    component: GJOrderDetail,
-                },
-                {
                     path: 'gnorderlist',
-                    name: '国内订单列表',
+                    name: '国内航班查询',
                     component: GNOrderList,
-                },
-                {
-                    path: 'gnorderdetail',
-                    name: '国内订单详情',
-                    component: GNOrderDetail,
                 },
                 {
                     path: 'pnrcreat',
@@ -95,7 +85,7 @@ export default new Router({
                 },
                 {
                     path: 'userbll',
-                    name: '用户管理',
+                    name: '',
                     component: UserList,
                     children: MyUser
                 },

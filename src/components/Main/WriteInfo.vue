@@ -46,7 +46,7 @@
         <div :class='"box-bg person-form" + (i > 0? " person-mTop": "")' v-for="(item, i) in selPersonList" :key="i">
             <div>
                 <div class="form-label">乘客姓名：</div>
-                <el-select v-model="item.ptype" placeholder="成人">
+                <el-select v-model="item.type" placeholder="成人">
                     <el-option v-for="item in personType" :key="item" :label="item" :value="item"></el-option>
                 </el-select>
                 <el-input v-model="item.name" class="form-input" placeholder="请输入乘客姓名"></el-input>
@@ -129,7 +129,7 @@ export default {
             cardType: ['身份证', '军官证', '港澳通行证'],
             person: {
                 id: '',
-                ptype: '成人',
+                type: '成人',
                 name: '',
                 cardtype: '身份证',
                 cardno: '',
@@ -185,7 +185,7 @@ export default {
                     let obj = this.personAllList[v]
                     let p = {
                         id: obj.id,
-                        ptype: obj.type == 1? "成人": "儿童",
+                        type: obj.type == 1? "成人": "儿童",
                         name: obj.name,
                         cardtype: "身份证",
                         cardno: obj.idcard,
@@ -285,7 +285,12 @@ export default {
             this.$http.post(this.apis + '/api/gnorder/submitordercn', orderBody)
             .then(res => {
                 if (res && res.data && res.data.status != 0) {
-                    this.MessageBox("下单成功！", '温馨提示')
+                    this.$store.state.selCompany = this.selCompany
+                    this.MessageBox("下单成功！", '温馨提示').then(()=>{
+                        this.$router.push({
+                            path: '/main/userbll'
+                        })
+                    })
                 } else {
                     this.MessageBox("下单失败，请检查数据！", '温馨提示')
                 }
@@ -296,7 +301,7 @@ export default {
         this.flight = JSON.parse(sessionStorage.getItem('bookFlight'))
         this.seat = JSON.parse(sessionStorage.getItem('bookFlightSeat'))
         this.search = JSON.parse(sessionStorage.getItem('gnsearch'))
-        console.log(this.search)
+        console.log(this.flight)
         this.selCompany = this.search.selCompany
         if (this.search.selChildCompany && this.search.selChildCompany.id) {
             this.selCompany = this.search.selChildCompany

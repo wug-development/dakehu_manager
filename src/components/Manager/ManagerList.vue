@@ -98,6 +98,13 @@ export default {
             pageCount: 1,
             dataList: []
         }
+        /* 
+        {muser: false, name: '用户管理' },
+        {mregister: false, name: '用户注册' },
+        {mshoukuan: false, name: '收款确认' },
+        {museredit: false, name: '用户编辑' },
+        {muserdel: false, name: '用户删除' }
+        */
     },
     methods: {
         addItem: function () {

@@ -104,7 +104,6 @@ export default {
         let data = sessionStorage.getItem('loginData')
         if (data) {
             this.selCompany = this.$store.state.selCompany
-            console.log(this.selCompany)
             if (!this.selCompany || !this.selCompany.id){
                 this.selCompany = JSON.parse(sessionStorage.getItem('selCompany'))
                 this.$store.state.selCompany = this.selCompany

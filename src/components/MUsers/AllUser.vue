@@ -3,6 +3,7 @@
         <SiteMap></SiteMap>
         <div class="box-bg search-box">
             <el-select class="ddl"
+                @focus="username = ''"
                 v-model="username"
                 filterable
                 remote
@@ -118,14 +119,16 @@ export default {
             })
         },
         remoteMethod: function (v) {
-            this.$http.get(this.apis + '/api/company/getfiltercompany', {params: {
-                name: v
-            }})
-            .then(res => {
-                if (res && res.data && res.data.status != 0) {
-                    this.options = res.data.data
-                }
-            })
+            if (v.length > 0) {
+                this.$http.get(this.apis + '/api/company/getfiltercompany', {params: {
+                    name: v
+                }})
+                .then(res => {
+                    if (res && res.data && res.data.status != 0) {
+                        this.options = res.data.data
+                    }
+                })
+            }
         },
         handleCurrentChange: function (v) {
             this.page = v
@@ -154,22 +157,29 @@ export default {
             this.getList()
         },
         del: function (v) {
-            this.$http.get(this.apis + '/api/company/delcompany', {params: {
-                id: v
-            }})
-            .then(res => {
-                if (res && res.data && res.data.status != 0) {
-                    this.getList()
-                    this.Notification({
-                        title: '删除成功',
-                        type: 'success'
-                    })
-                } else {
-                    this.Notification.error({
-                        title: '删除失败',
-                        message: '请刷新重试'
-                    })
-                }
+            this.MessageBox.confirm('您确认删除该用户吗？', {
+                confirmButtonText: '取消',
+                cancelButtonText: '确认'
+            }).then(e => {
+                console.log('取消删除')
+            }).catch(() => {
+                this.$http.get(this.apis + '/api/company/delcompany', {params: {
+                    id: v
+                }})
+                .then(res => {
+                    if (res && res.data && res.data.status != 0) {
+                        this.getList()
+                        this.Notification({
+                            title: '删除成功',
+                            type: 'success'
+                        })
+                    } else {
+                        this.Notification.error({
+                            title: '删除失败',
+                            message: '请刷新重试'
+                        })
+                    }
+                })
             })
         },
         toPage (v) {

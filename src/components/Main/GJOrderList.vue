@@ -122,6 +122,8 @@ export default {
                 _cid = this.selChildCompany.id
             }
             this.filterParams.cid = _cid
+            this.filterParams.sdate = this.filterParams.sdate || ''
+            this.filterParams.edate = this.filterParams.edate || ''
             this.$http.get(this.apis + '/api/orderlist/getorderlist', {params: this.filterParams})
             .then(res => {
                 if (res && res.data && res.data.status != 0) {
@@ -133,7 +135,7 @@ export default {
             })
         },
         handleCurrentChange: function (v) {
-            this.page = v
+            this.filterParams.page = v
             this.getOrderList()
         },
         remoteMethod: function (v) {

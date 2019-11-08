@@ -38,6 +38,10 @@
             border: 0;
             height: 54px;
             font-size: 16px;
+            min-width: 70px;
+        }
+        th:first-child{
+            min-width: 20px;
         }
     }
     .table-list-body{

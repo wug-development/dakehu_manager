@@ -33,6 +33,7 @@
                         <th>付款单位</th>
                         <th>备注</th>
                         <th>状态</th>
+                        <th>操作</th>
                     </tr>
                 </thead>
                 <tbody class="table-list-body">
@@ -149,18 +150,7 @@ export default {
             this.user = JSON.parse(account)
             this.$store.state.topmenu = "payrecord"
         }
-    },
-    // computed: {
-    //     aa () {
-    //         return this.$store.state.selCompany
-    //     }
-    // },
-    // watch: {
-    //     aa (newCount, oldCount) {
-    //         this.selCompany = this.$store.state.selCompany
-    //         this.getPayList ()
-    //     }
-    // }
+    }
 }
 </script>
 

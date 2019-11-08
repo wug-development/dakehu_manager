@@ -34,7 +34,7 @@
                 <tbody class="table-list-body">
                     <tr v-for="(item, i) in orderList" :key="i">
                         <td><div v-if="item.status == 0" :class='"check-box" + (checkOrder.indexOf(item.orderid) > -1?" el-icon-check cur":"")' @click="checkItem(item.orderid)"></div></td>
-                        <td class="active" @click="toDetail(item.orderid, item.cid)">{{item.orderid}}</td>
+                        <td class="active" @click="toDetail(item.orderid, item.cid, item.ordertype)">{{item.orderid}}</td>
                         <td>{{item.cname}}</td>
                         <td>{{item.pername}}</td>
                         <td>{{item.ordercode}}</td>
@@ -134,10 +134,17 @@ export default {
                 this.checkOrder = []
             }
         },
-        toDetail (id, cid) {
-            this.$router.push({
-                path: '/main/gjorderdetail?id=' + id + '&cid=' + cid
-            })
+        toDetail (id, cid, t) {
+            console.log(t)
+            if (t == 1) {
+                this.$router.push({
+                    path: '/main/userbll/gjorderdetail?id=' + id + '&cid=' + cid
+                })
+            } else {
+                this.$router.push({
+                    path: '/main/userbll/gnorderdetail?id=' + id + '&cid=' + cid
+                })
+            }
         },
         saveDingzhi () {
             if (this.other != ''){
