@@ -50,7 +50,7 @@ export default {
         let logindata = sessionStorage.getItem('loginData')
         if (logindata) {
             let _d = JSON.parse(logindata)
-            this.menuList = _d.limits
+            this.menuList = _d.menus
         }
     }
 }

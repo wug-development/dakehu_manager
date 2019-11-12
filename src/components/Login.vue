@@ -35,9 +35,40 @@ export default {
                     'upass': this.password
                 }})
                 .then(res => {
+                    console.log(res)
                     if (res && res.data && res.data.status != 0) {
-                        console.log(res.data.data)
-                        sessionStorage.setItem('loginData', JSON.stringify(res.data.data))
+                        let _d = res.data.data
+                        _d.logintime = this.utils.dateFormat('yyyy-MM-dd hh:mm:ss')
+                        
+                        // console.log(_d)
+                        let _r = _d.limits.findIndex(e => {
+                            return e.name === '客户注册'
+                        })                        
+                        let _y = _d.limits.findIndex(e => {
+                            return e.name === '用户管理'
+                        })
+                        let _g = _d.limits.findIndex(e => {
+                            return e.name === '管理员管理'
+                        })
+                        if (_r === -1) {
+                            let _i = _d.menus.findIndex(e => {
+                                return e.name === '客户注册'
+                            })
+                            _d.menus.splice(_i, 1)
+                        } 
+                        if (_y === -1) {
+                            let _i = _d.menus.findIndex(e => {
+                                return e.name === '用户管理'
+                            })
+                            _d.menus.splice(_i, 1)
+                        }
+                        if (_g === -1) {
+                            let _i = _d.menus.findIndex(e => {
+                                return e.name === '管理员管理'
+                            })
+                            _d.menus.splice(_i, 1)
+                        }
+                        sessionStorage.setItem('loginData', JSON.stringify(_d))
                         this.$router.push({
                             path: '/main'
                         })

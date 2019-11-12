@@ -354,8 +354,8 @@ export default {
                 this.ticketinfo.dcOutTicketName = this.selOutTicket.name
             }
             if (this.selPeople) {
-                this.ticketinfo.dnHKYWID = this.selOutTicket.id
-                this.ticketinfo.dcLXR = this.selOutTicket.name
+                this.ticketinfo.dnHKYWID = this.selPeople.id
+                this.ticketinfo.dcLXR = this.selPeople.name
             }
             if (!this.ticketinfo.dcTSID) {
                 this.ticketinfo.dcAddUser = this.orderinfo.dcAdminName

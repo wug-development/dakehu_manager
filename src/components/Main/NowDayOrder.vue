@@ -53,17 +53,17 @@
                 </thead>
                 <tbody class="table-list-body">
                     <tr v-for="(item, i) in orderList" :key="i">
-                        <td><div :class='"check-box" + (checkOrder.indexOf(item.OrderID) > -1?" el-icon-check cur":"")' @click="checkItem(item.OrderID)"></div></td>
-                        <td class="active" @click="toDetail(item.OrderID)">{{item.OrderID}}</td>
-                        <td>{{item.JCPY}}</td>
-                        <td>{{item.PName}}</td>
-                        <td>{{item.PNR}}</td>
-                        <td>{{item.StartCity}}-{{item.EndCity}}</td>
-                        <td>{{item.StartDate}}</td>
-                        <td>{{item.OrderPrice}}</td>
-                        <td>{{item.OrderTime.substr(0,10)}}</td>
-                        <td :class='item.OrderState == "2"? "deal" : (item.OrderState == "5"? "" : "wait")'>{{checkstatus(item.OrderState)}}</td>
-                        <td>{{item.CLName}}</td>
+                        <td><div :class='"check-box" + (checkOrder.indexOf(item.dcOrderID) > -1?" el-icon-check cur":"")' @click="checkItem(item.dcOrderID)"></div></td>
+                        <td class="active" @click="toDetail(item)">{{item.dcOrderID}}</td>
+                        <td>{{item.dcCompanyName}}</td>
+                        <td>{{item.dcLinkName}}</td>
+                        <td>{{item.dcOrderCode}}</td>
+                        <td>{{item.dcStartCity}}-{{item.dcBackCity}}</td>
+                        <td>{{item.dcStartDate}}</td>
+                        <td>{{item.dnTotalPrice}}</td>
+                        <td>{{item.dtAddTime.replace('T', '')}}</td>
+                        <td :class='item.dnStatus == 0? "deal" : ""'>{{checkstatus(item.dnStatus)}}{{item.dnStatus}}</td>
+                        <td>{{item.dcAdminName}}</td>
                     </tr>
                 </tbody>
             </table>
@@ -112,6 +112,7 @@ export default {
                 'pagenum': this.pageNum
             }})
             .then(res => {
+                console.log(res)
                 if (res && res.data && res.data.status != 0) {
                     this.pageCount = res.data.data.pageCount
                     this.orderList = res.data.data.data
@@ -139,8 +140,8 @@ export default {
         checkstatus: function (v) {
             let txt = ''
             switch (v) {
-                case '2': txt = '待确认'; break;
-                default: txt = '出票完成'; break;
+                case 0: txt = '未处理'; break;
+                default: txt = '处理完成'; break;
             }
             return txt
         },
@@ -244,10 +245,23 @@ export default {
                 }
             })
         },
-        toDetail (id) {            
-            this.$router.push({
-                path: '/main/gjorderdetail?id=' + id
-            })
+        toDetail (item) {
+            let v = {
+                id: item.dcCompanyID,
+                name: item.dcCompanyName
+            }
+            this.$store.state.selCompany = v
+            sessionStorage.setItem('selCompany', JSON.stringify(v))
+
+            if (item.dnOrderType == 1) {
+                this.$router.push({
+                    path: '/main/userbll/gjorderdetail?id=' + item.dcOrderID + '&cid=' + item.dcCompanyID
+                })
+            } else {
+                this.$router.push({
+                    path: '/main/userbll/gnorderdetail?id=' + item.dcOrderID + '&cid=' + item.dcCompanyID
+                })
+            }
         },
         toPNR () {
             this.$router.push({

@@ -33,7 +33,7 @@
                         <th>付款单位</th>
                         <th>备注</th>
                         <th>状态</th>
-                        <th>操作</th>
+                        <th v-if="isLimitComfirm">操作</th>
                     </tr>
                 </thead>
                 <tbody class="table-list-body">
@@ -45,6 +45,9 @@
                         <td>{{selCompany.name == item.company?item.company:selCompany.name +'-'+ item.company}}</td>
                         <td>{{item.other}}</td>
                         <td :class="item.status == 1?'':'active'">{{item.status == 1? '已确认' : '等待确认'}}</td>
+                        <td v-if="isLimitComfirm">
+                            <div class="btns-box" v-if="item.status != 1"><div class="btn-save" @click="ComfirmPrice(item)">确认收款</div></div>
+                        </td>
                     </tr>
                 </tbody>
             </table>
@@ -73,7 +76,8 @@ export default {
             page: 1,
             pageNum: 5,
             pageCount: 1,
-            user: {}
+            user: {},
+            isLimitComfirm: false
         }
     },
     components: {
@@ -137,6 +141,29 @@ export default {
                     }
                 })
             }
+        },
+        ComfirmPrice (item) {
+            this.MessageBox.confirm('你确认收款了么？', '温馨提示', {
+                confirmButtonText: '取消',
+                cancelButtonText: '确定',
+                type: 'warning'
+            }).then(() => {
+                console.log('取消')
+            }).catch(()=>{
+                this.$http.get(this.apis + '/api/payrecord/comfirmpay', {params: {
+                    id: item.id,
+                    mid: this.user.id
+                }})
+                .then(res => {
+                    if (res && res.data && res.data.status != 0) {
+                        this.Notification({
+                            title: '保存成功',
+                            type: 'success'
+                        })
+                        this.getPayList()
+                    }
+                })
+            })
         }
     },
     created () {
@@ -145,10 +172,16 @@ export default {
         this.payCompany = JSON.parse(sel)
         this.getSubComlist()
         this.getPayList ()
+        this.$store.state.topmenu = 'payrecord'
         let account = sessionStorage.getItem('loginData')
         if (account) {
             this.user = JSON.parse(account)
-            this.$store.state.topmenu = "payrecord"
+            let _g = this.user.limits.findIndex(e => {
+                return e.name === '收款确认'
+            })
+            if (_g > -1) {
+                this.isLimitComfirm = true
+            }
         }
     }
 }

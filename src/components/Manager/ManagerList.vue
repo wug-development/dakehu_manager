@@ -36,7 +36,7 @@
                         <td><input type="text" :readonly="isedit == item.id ? false : 'readonly'" v-model="item.qq" maxlength="15"></td>
                         <td>
                             <div class="btn-box">
-                                <div class="btn-set" @click="limitSet(item.id)">权限设置</div>
+                                <div class="btn-set" v-if="isLimitSet" @click="limitSet(item.id)">权限设置</div>
                                 <div v-show="isedit==item.id" class="btn-save" @click="savedata(item.id, i)">保存</div>
                                 <div v-show="isedit!=item.id" class="btn-edit" @click="isedit = item.id">修改</div>
                                 <div class="btn-del" @click="delItem(item.id)">删除</div>
@@ -86,6 +86,7 @@ export default {
             mqq: '',
             isedit: '',
             islimit: false,
+            isLimitSet: false,
             powers: {
                 muser: false,
                 mregister: false,
@@ -98,13 +99,6 @@ export default {
             pageCount: 1,
             dataList: []
         }
-        /* 
-        {muser: false, name: '用户管理' },
-        {mregister: false, name: '用户注册' },
-        {mshoukuan: false, name: '收款确认' },
-        {museredit: false, name: '用户编辑' },
-        {muserdel: false, name: '用户删除' }
-        */
     },
     methods: {
         addItem: function () {
@@ -212,7 +206,33 @@ export default {
             })
         },
         limitSet: function (id) {
+            this.powers.muser = false
+            this.powers.mregister = false
+            this.powers.mshoukuan = false
+            this.powers.museredit = false
+            this.powers.muserdel = false
             this.islimit = id
+            this.$http.get(this.apis + '/api/limitmenu/getlimit', {params: {
+                id
+            }})
+            .then(res => {
+                if (res && res.data && res.data.status != 0) {
+                    let _arr = res.data.data
+                    for (let i in _arr) {
+                        if (_arr[i].name === '用户管理') {
+                            this.powers.muser = true
+                        } else if (_arr[i].name === '客户注册') {
+                            this.powers.mregister = true
+                        } else if (_arr[i].name === '收款确认') {
+                            this.powers.mshoukuan = true
+                        } else if (_arr[i].name === '用户编辑') {
+                            this.powers.museredit = true
+                        } else if (_arr[i].name === '用户删除') {
+                            this.powers.muserdel = true
+                        }
+                    }
+                }
+            })
         },
         saveLimit: function () {
             this.$http.post(this.apis + '/api/limitmenu/SaveLimit', {
@@ -220,7 +240,11 @@ export default {
                 muser: this.powers
             })
             .then(res => {
-                console.log(res)
+                this.islimit = false
+                this.Notification({
+                    title: '保存成功',
+                    type: 'success'
+                })
             })
         },
         getList: function () {
@@ -246,9 +270,20 @@ export default {
         SiteMap
     },
     created () {
-        this.$store.state.siteMap = ["管理员管理"]
         // 获取列表
         this.getList()
+
+        let logindata = sessionStorage.getItem('loginData')
+        if (logindata) {
+            let _d = JSON.parse(logindata)
+            console.log(_d)
+            let _g = _d.limits.findIndex(e => {
+                return e.name === '权限管理'
+            })
+            if (_g > -1) {
+                this.isLimitSet = true
+            }
+        }
     }
 }
 </script>

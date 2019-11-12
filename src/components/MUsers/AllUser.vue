@@ -42,7 +42,7 @@
                         <li class="w20">
                             <div class="btns-box">
                                 <div class="btn-del"><router-link :to="'/main/edituser?id=' + item.id ">详情</router-link></div>
-                                <div class="btn-warn" @click="del(item.id)">删除</div>
+                                <div class="btn-warn" v-if="isLimitDel" @click="del(item.id)">删除</div>
                                 <div class="btn-edit">前台</div>
                             </div>
                         </li>
@@ -94,10 +94,22 @@ export default {
             page: 1,
             pageNum: 5,
             pageCount: 1,
+            isLimitDel: false
         }
     },
     created () {
         this.getList()
+
+        let logindata = sessionStorage.getItem('loginData')
+        if (logindata) {
+            let _d = JSON.parse(logindata)
+            let _g = _d.limits.findIndex(e => {
+                return e.name === '用户删除'
+            })
+            if (_g > -1) {
+                this.isLimitDel = true
+            }
+        }
     },
     components: {
         SiteMap

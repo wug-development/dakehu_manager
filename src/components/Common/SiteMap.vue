@@ -38,6 +38,19 @@ export default {
             }
         }
         this.maplist = obj
+        
+        let logindata = sessionStorage.getItem('loginData')
+        if (logindata) {
+            let _d = JSON.parse(logindata)
+            let _ltime = this.utils.dateFormat(this.utils.getAfterNDate(_d.logintime, 1, 'd'),'yyyy-MM-dd hh:mm:ss')
+            let _ntime = this.utils.dateFormat('yyyy-MM-dd hh:mm:ss')
+            if (this.utils.dateTab(_ntime, _ltime)) {
+                sessionStorage.setItem('loginData', '')
+                this.$router.push({
+                    path: '/'
+                })
+            }
+        }
     }
 }
 </script>

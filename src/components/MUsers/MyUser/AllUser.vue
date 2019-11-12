@@ -41,7 +41,7 @@
                         <li class="w20">
                             <div class="btns-box">
                                 <div class="btn-del"><router-link :to="'/main/edituser?id=' + item.id ">详情</router-link></div>
-                                <div class="btn-warn" @click="del(item.id)">删除</div>
+                                <div class="btn-warn" v-if="isLimitDel" @click="del(item.id)">删除</div>
                                 <div class="btn-edit">前台</div>
                             </div>
                         </li>
@@ -93,10 +93,22 @@ export default {
             page: 1,
             pageNum: 5,
             pageCount: 1,
+            isLimitDel: false
         }
     },
     created () {
         this.getList()
+
+        let logindata = sessionStorage.getItem('loginData')
+        if (logindata) {
+            let _d = JSON.parse(logindata)
+            let _g = _d.limits.findIndex(e => {
+                return e.name === '用户删除'
+            })
+            if (_g > -1) {
+                this.isLimitDel = true
+            }
+        }
     },
     components: {
         SiteMap
@@ -154,22 +166,28 @@ export default {
             this.getList()
         },
         del: function (v) {
-            this.$http.get(this.apis + '/api/company/delcompany', {params: {
-                id: v
-            }})
-            .then(res => {
-                if (res && res.data && res.data.status != 0) {
-                    this.getList()
-                    this.Notification({
-                        title: '删除成功',
-                        type: 'success'
-                    })
-                } else {
-                    this.Notification.error({
-                        title: '删除失败',
-                        message: '请刷新重试'
-                    })
-                }
+            this.MessageBox.confirm('你确定要删除该企业么？', '温馨提示', {
+                confirmButtonText: '确定',
+                cancelButtonText: '取消',
+                type: 'warning'
+            }).then(() => {
+                this.$http.get(this.apis + '/api/company/delcompany', {params: {
+                    id: v
+                }})
+                .then(res => {
+                    if (res && res.data && res.data.status != 0) {
+                        this.getList()
+                        this.Notification({
+                            title: '删除成功',
+                            type: 'success'
+                        })
+                    } else {
+                        this.Notification.error({
+                            title: '删除失败',
+                            message: '请刷新重试'
+                        })
+                    }
+                })
             })
         }
     }

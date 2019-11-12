@@ -11,6 +11,7 @@
             <div class="div-label">手机号:</div>
             <el-input v-model="phone"></el-input>
             <div class="btn" @click="searchData">搜索</div>
+            <div class="btn-other" @click="centerDialogVisible = true">添加乘机人</div>
         </div>
         <div class="box-bg alluser-list-box">
             <div class="pubtitle">全部乘机人</div>
@@ -52,6 +53,40 @@
                 <el-pagination background layout="prev, pager, next" :page-size="pageNum" @current-change="handleCurrentChange" :total="pageCount"></el-pagination>
             </div>
         </div>
+
+        <el-dialog title="添加乘机人" :visible.sync="centerDialogVisible" width="440px" center>
+            <el-form :model="uinfo">
+                <el-form-item label="姓名" :label-width="formLabelWidth">
+                    <el-input v-model="uinfo.CjrName" autocomplete="off"></el-input>
+                </el-form-item>
+                <el-form-item label="性别" :label-width="formLabelWidth">
+                    <el-radio v-model="uinfo.Sex" label="女">女</el-radio>
+                    <el-radio v-model="uinfo.Sex" label="男">男</el-radio>
+                </el-form-item>
+                <el-form-item label="身份证号码" :label-width="formLabelWidth">
+                    <el-input v-model="uinfo.idcard" autocomplete="off" maxlength="18" show-word-limit></el-input>
+                </el-form-item>
+                <el-form-item label="护照号" :label-width="formLabelWidth">
+                    <el-input v-model="uinfo.HZH" autocomplete="off"></el-input>
+                </el-form-item>
+                <el-form-item label="护照有效期" :label-width="formLabelWidth">
+                    <el-date-picker v-model="uinfo.HZYXQ" value-format="yyyy-MM-dd" :clearable="false" type="date"></el-date-picker>
+                </el-form-item>
+                <el-form-item label="手机号" :label-width="formLabelWidth">
+                    <el-input v-model="uinfo.phone" autocomplete="off" maxlength="11" show-word-limit></el-input>
+                </el-form-item>
+                <el-form-item label="紧急人手机	" :label-width="formLabelWidth">
+                    <el-input v-model="uinfo.jingji" autocomplete="off" maxlength="11" show-word-limit></el-input>
+                </el-form-item>
+                <el-form-item label="出生日期" :label-width="formLabelWidth">
+                    <el-date-picker v-model="uinfo.CSRQ" value-format="yyyy-MM-dd" :clearable="false" type="date"></el-date-picker>
+                </el-form-item>
+            </el-form>
+            <div slot="footer" class="dialog-footer">
+                <el-button @click="centerDialogVisible = false">取 消</el-button>
+                <el-button type="primary" @click="addData">确 定</el-button>
+            </div>
+        </el-dialog>
     </div>
 </template>
 
@@ -70,6 +105,20 @@ export default {
             page: 1,
             pageNum: 5,
             pageCount: 1,
+            uinfo: {
+                CjrName: '',
+                Sex: '',
+                HZH: '',
+                HZYXQ: '',
+                CSRQ: '',
+                idcard: '',
+                type: '1',
+                id: '',
+                phone: '',
+                jingji: ''
+            },
+            centerDialogVisible: false,
+            formLabelWidth: '120px'
         }
     },
     components: {
@@ -145,6 +194,25 @@ export default {
                     }
                 })
             }).catch(() => {})
+        },
+        addData () {
+            this.$http.post(this.apis + '/api/passenger/addperson', this.uinfo)
+            .then(res => {
+                if (res && res.data && res.data.status != 0) {
+                    this.centerDialogVisible = false
+                    this.page = 1
+                    this.getDataList()
+                    this.Notification({
+                        title: '添加成功',
+                        type: 'success'
+                    })
+                } else {
+                    this.Notification.error({
+                        title: '添加失败',
+                        message: '请检查数据！'
+                    })
+                }
+            })
         }
     },
     created () {
@@ -159,6 +227,7 @@ export default {
                 let c = JSON.parse(com)
                 this.selCompany = c
                 this.getDataList ()
+                this.uinfo.id = c.id
             }
         }
         this.getDataList()
@@ -181,6 +250,9 @@ export default {
         .el-input{
             margin-right: 40px;
         }
+        .btn-other{
+            margin-left: 15px;
+        }
     }
     .alluser-list-box{
         margin-top: 20px;
@@ -200,6 +272,9 @@ export default {
             background-color: initial;
             color: initial;
         }
+    }
+    .el-form{
+        width: 340px;
     }
 }
 </style>

@@ -22,7 +22,7 @@ var utils = {
                 date.setMonth(date.getMonth() + number * 3);
                 break;
             }
-            case "m": {
+            case "M": {
                 date.setMonth(date.getMonth() + number);
             }
             case "w": {
