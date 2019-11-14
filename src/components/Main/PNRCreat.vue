@@ -85,10 +85,10 @@
                 </thead>
                 <tbody>
                     <tr v-for="(item, i) in flightInfo.Persons" :key="i">
-                        <td><input type="text" v-model="item.pername" /></td>
+                        <td><input type="text" v-model="item.name" /></td>
                         <td><input type="text" v-model="item.phone" /></td>
                         <td><input type="text" v-model="item.cardtype" /></td>
-                        <td><input type="text" v-model="item.cardno" /></td>
+                        <td><input type="text" v-model="item.idcard" /></td>
                     </tr>
                 </tbody>
             </table>
@@ -139,7 +139,10 @@ export default {
         }
     },
     methods: {
-        checkCompany: function () {
+        checkCompany: function (v) {
+            if (v != 2) {
+                this.selChildCompany = ''
+            }
             this.$http.get(this.apis + '/api/company/getfiltersubcompany', {params: {
                 id: this.selCompany.id
             }})
@@ -167,7 +170,6 @@ export default {
         btnCreate () {
             if (this.txt_PNR) {
                 let arr = this.txt_PNR.split(/\n/g)
-                console.log(arr)
                 for (var i = 0; i < arr.length; i++) {
                     arr[i] = arr[i].replace(/\s+/g, " ");
                     arr[i] = arr[i].replace(/(^\s*)|(\s*$)/g, "");
@@ -178,21 +180,27 @@ export default {
                 var chengkexinxi = [];
                 var arr1 = [];
                 let cardno = [];
+                let cardtype = [];
                 let CTCM = [];
                 let CTCT = '';
                 let tickno = [];
                 for (var i = 0; i < arr.length; i++) {
                     if (arr[i].indexOf("DOCS") != -1) {
-                        chengkexinxi.push(arr[i]);
+                        chengkexinxi.push(arr[i])
                     }
-                    var arr2 = [];
-                    arr2 = arr[i].split(" ");
-                    arr1.push(arr2);
-                    // 获取身份证号码
+                    var arr2 = []
+                    arr2 = arr[i].split(" ")
+                    arr1.push(arr2)
+                    // 获取证件号码
                     if (arr[i].indexOf('FOID') > -1 && arr[i].indexOf('NI') > -1) {
                         let c = arr[i].split('NI')[1]
                         c = c.split('/')[0]
                         cardno.push(c)
+                        if (arr[i].indexOf('MU') > -1) {
+                            cardtype.push('护照')
+                        } else {
+                            cardtype.push('身份证')
+                        }
                     }
                     // 获取CTCM
                     if (arr[i].indexOf('CTCM') > -1) {
@@ -203,6 +211,7 @@ export default {
                     // 获取CTCT
                     if (arr[i].indexOf('CTCT') > -1) {
                         this.flightInfo.CTCT = arr[i].split('CTCT')[1]
+                        this.flightInfo.CTCT = this.flightInfo.CTCT.substring(0, 11)
                     }
                     // 获取票号
                     if (arr[i].indexOf('TN/') > -1) {
@@ -224,17 +233,18 @@ export default {
                 }
                 if (chengkexinxi.length == 0) { //，没有证件信息
                     var ckHtml = '';
-                    for (var i = 0; i < arr1[0].length - 1; i++) {
+                    this.flightInfo.Persons = []
+                    for (var i = 0; i < cardno.length; i++) {
                         let pername = ''
                         if (arr1[0][i].indexOf(".") != -1) {                            
                             pername = arr1[0][i].substring(2)
                         }
                         this.flightInfo.Persons.push({
-                            pername: pername,
+                            name: pername,
                             phone: CTCM[i],
-                            cardtype: '身份证',
+                            cardtype: cardtype[i],
                             sex: '',
-                            cardno: cardno[i]
+                            idcard: cardno[i]
                         })
                     }
 
@@ -247,15 +257,15 @@ export default {
                     }
                     var ckHtml = '';
                     for (var i = 0; i < ckarr.length; i++) {
-                        let sex = ckarr[i][5] == "F" ? "女" : "男";
+                        let sex = ckarr[i][5] == "F" ? "女" : "男"
                         this.flightInfo.Persons.push({
-                            pername: ckarr[i][7] + "/" + ckarr[i][8],
+                            name: ckarr[i][7] + "/" + ckarr[i][8],
                             phone: '',
                             cardtype: '护照',
                             sex: sex,
-                            cardno: ckarr[i][2],
+                            hzh: ckarr[i][2],
                             hzyxq: transDate2(ckarr[i][6]),
-                            birthday: transDate1(ckarr[i][4])
+                            csrq: transDate1(ckarr[i][4])
                         })
                     }
                 }
@@ -296,11 +306,30 @@ export default {
                 this.flightInfo.airCabin = airCabin.join(' ')
                 this.flightInfo.sdate = sdate.join(' ')
             }
+            console.log(this.flightInfo)
         },
         submit () {
             if (this.selCompany) {
                 if (this.flightInfo.totalPrice) {
-
+                    let orderBody = {
+                        cid: this.selChildCompany.id || this.selCompany.id,
+                        cname: this.selChildCompany.name || this.selCompany.name,
+                        flightinfo: this.flightInfo
+                    }
+                    console.log(orderBody)
+                    this.$http.post(this.apis + '/api/gnorder/submitpnrorder', orderBody)
+                    .then(res => {
+                        if (res && res.data && res.data.status != 0) {
+                            this.$store.state.selCompany = this.selCompany
+                            this.MessageBox("下单成功！", '温馨提示').then(()=>{
+                                this.$router.push({
+                                    path: '/main/userbll'
+                                })
+                            })
+                        } else {
+                            this.MessageBox("下单失败，请检查数据！", '温馨提示')
+                        }
+                    });
                 } else {
                     this.MessageBox('请输入总金额', '温馨提示')
                 }
@@ -313,6 +342,18 @@ export default {
         SiteMap
     },
     created () {        
+        let obj = sessionStorage.getItem('comsearch')
+        if (obj) {
+            let _d = JSON.parse(obj)
+            if (_d.cp) {
+                this.selCompany = _d.cp
+                if (_d.cc) {
+                    this.selChildCompany = _d.cc
+                }
+                this.checkCompany(2)
+            }
+        }
+
         //获取企业列表
         this.remoteMethod('')
     }

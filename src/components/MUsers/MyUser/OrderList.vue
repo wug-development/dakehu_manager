@@ -38,7 +38,7 @@
                         <td>{{item.cname}}</td>
                         <td>{{item.pername}}</td>
                         <td>{{item.ordercode}}</td>
-                        <td>{{item.scity}}-{{item.ecity}}</td>
+                        <td>{{item.scity}}{{item.ecity?"-"+item.ecity:""}}</td>
                         <td>{{item.sdate}}</td>
                         <td>{{item.totalprice}}</td>
                         <td>{{item.addtime.substr(0,10)}}</td>

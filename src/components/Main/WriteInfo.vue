@@ -57,15 +57,15 @@
                 <el-select v-model="item.cardtype" placeholder="身份证">
                     <el-option v-for="item in cardType" :key="item" :label="item" :value="item"></el-option>
                 </el-select>
-                <el-input v-model="item.cardno" class="form-input" placeholder="请输入证件号码"></el-input>
+                <el-input v-model="item.idcard" class="form-input" placeholder="请输入证件号码"></el-input>
             </div>
             <div>
                 <div class="form-label">乘机人手机：</div>
-                <el-input v-model="item.mobile" class="form-input-m" placeholder="请输入乘机人手机"></el-input>
+                <el-input v-model="item.phone" class="form-input-m" placeholder="请输入乘机人手机"></el-input>
             </div>
             <div>
                 <div class="form-label">紧急人手机：</div>
-                <el-input v-model="item.urgentphone" class="form-input-m" placeholder="请输入紧急人手机"></el-input>
+                <el-input v-model="item.jjphone" class="form-input-m" placeholder="请输入紧急人手机"></el-input>
             </div>
             <div>
                 <div class="form-label">购买保险：</div>
@@ -132,9 +132,9 @@ export default {
                 type: '成人',
                 name: '',
                 cardtype: '身份证',
-                cardno: '',
-                mobile: '',
-                urgentphone: '',
+                idcard: '',
+                phone: '',
+                jjphone: '',
                 safenum: 1
             },
             selPersonList: [],
@@ -188,9 +188,9 @@ export default {
                         type: obj.type == 1? "成人": "儿童",
                         name: obj.name,
                         cardtype: "身份证",
-                        cardno: obj.idcard,
-                        mobile: obj.phone,
-                        urgentphone: obj.jjphone,
+                        idcard: obj.idcard,
+                        phone: obj.phone,
+                        jjphone: obj.jjphone,
                         safenum: 1
                     }
                     if (this.selPersonList.length < 2 && this.selPersonList[0].name === '') {
@@ -326,7 +326,7 @@ export default {
 .writeinfo-box{
     height: 100%;
     .el-input{
-        width: auto;
+        width: auto !important;
     }
     .flight-info{
         border: 1px dotted $pubcolor;
@@ -428,7 +428,7 @@ export default {
                 color: #f00000;
             }
             .el-select{
-                width: 120px;
+                width: 120px !important;
                 margin-right: 15px;
             }
             .form-input{

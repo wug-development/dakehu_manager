@@ -284,7 +284,7 @@
                     </tbody>
                 </table>
             </div>
-            <div class="btn" v-if="this.orderinfo.dnIsTicket < 1" @click="submitTicket">提交</div>
+            <div class="btn" v-if="ticketinfo.dnIsTicket < 1" @click="submitTicket">提交</div>
         </div>
     </div>
 </template>
@@ -334,7 +334,8 @@ export default {
                 dcCPDXX: '支付宝',
                 dcPaymentMethod1: '',
                 dcPaymentMethod2: '',
-                dcSendTicketerName: '无'
+                dcSendTicketerName: '无',
+                dnIsTicket: 0
             },
         }
     },
@@ -435,10 +436,10 @@ export default {
                 this.ticketinfo.dcStartCity = this.flightinfo.dcSCode + '-' + this.flightinfo.dcECode
                 this.ticketinfo.dcAirCompanyName = this.flightinfo.dcCompanyCode
                 this.ticketinfo.dcCompanyName = this.orderinfo.dcCompanyName
-                this.ticketinfo.dcRakedClass = this.flightinfo.dcSeatMsg
+                this.ticketinfo.dcRakedClass = this.flightinfo.dcSeatMsg.replace('特价', '').replace('超级', '')
                 this.ticketinfo.dcFlightNumber = this.flightinfo.dcAirCode
                 this.ticketinfo.dcStartDate = this.orderinfo.dcStartDate
-                this.ticketinfo.dnDiscount = this.orderinfo.dnDiscount
+                this.ticketinfo.dnDiscount = this.orderinfo.dnDiscount * 10
                 let _n = ''
                 for (const key in this.personlist) {
                     if (key > 0) {
@@ -517,7 +518,7 @@ export default {
                 let _d = res.data.data
                 if (_d.info && _d.info.length > 0) {
                     this.orderinfo = _d.info[0]
-                    //console.log(this.orderinfo)
+                    console.log(_d)
                     if (this.orderinfo.dnIsTicket > 0) {
                         this.ticketid = this.orderinfo.dcTicketNO
                         this.getTicket()

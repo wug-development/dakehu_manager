@@ -18,7 +18,7 @@
                         </td>
                         <td>出发日期：</td>
                         <td>
-                            <el-date-picker v-model="orderinfo.dcStartDate" type="date" placeholder="请选择"></el-date-picker>
+                            <el-date-picker v-model="orderinfo.dcStartDate" value-format="yyyy-MM-dd" type="date" placeholder="请选择"></el-date-picker>
                         </td>
                     </tr>
                     <tr>
@@ -32,7 +32,7 @@
                         </td>
                         <td>行程：</td>
                         <td>
-                            <input readonly class="txt" v-model="orderinfo.dcStartCity"> - <input readonly class="txt" v-model="orderinfo.dcBackCity">
+                            <el-input v-model="orderinfo.dcStartCity"></el-input>
                         </td>
                         <td>票号：</td>
                         <td>                            
@@ -266,7 +266,7 @@
                     </tr>
                 </tbody>
             </table>
-            <div class="btn" v-if="orderinfo.dnIsTicket == 0" @click="submitTicket">保存</div>
+            <div class="btn" v-if="ticketinfo.dnIsTicket < 1" @click="submitTicket">保存</div>
         </div>
     </div>
 </template>
@@ -305,7 +305,8 @@ export default {
                 dnLiRun: 0,
                 dnShiShouPrice: 0,
                 dnYaoWeiPrice: 0,
-                dnReturnPrice: 0
+                dnReturnPrice: 0,
+                dnIsTicket: 0
             },
             flightlist: [],
             personlist: [],
@@ -322,6 +323,7 @@ export default {
             if (!this.isChangeType) {
                 console.log('editorder')
                 this.orderinfo.dnStatus = this.orderStatus.key
+                console.log(this.orderinfo)
                 this.$http.post(this.apis + '/api/order/editorder', this.orderinfo)
                 .then(res => {
                     if (res && res.data && res.data.status != 0) {
@@ -389,6 +391,8 @@ export default {
                 this.orderinfo.dnIsTicket = 1
                 this.ticketinfo.dcOrderCode = this.orderinfo.dcOrderCode
                 this.ticketinfo.dcTicketNO = this.orderinfo.dcTicketNO
+                this.ticketinfo.dcStartDate = this.orderinfo.dcStartDate
+                this.ticketinfo.dcStartCity = this.orderinfo.dcStartCity
                 this.getOutTicket()
                 this.getGJPeople()
                 this.getChengjiren()

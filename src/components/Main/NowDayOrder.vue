@@ -58,11 +58,11 @@
                         <td>{{item.dcCompanyName}}</td>
                         <td>{{item.dcLinkName}}</td>
                         <td>{{item.dcOrderCode}}</td>
-                        <td>{{item.dcStartCity}}-{{item.dcBackCity}}</td>
+                        <td>{{item.dcStartCity}}{{item.dcBackCity?"-"+item.dcBackCity:""}}</td>
                         <td>{{item.dcStartDate}}</td>
                         <td>{{item.dnTotalPrice}}</td>
                         <td>{{item.dtAddTime.replace('T', '')}}</td>
-                        <td :class='item.dnStatus == 0? "deal" : ""'>{{checkstatus(item.dnStatus)}}{{item.dnStatus}}</td>
+                        <td :class='item.dnStatus == 0? "deal" : ""'>{{checkstatus(item.dnStatus)}}</td>
                         <td>{{item.dcAdminName}}</td>
                     </tr>
                 </tbody>
@@ -187,7 +187,7 @@ export default {
                     cp: this.selCompany,
                     cc: this.selChildCompany
                 }
-                sessionStorage.setItem('gjsearch', JSON.stringify(obj))
+                sessionStorage.setItem('comsearch', JSON.stringify(obj))
                 this.$router.push({
                     path: '/main/gjorderlist'
                 })
@@ -234,8 +234,10 @@ export default {
                 }
             })
         },
-        checkCompany: function () {
-            this.selChildCompany = ''
+        checkCompany: function (v) {
+            if (v != 2) {
+                this.selChildCompany = ''
+            }
             this.$http.get(this.apis + '/api/company/getfiltersubcompany', {params: {
                 id: this.selCompany.id
             }})
@@ -264,9 +266,18 @@ export default {
             }
         },
         toPNR () {
-            this.$router.push({
-                path: '/main/pnrcreat'
-            })
+            if (this.selCompany){
+                let obj = {
+                    cp: this.selCompany,
+                    cc: this.selChildCompany
+                }
+                sessionStorage.setItem('comsearch', JSON.stringify(obj))
+                this.$router.push({
+                    path: '/main/pnrcreat'
+                })
+            } else {
+                this.MessageBox('请选择企业', '温馨提示')
+            }
         }
     },
     components: {
@@ -276,6 +287,17 @@ export default {
         // 获取订单列表
         this.getOrderList()
 
+        let obj = sessionStorage.getItem('comsearch')
+        if (obj){
+            let _d = JSON.parse(obj)
+            if (_d.cp) {
+                this.selCompany = _d.cp
+                if (_d.cc) {
+                    this.selChildCompany = _d.cc
+                }
+                this.checkCompany(2)
+            }
+        }
         //获取企业列表
         this.remoteMethod('')
         

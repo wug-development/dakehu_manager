@@ -55,11 +55,11 @@
                 <tbody class="table-list-body">
                     <tr v-for="(item, i) in orderList" :key="i">
                         <td><div :class='"check-box" + (checkOrder.indexOf(item.orderid) > -1?" el-icon-check cur":"")' @click="checkItem(item.orderid)"></div></td>
-                        <td class="active" @click="toDetail(item.orderid, item.cid)">{{item.orderid}}</td>
+                        <td class="active" @click="toDetail(item)">{{item.orderid}}</td>
                         <td>{{item.cname}}</td>
                         <td>{{item.pername}}</td>
                         <td>{{item.ordercode}}</td>
-                        <td>{{item.scity}}-{{item.ecity}}</td>
+                        <td>{{item.scity}}{{item.ecity?"-"+item.ecity:""}}</td>
                         <td>{{item.sdate}}</td>
                         <td>{{item.totalprice}}</td>
                         <td>{{item.addtime.substr(0,10)}}</td>
@@ -188,9 +188,15 @@ export default {
                 this.checkOrder = []
             }
         },
-        toDetail (id, cid) {
+        toDetail (item) {
+            let v = {
+                id: item.cid,
+                name: item.cname
+            }
+            this.$store.state.selCompany = v
+            sessionStorage.setItem('selCompany', JSON.stringify(v))
             this.$router.push({
-                path: '/main/gjorderdetail?id=' + id + '&cid=' + cid
+                path: '/main/userbll/gjorderdetail?id=' + item.orderid + '&cid=' + item.cid
             })
         },
         saveDingzhi () {
@@ -218,14 +224,16 @@ export default {
         SiteMap
     },
     created () {
-        let obj = sessionStorage.getItem('gjsearch')
-        let _d = JSON.parse(obj)
-        if (_d.cp) {
-            this.selCompany = _d.cp
-            if (_d.cc) {
-                this.selChildCompany = _d.cc
+        let obj = sessionStorage.getItem('comsearch')
+        if (obj) {
+            let _d = JSON.parse(obj)
+            if (_d.cp) {
+                this.selCompany = _d.cp
+                if (_d.cc) {
+                    this.selChildCompany = _d.cc
+                }
+                this.checkCompany(2)
             }
-            this.checkCompany(2)
         }
         
         //获取企业列表

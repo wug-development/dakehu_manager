@@ -6,7 +6,7 @@
                     <el-submenu>
                         <template slot="title"><i :class='"el-icon-menu el-icon-" + item.keys'></i><span slot="title">{{item.name}}</span></template>
                         <el-menu-item-group>
-                            <el-menu-item :class="isCheck==((i + 1) + '-' + (j + 1))?'is-active':''" v-for="(m, j) in item.children" :key="j" :index="(i + 1) + '-' + (j + 1)" @click="checkItem(i, j, m.href)">{{m.name}}</el-menu-item>
+                            <el-menu-item :class="isCheck==(j + 1)?'is-active':''" v-for="(m, j) in item.children" :key="j" :index="(j + 1)" @click="checkItem(j, m.href)">{{m.name}}</el-menu-item>
                         </el-menu-item-group>
                     </el-submenu>
                 </template>
@@ -27,13 +27,13 @@ export default {
     data () {
         return {
             OpenNode: ['1'],
-            isCheck: "1-1",
+            isCheck: 'index',
             menuList: []
         }
     },
     methods: {
-        checkItem: function (i, j, href) {
-            this.isCheck = (i + 1) + '-' + (j + 1)
+        checkItem: function (j, href) {
+            this.isCheck = (j + 1)
             this.$router.push({
                 path: href
             })
