@@ -8,6 +8,8 @@
                 <div>
                     <div class="form-label">企业简称</div>
                     <el-input v-model="comShorthand"></el-input>
+                    <div class="form-label">首字母</div>
+                    <el-input v-model="comShort"></el-input>
                     <div class="form-label">登录密码</div>
                     <el-input v-model="comPass"></el-input>
                     <div class="btn" @click="addLinkMan">+联系人</div>
