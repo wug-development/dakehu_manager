@@ -72,13 +72,11 @@ export default {
             // })
         },
         getAccount (id) {
-                    console.log(id)
             this.$http.get(this.apis + '/api/company/getcompanyaccount', {params: {
                 id
             }})
             .then(res => {
                 if (res && res.data && res.data.status != 0) {
-                    console.log(res.data.data[0])
                     this.acountInfo = res.data.data[0]
                 }
             })
