@@ -8,10 +8,10 @@
                 <div>
                     <div class="form-label">企业简称</div>
                     <el-input v-model="comShorthand"></el-input>
-                    <div class="form-label">首字母</div>
-                    <el-input v-model="comShort"></el-input>
                     <div class="form-label">登录密码</div>
                     <el-input v-model="comPass"></el-input>
+                    <div class="form-label">首字母</div>
+                    <el-input v-model="firstLetter"></el-input>
                     <div class="btn" @click="addLinkMan">+联系人</div>
                     <div class="btn" @click="addSubCompany">+子公司</div>
                 </div>
@@ -35,6 +35,8 @@
                     <el-input v-model="item.comShorthand"></el-input>
                     <div class="form-label">登录密码</div>
                     <el-input v-model="item.comPass"></el-input>
+                    <div class="form-label">首字母</div>
+                    <el-input v-model="item.firstLetter"></el-input>
                     <div class="btn-del el-icon-close" @click="delSubCompany(i)"></div>
                 </div>
                 <div class="link-man">
@@ -128,6 +130,7 @@ export default {
         return {
             comShorthand: '',
             comPass: '',
+            firstLetter: '',
             other: '',
             LinkmanList: [{
                 name: '',
@@ -181,6 +184,7 @@ export default {
         addSubCompany: function () {
             this.subCompany.push({
                 comShorthand: '',
+                firstLetter: '',
                 comPass: '',
                 other: '',
                 linkmanList: {
@@ -204,6 +208,7 @@ export default {
                     companyid: '',
                     comShorthand: this.comShorthand,
                     comPass: this.comPass,
+                    firstLetter: this.firstLetter,
                     comInfo: this.companyInfo,
                     linkman: this.LinkmanList,
                     subcompany: this.subCompany,

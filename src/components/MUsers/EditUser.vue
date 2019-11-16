@@ -10,6 +10,8 @@
                     <el-input v-model="comShorthand"></el-input>
                     <div class="form-label">登录密码</div>
                     <el-input v-model="comPass"></el-input>
+                    <div class="form-label">首字母</div>
+                    <el-input v-model="firstLetter"></el-input>
                     <div class="btn" @click="addLinkMan">+联系人</div>
                     <div class="btn" @click="addSubCompany">+子公司</div>
                 </div>
@@ -33,6 +35,8 @@
                     <el-input v-model="item.comShorthand"></el-input>
                     <div class="form-label">登录密码</div>
                     <el-input v-model="item.comPass"></el-input>
+                    <div class="form-label">首字母</div>
+                    <el-input v-model="item.firstLetter"></el-input>
                     <div class="btn-del el-icon-close" @click="delSubCompany(i)"></div>
                 </div>
                 <div class="link-man">
@@ -128,6 +132,7 @@ export default {
             companyid: '',
             comShorthand: '',
             comPass: '',
+            firstLetter: '',
             other: '',
             LinkmanList: [{
                 name: '',
@@ -185,6 +190,7 @@ export default {
             this.subCompany.push({
                 comShorthand: '',
                 comPass: '',
+                firstLetter: '',
                 other: '',
                 linkmanList: {
                     name: '',
@@ -207,6 +213,7 @@ export default {
                     companyid: this.companyid,
                     comShorthand: this.comShorthand,
                     comPass: this.comPass,
+                    firstLetter: this.firstLetter,
                     comInfo: this.companyInfo,
                     linkman: this.LinkmanList,
                     subcompany: this.subCompany,
@@ -244,6 +251,7 @@ export default {
                     console.log(_d)
                     this.comShorthand = _d.ds[0].comShorthand
                     this.comPass = _d.ds[0].comPass
+                    this.firstLetter = _d.ds[0].firstLetter
                     this.companyInfo = _d.ds[0]
                     if (_d.ds[0] && _d.ds[0].mid) {
                         this.companyInfo.manager = {

@@ -10,7 +10,7 @@
                 reserve-keyword
                 placeholder="请输入用户简称"
                 :remote-method="remoteMethod">
-                <el-option v-for="item in options" :key="item.name" :label="item.name" :value="item.name"></el-option>
+                <el-option v-for="item in options" :key="item.firstletter" :label="item.firstletter+item.name" :value="item.name"></el-option>
             </el-select>
             <div class="btn" @click="searchData">搜索</div>
         </div>
@@ -33,7 +33,7 @@
                 <dd>
                     <ul v-for="(item, i) in dataList" :key="i">
                         <li class="w2"></li>
-                        <li class="active wleft w20"><span @click="toPage(item)">{{item.name}}</span> <div v-if="item.childnum > 0"  @click="showSubCompany(item.id, i)" :class="showSub == item.id?'el-icon-arrow-up' : 'el-icon-arrow-down'"></div></li>
+                        <li class="active wleft w20"><span @click="toPage(item)">{{item.firstletter}}{{item.name}}</span> <div v-if="item.childnum > 0"  @click="showSubCompany(item.id, i)" :class="showSub == item.id?'el-icon-arrow-up' : 'el-icon-arrow-down'"></div></li>
                         <li class="w10">{{item.pass}}</li>
                         <li class="w10">{{item.linkman}}</li>
                         <li class="w15">{{item.phone}}</li>

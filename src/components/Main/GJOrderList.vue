@@ -5,11 +5,11 @@
             <div class="div-box">
                 <div>公司名称:</div>
                 <el-select v-model="selCompany" value-key="name" filterable @change="checkCompany(1)" :remote-method="remoteMethod" placeholder="请选择企业">
-                    <el-option v-for="item in company" :key="item.id" :label="item.name" :value="item"></el-option>
+                    <el-option v-for="item in company" :key="item.id" :label="item.firstletter+item.name" :value="item"></el-option>
                 </el-select>
                 <el-select v-model="selChildCompany" @change="checkCompany(0)" filterable placeholder="请选择子公司">
                     <el-option value="">请选择</el-option>
-                    <el-option v-for="item in childCompany" :key="item.shortname" :label="item.shortname" :value="item"></el-option>
+                    <el-option v-for="item in childCompany" :key="item.shortname" :label="item.firstletter+item.name" :value="item"></el-option>
                 </el-select>
             </div>
             <div class="div-box div-gn">

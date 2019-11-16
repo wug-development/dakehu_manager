@@ -4,7 +4,7 @@
         <div class="box-bg search-box">
             <div class="div-label">公司名称:</div>
             <el-select v-model="selCompany" value-key="name" placeholder="请选择企业">
-                <el-option v-for="item in comList" :key="item.id" :label="item.name" :value="item"></el-option>
+                <el-option v-for="item in comList" :key="item.id" :label="item.firstletter + item.name" :value="item"></el-option>
             </el-select>
             <div class="div-label">姓名:</div>
             <el-input v-model="name"></el-input>

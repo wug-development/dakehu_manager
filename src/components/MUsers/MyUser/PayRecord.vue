@@ -14,7 +14,7 @@
                 <el-date-picker v-model="sdate" type="date" value-format="yyyy-MM-dd"></el-date-picker>
                 <div class="div-labels">付款单位:</div>
                 <el-select v-model="payCompany" value-key="name">
-                    <el-option v-for="item in comList" :key="item.id" :label="item.name" :value="item"></el-option>
+                    <el-option v-for="item in comList" :key="item.id" :label="item.firstletter + item.name" :value="item"></el-option>
                 </el-select>
                 <div class="div-labels">备注:</div>
                 <el-input v-model="other"></el-input>

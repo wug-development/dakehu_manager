@@ -5,10 +5,10 @@
             <div class="div-box">
                 <div>公司名称:</div>
                 <el-select v-model="selCompany" value-key="name" filterable @change="checkCompany" placeholder="请选择企业">
-                    <el-option v-for="item in company" :key="item.shortname" :label="item.shortname" :value="item"></el-option>
+                    <el-option v-for="item in company" :key="item.shortname" :label="item.firstletter+item.name" :value="item"></el-option>
                 </el-select>
                 <el-select v-model="selChildCompany" value-key="name" filterable placeholder="请选择子公司">
-                    <el-option v-for="item in childCompany" :key="item.id" :label="item.shortname" :value="item"></el-option>
+                    <el-option v-for="item in childCompany" :key="item.id" :label="item.firstletter+item.name" :value="item"></el-option>
                 </el-select>
             </div>
             <div class="div-box div-gn">
