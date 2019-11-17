@@ -2,10 +2,10 @@
     <div class="mpersons-box">
         <SiteMap></SiteMap>
         <div class="box-bg search-box">
-            <div class="div-label">公司名称:</div>
+            <!-- <div class="div-label">公司名称:</div>
             <el-select v-model="selCompany" value-key="name" placeholder="请选择企业">
                 <el-option v-for="item in comList" :key="item.id" :label="item.firstletter + item.name" :value="item"></el-option>
-            </el-select>
+            </el-select> -->
             <div class="div-label">姓名:</div>
             <el-input v-model="name"></el-input>
             <div class="div-label">手机号:</div>
@@ -49,7 +49,7 @@
                     </tr>
                 </tbody>
             </table>
-            <div class="div_page">
+            <div class="div_page" v-if="pageCount">
                 <el-pagination background layout="prev, pager, next" :page-size="pageNum" @current-change="handleCurrentChange" :total="pageCount"></el-pagination>
             </div>
         </div>
@@ -104,7 +104,7 @@ export default {
             isedit: '',
             page: 1,
             pageNum: 5,
-            pageCount: 1,
+            pageCount: 0,
             uinfo: {
                 CjrName: '',
                 Sex: '',

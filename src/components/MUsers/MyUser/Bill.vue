@@ -47,7 +47,7 @@
                     </tr>
                 </tbody>
             </table>
-            <div class="div_page">
+            <div class="div_page" v-if="pageCount">
                 <div class="btns">
                     <div class="btn-label btn-export" id="at" @click="exportExcel">导出</div>
                 </div>
@@ -190,7 +190,7 @@ export default {
             showLayer: false,
             page: 1,
             pageNum: 10,
-            pageCount: 1,
+            pageCount: 0,
             billinfo: {},
             islist: false
         }

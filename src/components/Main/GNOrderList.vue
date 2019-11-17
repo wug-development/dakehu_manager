@@ -4,11 +4,11 @@
         <div class="box-bg search-box">
             <div class="div-box">
                 <div>公司名称:</div>
-                <el-select v-model="selCompany" value-key="name" filterable @change="checkCompany" placeholder="请选择企业">
-                    <el-option v-for="item in company" :key="item.shortname" :label="item.firstletter+item.name" :value="item"></el-option>
+                <el-select v-model="selCompany" value-key="name" filterable :filter-method="remoteMethod" @change="checkCompany" placeholder="请选择企业">
+                    <el-option v-for="item in company" :key="item.shortname" :label="item.name" :value="item"></el-option>
                 </el-select>
                 <el-select v-model="selChildCompany" value-key="name" filterable placeholder="请选择子公司">
-                    <el-option v-for="item in childCompany" :key="item.id" :label="item.firstletter+item.name" :value="item"></el-option>
+                    <el-option v-for="item in childCompany" :key="item.id" :label="item.name" :value="item"></el-option>
                 </el-select>
             </div>
             <div class="div-box div-gn">
@@ -251,6 +251,21 @@ export default {
                 })
             }
         },
+        remoteMethod: function (v) {
+            this.$http.get(this.apis + '/api/company/getfiltercompany', {params: {
+                name: v
+            }})
+            .then(res => {
+                console.log(res)
+                if (res && res.data && res.data.status != 0) {
+                    let arr = res.data.data
+                    arr.sort((x, y) => {
+                        return x.shortname.charCodeAt(0) - y.shortname.charCodeAt(0)
+                    })
+                    this.company = arr
+                }
+            })
+        },
         bookFlight (item, seat) {
             item.airCompanyName = this.checkAirCompany(item.flightNo.substr(0,2))
             item.sAirPort = this.checkAirPort(item.orgCity)
@@ -280,19 +295,9 @@ export default {
             this.selChildCompany = _d.selChildCompany
         }
         this.getFlightList()
-        
         //获取企业列表
-        this.$http.get(this.apis + '/api/company/getfiltercompany', {params: {name:''}})
-        .then(res => {
-            if (res && res.data && res.data.status != 0) {
-                let arr = res.data.data
-                arr.sort((x, y) => {
-                    return x.shortname.charCodeAt(0) - y.shortname.charCodeAt(0)
-                })
-                this.company = arr
-            }
-        })
-        
+        this.remoteMethod(this.selCompany.name)
+                
         //获取城市列表
         this.$http.get(this.apis + '/api/city/getcity', {params: {}})
         .then(res => {

@@ -4,11 +4,11 @@
         <div class="box-bg search-box">
             <div class="div-box">
                 <div>公司名称:</div>
-                <el-select v-model="selCompany" value-key="name" filterable @change="checkCompany" :remote-method="remoteMethod" placeholder="请选择企业">
-                    <el-option v-for="item in company" :key="item.id" :label="item.firstletter+item.name" :value="item"></el-option>
+                <el-select v-model="selCompany" value-key="name" filterable @change="checkCompany" :filter-method="remoteMethod" placeholder="请选择企业">
+                    <el-option v-for="item in company" :key="item.id" :label="item.name" :value="item"></el-option>
                 </el-select>
                 <el-select v-model="selChildCompany" value-key="name" filterable placeholder="请选择子公司">
-                    <el-option v-for="item in childCompany" :key="item.id" :label="item.firstletter+item.name" :value="item"></el-option>
+                    <el-option v-for="item in childCompany" :key="item.id" :label="item.name" :value="item"></el-option>
                 </el-select>
                 <div class="btn-gj" @click="gjsearch">
                     国际行程
@@ -67,7 +67,7 @@
                     </tr>
                 </tbody>
             </table>
-            <div class="div_page">
+            <div class="div_page" v-if="pageCount">
                 <div class="btns">
                     <div class="btn-label btn-del" @click="delOrder">删除</div>
                 </div>
@@ -235,6 +235,7 @@ export default {
             })
         },
         checkCompany: function (v) {
+            console.log(222)
             if (v != 2) {
                 this.selChildCompany = ''
             }
@@ -299,7 +300,7 @@ export default {
             }
         }
         //获取企业列表
-        this.remoteMethod('')
+        this.remoteMethod(this.selCompany.name)
         
         //获取城市列表
         this.$http.get(this.apis + '/api/city/getcity', {params: {}})

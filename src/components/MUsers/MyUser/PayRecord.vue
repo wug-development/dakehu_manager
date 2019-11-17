@@ -14,7 +14,7 @@
                 <el-date-picker v-model="sdate" type="date" value-format="yyyy-MM-dd"></el-date-picker>
                 <div class="div-labels">付款单位:</div>
                 <el-select v-model="payCompany" value-key="name">
-                    <el-option v-for="item in comList" :key="item.id" :label="item.firstletter + item.name" :value="item"></el-option>
+                    <el-option v-for="item in comList" :key="item.id" :label="item.name" :value="item"></el-option>
                 </el-select>
                 <div class="div-labels">备注:</div>
                 <el-input v-model="other"></el-input>
@@ -51,7 +51,7 @@
                     </tr>
                 </tbody>
             </table>
-            <div class="div_page">
+            <div class="div_page" v-if="pageCount">
                 <el-pagination background layout="prev, pager, next" :page-size="pageNum" @current-change="handleCurrentChange" :total="pageCount"></el-pagination>
             </div>
         </div>
@@ -75,7 +75,7 @@ export default {
             payType: ['现金','支票','对公账户','个人账户','刷卡','支付宝','易宝支付','微信支付'],
             page: 1,
             pageNum: 5,
-            pageCount: 1,
+            pageCount: 0,
             user: {},
             isLimitComfirm: false
         }

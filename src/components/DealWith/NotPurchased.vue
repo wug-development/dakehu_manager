@@ -10,7 +10,7 @@
                 </div>
             </li>
         </ul>
-        <div class="div-page">
+        <div class="div-page" v-if="pageCount > 1">
             <el-pagination background layout="prev, pager, next" :page-size="pageNum" @current-change="handleCurrentChange" :total="pageCount"></el-pagination>
         </div>
     </div>
