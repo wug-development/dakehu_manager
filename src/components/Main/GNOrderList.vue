@@ -13,12 +13,12 @@
             </div>
             <div class="div-box div-gn">
                 <div>出发城市:</div>
-                <el-select v-model="selStartCity" value-key="name" filterable placeholder="请选择出发城市">
-                    <el-option v-for="item in cityList" :key="item.id" :label="item.name" :value="item"></el-option>
+                <el-select v-model="selStartCity" value-key="name"  filterable :filter-method="filterScity" placeholder="请选择出发城市">
+                    <el-option v-for="item in scityList" :key="item.id" :label="item.name" :value="item"></el-option>
                 </el-select>
                 <div>到达城市:</div>
-                <el-select v-model="selEndCity" value-key="name" filterable placeholder="请选择到达城市">
-                    <el-option v-for="item in cityList" :key="item.id" :label="item.name" :value="item"></el-option>
+                <el-select v-model="selEndCity" value-key="name"  filterable :filter-method="filterEcity" placeholder="请选择到达城市">
+                    <el-option v-for="item in ecityList" :key="item.id" :label="item.name" :value="item"></el-option>
                 </el-select>
                 <div>出发日期:</div>
                 <el-date-picker v-model="sdate" type="date" value-format="yyyy-MM-dd" placeholder="请选择出发日期"></el-date-picker>
@@ -39,7 +39,7 @@
                 <li class="flight-item" v-for="(item, i) in dataList" :key="i">
                     <div class="flight-info flight-shadow">
                         <div class="air-no company-no company-site-no">
-                            <div><img :src="'/static/icons/' + (item.flightNo.substr(0,2)) + '.gif'" alt=""></div>
+                            <div><img :src="apath + '/static/icons/' + (item.flightNo.substr(0,2)) + '.gif'" alt=""></div>
                             <div class="div_company">
                                 <div class="air-company"><span>{{checkAirCompany(item.flightNo.substr(0,2))}}</span>{{item.flightNo}}</div>
                                 <div class="air-type">机型：<span>{{item.planeType}}</span> （{{item.seatItems[0].seatMsg.replace("特价舱","特价经济舱")}}）</div>
@@ -121,6 +121,8 @@ export default {
             selStartCity: '',
             selEndCity: '',
             cityList: [],
+            scityList: [],
+            ecityList: [],
             dataList: [],
             airPort: [],
             airCompany: [],
@@ -133,6 +135,22 @@ export default {
     methods: {
         handleCurrentChange: function (v) {
             console.log(v)
+        },
+        filterScity (v) {
+            let arr = this.cityList.filter(e => {
+                return e.name.includes(v) || e.airportname.includes(v) || e.code.includes(v.toUpperCase()) || e.country.includes(v) || e.enname.includes(v.toUpperCase())
+            })
+            if (arr) {
+                this.scityList = JSON.parse(JSON.stringify(arr))
+            }
+        },
+        filterEcity (v) {
+            let arr = this.cityList.filter(e => {
+                return e.name.includes(v) || e.airportname.includes(v) || e.code.includes(v.toUpperCase()) || e.country.includes(v) || e.enname.includes(v.toUpperCase())
+            })
+            if (arr) {
+                this.ecityList = JSON.parse(JSON.stringify(arr))
+            }
         },
         checkCompany: function () {
             this.selChildCompany = ''
@@ -171,11 +189,14 @@ export default {
             .then(res => {
                 if (res && res.data && res.data.status != 0) {
                     var _d = res.data.data
+                    console.log(_d)
                     if (_d.data.returnCode === 'S') {
                         this.airCompany = _d.airCompany
                         this.airPort = _d.airPort
                         this.dataList = _d.data.flightItems[0].flights
                     }
+                } else {
+                    this.MessageBox(res.data.msg)
                 }
                 this.loading = false
             })
@@ -303,6 +324,8 @@ export default {
         .then(res => {
             if (res && res.data && res.data.status != 0) {
                 this.cityList = res.data.data
+                this.scityList = JSON.parse(JSON.stringify(res.data.data))
+                this.ecityList = JSON.parse(JSON.stringify(res.data.data))
             }
         })
     }

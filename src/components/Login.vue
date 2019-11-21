@@ -8,7 +8,7 @@
                     <input type="text" class="txt-form txt-acount" maxlength="40" v-model="username" placeholder="请输入登录账号">
                     <input type="password" class="txt-form txt-password" maxlength="40" v-model="password" placeholder="请输入登录账号">
                     <div class="fix-box-tip" v-show="isCheck">提示：用户名或者密码错误!</div>
-                    <div class="btn btn-login" @click="login">登 录</div>
+                    <div class="btn btn-login" @click="login">登 录 <i v-if="isLogining" class="el-icon-loading"></i></div>
                 </div>
             </div>
         </div>
@@ -22,7 +22,8 @@ export default {
         return {
             isCheck: false,
             username: '',
-            password: ''
+            password: '',
+            isLogining: false
         }
     },
     methods: {
@@ -30,44 +31,18 @@ export default {
             if (this.username == '' || this.password == '') {
                 this.isCheck = true
             } else {
+                this.isLogining = true
                 this.$http.get(this.apis + '/api/account/login', {params: {
                     'uname': this.username,
                     'upass': this.password
                 }})
                 .then(res => {
                     console.log(res)
+                    this.isLogining = false
                     if (res && res.data && res.data.status != 0) {
                         let _d = res.data.data
                         _d.logintime = this.utils.dateFormat('yyyy-MM-dd hh:mm:ss')
                         
-                        // console.log(_d)
-                        let _r = _d.limits.findIndex(e => {
-                            return e.name === '客户注册'
-                        })                        
-                        let _y = _d.limits.findIndex(e => {
-                            return e.name === '用户管理'
-                        })
-                        let _g = _d.limits.findIndex(e => {
-                            return e.name === '管理员管理'
-                        })
-                        if (_r === -1) {
-                            let _i = _d.menus.findIndex(e => {
-                                return e.name === '客户注册'
-                            })
-                            _d.menus.splice(_i, 1)
-                        } 
-                        if (_y === -1) {
-                            let _i = _d.menus.findIndex(e => {
-                                return e.name === '用户管理'
-                            })
-                            _d.menus.splice(_i, 1)
-                        }
-                        if (_g === -1) {
-                            let _i = _d.menus.findIndex(e => {
-                                return e.name === '管理员管理'
-                            })
-                            _d.menus.splice(_i, 1)
-                        }
                         sessionStorage.setItem('loginData', JSON.stringify(_d))
                         this.$router.push({
                             path: '/main'
@@ -75,6 +50,9 @@ export default {
                     } else {
                         this.isCheck = true
                     }
+                }).catch(res => {
+                    this.isLogining = false
+                    this.MessageBox('网络连接失败，请检查网络！')
                 })
             }
         }
@@ -188,9 +166,15 @@ export default {
                     box-shadow: 0 5px 5px #aaa;
                     cursor: pointer;
                     user-select: none;
+                    position: relative;
                 }
                 .btn:active{
                     background-color: $pubcoloractive;
+                }
+                .el-icon-loading{
+                    position: absolute;
+                    top: 21px;
+                    margin-left: 10px;
                 }
             }
         }

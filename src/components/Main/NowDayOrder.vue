@@ -16,12 +16,12 @@
             </div>
             <div class="div-box div-gn">
                 <div>出发城市:</div>
-                <el-select v-model="selStartCity" value-key="name" filterable placeholder="请选择">
-                    <el-option v-for="item in cityList" :key="item.id" :label="item.name" :value="item"></el-option>
+                <el-select v-model="selStartCity" value-key="name" filterable :filter-method="filterScity" placeholder="请选择">
+                    <el-option v-for="item in scityList" :key="item.id" :label="item.name" :value="item"></el-option>
                 </el-select>
                 <div>到达城市:</div>
-                <el-select v-model="selEndCity" value-key="name" filterable placeholder="请选择">
-                    <el-option v-for="item in cityList" :key="item.id" :label="item.name" :value="item"></el-option>
+                <el-select v-model="selEndCity" value-key="name" filterable :filter-method="filterEcity" placeholder="请选择">
+                    <el-option v-for="item in ecityList" :key="item.id" :label="item.name" :value="item"></el-option>
                 </el-select>
                 <div>出发日期:</div>
                 <el-date-picker v-model="sdate" type="date" value-format="yyyy-MM-dd" placeholder="请选择"></el-date-picker>
@@ -53,7 +53,7 @@
                 </thead>
                 <tbody class="table-list-body">
                     <tr v-for="(item, i) in orderList" :key="i">
-                        <td><div :class='"check-box" + (checkOrder.indexOf(item.dcOrderID) > -1?" el-icon-check cur":"")' @click="checkItem(item.dcOrderID)"></div></td>
+                        <td><div v-if="item.dnStatus == 0" :class='"check-box" + (checkOrder.indexOf(item.dcOrderID) > -1?" el-icon-check cur":"")' @click="checkItem(item.dcOrderID)"></div></td>
                         <td class="active" @click="toDetail(item)">{{item.dcOrderID}}</td>
                         <td>{{item.dcCompanyName}}</td>
                         <td>{{item.dcLinkName}}</td>
@@ -67,7 +67,7 @@
                     </tr>
                 </tbody>
             </table>
-            <div class="div_page" v-if="pageCount">
+            <div class="div_page" v-if="orderList.length">
                 <div class="btns">
                     <div class="btn-label btn-del" @click="delOrder">删除</div>
                 </div>
@@ -91,6 +91,8 @@ export default {
             selStartCity: '',
             selEndCity: '',
             cityList: [],
+            scityList: [],
+            ecityList: [],
             pickerOptions: {},
             sdate: '',
             isCheckAll: false,
@@ -102,9 +104,25 @@ export default {
         }
     },
     methods: {
-        handleCurrentChange: function (v) {
+        handleCurrentChange (v) {
             this.page = v
             this.getOrderList()
+        },
+        filterScity (v) {
+            let arr = this.cityList.filter(e => {
+                return e.name.includes(v) || e.airportname.includes(v) || e.code.includes(v.toUpperCase()) || e.country.includes(v) || e.enname.includes(v.toUpperCase())
+            })
+            if (arr) {
+                this.scityList = JSON.parse(JSON.stringify(arr))
+            }
+        },
+        filterEcity (v) {
+            let arr = this.cityList.filter(e => {
+                return e.name.includes(v) || e.airportname.includes(v) || e.code.includes(v.toUpperCase()) || e.country.includes(v) || e.enname.includes(v.toUpperCase())
+            })
+            if (arr) {
+                this.ecityList = JSON.parse(JSON.stringify(arr))
+            }
         },
         getOrderList: function () {
             this.$http.get(this.apis + '/api/orderlist/getnoworder', {params: {
@@ -131,7 +149,9 @@ export default {
             this.isCheckAll = !this.isCheckAll
             if(this.isCheckAll) {
                 for (let i in this.orderList) {
-                    this.checkOrder.push(this.orderList[i].OrderID)
+                    if (this.orderList[i].dnStatus == 0) {
+                        this.checkOrder.push(this.orderList[i].dcOrderID)
+                    }
                 }
             } else {
                 this.checkOrder = []
@@ -297,18 +317,27 @@ export default {
                     this.selChildCompany = _d.cc
                 }
                 this.checkCompany(2)
+                //获取企业列表
+                this.remoteMethod(this.selCompany.name)
             }
         }
-        //获取企业列表
-        this.remoteMethod(this.selCompany.name)
         
         //获取城市列表
         this.$http.get(this.apis + '/api/city/getcity', {params: {}})
         .then(res => {
             if (res && res.data && res.data.status != 0) {
                 this.cityList = res.data.data
+                this.scityList = JSON.parse(JSON.stringify(res.data.data))
+                this.ecityList = JSON.parse(JSON.stringify(res.data.data))
             }
         })
+
+        // this.$http.get(this.apis + '/api/orderlist/getpnr', {params: {
+        //     oid: '112019112190417782'
+        // }})
+        // .then(res => {
+        //     console.log(res)
+        // })
     }
 }
 
@@ -332,15 +361,19 @@ export default {
             div{
                 margin-right: 20px;
                 white-space: nowrap;
+                .el-input__inner{
+                    padding-right: 0;
+                }
             }
             .btn-gj{
                 border: 1px solid $pubcolor;
                 box-sizing: border-box;
-                padding: 0 40px;
+                padding: 0 30px;
                 color: $pubcolor;
                 user-select: none;
                 cursor: pointer;
                 box-shadow: 0 1px 2px #ddd;
+                margin: 0;
             }
             .btn-search{
                 background-color: $pubcolor;

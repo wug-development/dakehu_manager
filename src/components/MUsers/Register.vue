@@ -94,9 +94,11 @@
                 <div class="form-label">信用额度</div>
                 <el-input v-model="companyInfo.credit"></el-input>
                 <div class="form-label">结账日期</div>
-                <el-date-picker v-model="companyInfo.settleDate" type="date" format="MM月dd日"></el-date-picker>
+                <el-select v-model="companyInfo.settleDate">
+                    <el-option v-for="item in 28" :key="item" :label="item" :value="item"></el-option>
+                </el-select>
                 <div class="form-label">管理员</div>
-                <el-select v-model="companyInfo.manager">
+                <el-select v-model="companyInfo.manager" value-key="name">
                     <el-option v-for="item in ManagerList" :key="item.id" :label="item.name" :value="item"></el-option>
                 </el-select>
             </div>
@@ -258,6 +260,7 @@ export default {
         .then(res => {
             if (res && res.data && res.data.status != 0) {
                 this.ManagerList = res.data.data
+                console.log(this.ManagerList)
             }
         })
     }

@@ -7,7 +7,7 @@ Vue.use(Vuex)
 const state = {
     baseUri: 'http://www.roseonly.com.cn',
     menu: true,
-    menuCur: 2,
+    menuCur: 'index',
     openID: '',
     siteMap: ['首页'],
     topmenu: 'index',

@@ -49,7 +49,7 @@
             </table>
             <div class="div_page div_pages">
                 <div class="btns">
-                    <div class="btn-label btn-del">删除</div>
+                    <div class="btn-label btn-del" @click="delOrder">删除</div>
                 </div>
                 <el-pagination background layout="prev, pager, next" :page-size="filterParams.pageNum" @current-change="handleCurrentChange" :total="pageCount"></el-pagination>
             </div>
@@ -94,6 +94,42 @@ export default {
         search () {
             this.filterParams.page = 1
             this.getOrderList()
+        },
+        delOrder: function () {
+            if (this.checkOrder.length > 0) {
+                this.MessageBox.confirm('请选择要删除的订单', '温馨提示', {
+                    confirmButtonText: '确定',
+                    cancelButtonText: '取消',
+                    type: 'warning'
+                }).then(() => {
+                    this.$http.get(this.apis + '/api/orderlist/delorders', {params: {
+                        oids: this.checkOrder.join(',')
+                    }})
+                    .then(res => {
+                        if (res && res.data && res.data.status != 0) {
+                            if (res.data.data > 0) {                            
+                                this.Notification({
+                                    title: '删除成功',
+                                    message: '',
+                                    type: 'success'
+                                })
+                            } else {
+                                this.Notification.error({
+                                    title: '删除失败',
+                                    message: '该订单已删除'
+                                })
+                            }
+                        } else {
+                            this.Notification.error({
+                                title: '删除失败',
+                                message: ''
+                            })
+                        }
+                    })
+                })
+            } else {
+                this.MessageBox('请选择要删除的订单', '温馨提示')
+            }
         },
         getOrderList: function () {
             let _cid = this.selCompany.id

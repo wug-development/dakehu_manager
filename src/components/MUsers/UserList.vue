@@ -11,6 +11,10 @@ export default {
     name: 'UserList',
     components: {
         TopMenu
+    },
+    created () {
+        sessionStorage.setItem('menusel', 'muser')
+        this.$store.state.menuCur = 'muser'
     }
 }
 </script>

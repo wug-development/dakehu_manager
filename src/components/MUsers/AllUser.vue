@@ -42,8 +42,8 @@
                         <li class="w20">
                             <div class="btns-box">
                                 <div class="btn-del"><router-link :to="'/main/edituser?id=' + item.id ">详情</router-link></div>
-                                <div class="btn-warn" v-if="isLimitDel" @click="del(item.id)">删除</div>
-                                <div class="btn-edit">前台</div>
+                                <div class="btn-warn">前台</div>
+                                <div class="btn-danger" v-if="isLimitDel" @click="del(item.id)">删除</div>
                             </div>
                         </li>
                         <li class="w2"></li>
@@ -58,7 +58,7 @@
                                 <li class="w10">{{s.qiankuan}}</li>
                                 <li class="w20">
                                     <div class="btns-box">
-                                        <div class="btn-edit">前台</div>
+                                        <div class="btn-warn">前台</div>
                                     </div>
                                 </li>
                                 <li class="w2"></li>
@@ -124,6 +124,7 @@ export default {
             .then(res => {
                 if (res && res.data && res.data.status != 0) {
                     this.dataList = res.data.data.data
+                    console.log(res.data.data.data)
                     if (res.data.data.pagecount) {
                         this.pageCount = res.data.data.pagecount
                     }
@@ -170,11 +171,9 @@ export default {
         },
         del: function (v) {
             this.MessageBox.confirm('您确认删除该用户吗？', {
-                confirmButtonText: '取消',
-                cancelButtonText: '确认'
+                confirmButtonText: '确认',
+                cancelButtonText: '取消'
             }).then(e => {
-                console.log('取消删除')
-            }).catch(() => {
                 this.$http.get(this.apis + '/api/company/delcompany', {params: {
                     id: v
                 }})
@@ -192,6 +191,8 @@ export default {
                         })
                     }
                 })
+            }).catch((e) => {
+                console.log('取消删除')
             })
         },
         toPage (v) {

@@ -94,7 +94,9 @@
                 <div class="form-label">信用额度</div>
                 <el-input v-model="companyInfo.credit"></el-input>
                 <div class="form-label">结账日期</div>
-                <el-date-picker v-model="companyInfo.settleDate" type="date" value-format="MM-dd" format="MM-dd"></el-date-picker>
+                <el-select v-model="companyInfo.settleDate">
+                    <el-option v-for="item in 28" :key="item" :label="item" :value="item"></el-option>
+                </el-select>
                 <div class="form-label">管理员</div>
                 <el-select v-model="companyInfo.manager" value-key="name">
                     <el-option v-for="item in ManagerList" :key="item.id" :label="item.name" :value="item"></el-option>
@@ -109,8 +111,8 @@
         <div class="bill-box">
             <div class="title">设置账单显示字段 <span>（最多选择10个）</span></div>
             <div class="check-list">
-                <el-checkbox-group v-model="billCheckList" :min="1">
-                    <el-checkbox v-for="(item, i) in billFieldList" :key="i" :label="item.name" :checked="checkItem(item.name)" :disabled="checkItem(item.name)"></el-checkbox>
+                <el-checkbox-group v-model="billCheckList">
+                    <el-checkbox v-for="(item, i) in billFieldList" :key="i" :label="item.name" :disabled="checkItem(item.name)"></el-checkbox>
                 </el-checkbox-group>
             </div>
         </div>
@@ -219,7 +221,6 @@ export default {
                     subcompany: this.subCompany,
                     billfields: this.billCheckList.join(',')
                 }
-                console.log(formdata)
 
                 this.$http.post(this.apis + '/api/company/editcompany', formdata)
                 .then(res => {
@@ -248,7 +249,6 @@ export default {
             .then(res => {
                 if (res && res.data && res.data.status != 0) {
                     let _d = res.data.data
-                    console.log(_d)
                     this.comShorthand = _d.ds[0].comShorthand
                     this.comPass = _d.ds[0].comPass
                     this.firstLetter = _d.ds[0].firstLetter
@@ -269,11 +269,7 @@ export default {
                     }
                     this.subCompany = _d.ds1
 
-                    let arr = []
-                    for (let i in _d.ds4) {
-                        arr.push(_d.ds4[i].name)
-                    }
-                    this.billCheckList = arr
+                    this.getBillFile(_d.ds4)
                 }
             })
         },
@@ -284,6 +280,20 @@ export default {
             } else {
                 return false
             }
+        },
+        getBillFile (v) {
+            this.$http.get(this.apis + '/api/company/getbillfieldlist', {params: {}})
+            .then(res => {
+                if (res && res.data && res.data.status != 0) {
+                    this.billFieldList = res.data.data
+
+                    let arr = []
+                    for (let i in v) {
+                        arr.push(v[i].name)
+                    }
+                    this.billCheckList = arr
+                }
+            })
         }
     },
     created () {
@@ -292,13 +302,6 @@ export default {
         this.companyid = this.$route.query.id
 
         this.getCompanyInfo()
-
-        this.$http.get(this.apis + '/api/company/getbillfieldlist', {params: {}})
-        .then(res => {
-            if (res && res.data && res.data.status != 0) {
-                this.billFieldList = res.data.data
-            }
-        })
 
         this.$http.get(this.apis + '/api/manager/getlist', {params: {}})
         .then(res => {

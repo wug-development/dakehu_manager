@@ -11,7 +11,7 @@
             <div class="div-label">手机号:</div>
             <el-input v-model="phone"></el-input>
             <div class="btn" @click="searchData">搜索</div>
-            <div class="btn-other" @click="centerDialogVisible = true">添加乘机人</div>
+            <div class="btn-other" @click="showAddPerson">添加乘机人</div>
         </div>
         <div class="box-bg alluser-list-box">
             <div class="pubtitle">全部乘机人</div>
@@ -36,7 +36,7 @@
                         <td><input type="text" :readonly="isedit == item.id ? 'readonly' : 'readonly'" maxlength="50" v-model="item.cname"></td>
                         <td><input type="text" :readonly="isedit == item.id ? false : 'readonly'" maxlength="50" v-model="item.phone"></td>
                         <td><input type="text" :readonly="isedit == item.id ? false : 'readonly'" maxlength="50" v-model="item.jingji"></td>
-                        <td><input type="text" :readonly="isedit == item.id ? false : 'readonly'" maxlength="50" v-model="item.idcard"></td>
+                        <td><input type="text" style="width:150px;" :readonly="isedit == item.id ? false : 'readonly'" maxlength="50" v-model="item.idcard"></td>
                         <td><input type="text" :readonly="isedit == item.id ? false : 'readonly'" maxlength="50" v-model="item.HZH"></td>
                         <td><input type="text" :readonly="isedit == item.id ? false : 'readonly'" maxlength="50" v-model="item.HZYXQ"></td>
                         <td>
@@ -196,23 +196,48 @@ export default {
             }).catch(() => {})
         },
         addData () {
-            this.$http.post(this.apis + '/api/passenger/addperson', this.uinfo)
-            .then(res => {
-                if (res && res.data && res.data.status != 0) {
-                    this.centerDialogVisible = false
-                    this.page = 1
-                    this.getDataList()
-                    this.Notification({
-                        title: '添加成功',
-                        type: 'success'
-                    })
+            if (this.uinfo.CjrName != '' && this.uinfo.phone != ''){
+                if (this.uinfo.idcard === '' && this.uinfo.HZH === '') {
+                    this.MessageBox('请输入证件号码')
+                } else if (this.uinfo.jingji != '' && this.uinfo.jingji === this.uinfo.phone) {
+                    this.MessageBox('紧急联系人手机号不能与乘机人手机号相同！')
                 } else {
-                    this.Notification.error({
-                        title: '添加失败',
-                        message: '请检查数据！'
+                    this.$http.post(this.apis + '/api/passenger/addperson', this.uinfo)
+                    .then(res => {
+                        if (res && res.data && res.data.status != 0) {
+                            this.centerDialogVisible = false
+                            this.page = 1
+                            this.getDataList()
+                            this.Notification({
+                                title: '添加成功',
+                                type: 'success'
+                            })
+                        } else {
+                            this.Notification.error({
+                                title: '添加失败',
+                                message: '请检查数据！'
+                            })
+                        }
                     })
                 }
-            })
+            } else {
+                this.MessageBox('请输入姓名和手机号')
+            }
+        },
+        showAddPerson () {
+            this.centerDialogVisible = true
+            this.uinfo = {
+                CjrName: '',
+                Sex: '',
+                HZH: '',
+                HZYXQ: '',
+                CSRQ: '',
+                idcard: '',
+                type: '1',
+                id: this.selCompany.id,
+                phone: '',
+                jingji: ''
+            }
         }
     },
     created () {
@@ -229,6 +254,7 @@ export default {
                 this.getDataList ()
                 this.uinfo.id = c.id
             }
+            console.log(this.selCompany)
         }
         this.getDataList()
     }

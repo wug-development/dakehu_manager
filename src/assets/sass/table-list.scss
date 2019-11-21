@@ -70,6 +70,10 @@
                     color: #f3765f;
                     border: 1px solid #f3765f;
                 }
+                div.btn-default{
+                    color: #606266;
+                    border: 1px solid #dcdfe6;
+                }
                 div.btn-warn{
                     color: #f8b551;
                     border: 1px solid #f8b551;
@@ -177,6 +181,15 @@
                     div.btn-warn{
                         color: #f8b551;
                         border: 1px solid #f8b551;
+                    }
+                    div.btn-default{
+                        color: #606266;
+                        border: 1px solid #dcdfe6;
+                    }
+                    .btn-danger {
+                        color: #fff !important;
+                        background-color: #f56c6c !important;
+                        border-color: #f56c6c !important;
                     }
                 }
             }

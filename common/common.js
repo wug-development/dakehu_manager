@@ -174,6 +174,26 @@ var utils = {
             case 3: s = '处理完成'; break;
         }
         return s
+    },
+    getCardType (v) {
+        let arr = [
+            { key: 1, value: '身份证'},
+            { key: 2, value: '护照'},
+            { key: 3, value: '军官证'},
+            { key: 4, value: '士兵证'},
+            { key: 5, value: '台胞证'},
+            { key: 6, value: '其他'},
+        ]
+        if (v) {
+            let t = ''
+            for(var i in arr) {
+                if (arr[i].key === v) {
+                    t = arr[i].value
+                }
+            }
+        } else {
+            return arr
+        }
     }
 };
 export default {

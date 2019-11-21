@@ -11,7 +11,7 @@
                     </el-submenu>
                 </template>
                 <template v-else>
-                    <el-menu-item :class="isCheck==item.keys?'is-active':''" @click="checkParent(item.keys)">
+                    <el-menu-item :class="$store.state.menuCur==item.keys?'is-active':''" @click="checkParent(item.keys)">
                         <i :class='"el-icon-menu el-icon-" + item.keys'></i>
                         <span slot="title">{{item.name}}</span>
                     </el-menu-item>
@@ -40,6 +40,8 @@ export default {
         },
         checkParent: function (v) {
             this.isCheck = v
+            sessionStorage.setItem('menusel', v)
+            this.$store.state.menuCur = v
             v = v === 'index'? '' : v
             this.$router.push({
                 path: '/main/' + v
@@ -51,6 +53,11 @@ export default {
         if (logindata) {
             let _d = JSON.parse(logindata)
             this.menuList = _d.menus
+        }
+        let _sel = sessionStorage.getItem('menusel')
+        if (_sel) {
+            this.isCheck = _sel
+            this.$store.state.menuCur = _sel
         }
     }
 }
@@ -114,7 +121,7 @@ function getMenuList () {
 <style lang="scss">
 @import '../../assets/sass/set.scss';
 .menu-box{
-    width: 300px;
+    width: 260px;
     height: 100%;
     background-color: #212a2f;
     color: #fff;

@@ -151,8 +151,8 @@ export default {
         }
     }
     .el-badge__content{
-        top: 15px;
-        right: 20px;
+        top: 15px !important;
+        right: 20px !important;
     }
     .blue{
         .el-badge__content{

@@ -18,9 +18,10 @@
                         </td>
                         <td>订单状态：</td>
                         <td> 
-                            <el-select v-model="orderStatus" value-key="value" placeholder="请选择">
+                            {{orderStatus.value}}
+                            <!-- <el-select v-model="orderStatus" value-key="value" placeholder="请选择">
                                 <el-option v-for="item in ddlOrderStatus" :key="item.key" :label="item.value" :value="item"></el-option>
-                            </el-select>
+                            </el-select> -->
                         </td>
                     </tr>
                     <tr>
@@ -305,7 +306,7 @@ export default {
             personlist: [],
             sendTicketerS: [],
             orderStatus: '',
-            ddlOrderStatus: [{key:0,value:'等待处理'},{key:1,value:'处理完成'},{key:2,value:'后补等待'}],
+            ddlOrderStatus: [{key:0,value:'等待处理'},{key:1,value:'处理完成'}],
             dllMethod: ['预收款', '抵退票', '欠款'],
             isChangeType: false,
             delPP: '',
@@ -345,7 +346,7 @@ export default {
     methods: {
         save () {
             if (!this.isChangeType) {
-                this.orderinfo.dnStatus = this.orderStatus.key
+                this.orderinfo.dnStatus = 1
                 console.log(this.orderinfo)
                 this.$http.post(this.apis + '/api/gnorder/editorder', this.orderinfo)
                 .then(res => {
@@ -365,7 +366,7 @@ export default {
                     }
                 })
             } else {
-                this.orderinfo.dnStatus = this.orderStatus.key
+                this.orderinfo.dnStatus = 1
                 this.$http.post(this.apis + '/api/order/changeorder', this.orderinfo)
                 .then(res => {
                     if (res && res.data && res.data.status != 0) {

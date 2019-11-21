@@ -1,5 +1,5 @@
 <template>
-    <div class="writeinfo-box">
+    <div class="writeinfo-box" v-loading="loading" element-loading-text="订单提交中" element-loading-spinner="el-icon-loading" element-loading-background="rgba(255, 255, 255, 0.6)">
         <SiteMap></SiteMap>
         <div class="box-bg flight-info">
             <div class="title">
@@ -8,7 +8,7 @@
             </div>
             <div class="info-box">
                 <div class="air-no">
-                    <div><img :src="'/static/icons/' + (flight.flightNo.substr(0,2)) + '.gif'" alt=""></div>
+                    <div><img :src="apath + '/static/icons/' + (flight.flightNo.substr(0,2)) + '.gif'" alt=""></div>
                     <div class="div_company">
                         <div class="air-company"><span>{{flight.airCompanyName}}</span>{{flight.flightNo}}</div>
                         <div class="air-type">机型：<span>{{flight.planeType}}</span> （{{seat.seatMsg.replace("特价舱","特价经济舱")}}）</div>
@@ -45,7 +45,7 @@
 
         <div :class='"box-bg person-form" + (i > 0? " person-mTop": "")' v-for="(item, i) in selPersonList" :key="i">
             <div>
-                <div class="form-label">乘客姓名：</div>
+                <div class="form-label not-null">乘客姓名：</div>
                 <el-select v-model="item.type" placeholder="成人">
                     <el-option v-for="item in personType" :key="item" :label="item" :value="item"></el-option>
                 </el-select>
@@ -53,14 +53,14 @@
                 <div class="btn-del el-icon-minus" @click="del(i)"></div>
             </div>
             <div>
-                <div class="form-label">证件信息：</div>
-                <el-select v-model="item.cardtype" placeholder="身份证">
-                    <el-option v-for="item in cardType" :key="item" :label="item" :value="item"></el-option>
+                <div class="form-label not-null">证件信息：</div>
+                <el-select v-model="item.cardtype" value-key="value" @change="changeCardType(item)" placeholder="身份证">
+                    <el-option v-for="item in cardType" :key="item.key" :label="item.value" :value="item.key"></el-option>
                 </el-select>
                 <el-input v-model="item.idcard" class="form-input" placeholder="请输入证件号码"></el-input>
             </div>
             <div>
-                <div class="form-label">乘机人手机：</div>
+                <div class="form-label not-null">乘机人手机：</div>
                 <el-input v-model="item.phone" class="form-input-m" placeholder="请输入乘机人手机"></el-input>
             </div>
             <div>
@@ -69,11 +69,11 @@
             </div>
             <div>
                 <div class="form-label">购买保险：</div>
-                <div><el-input-number v-model="item.safenum" controls-position="right" :min="1" :max="20"></el-input-number></div>
+                <div><el-input-number v-model="item.safenum" controls-position="right" :min="0" :max="20"></el-input-number></div>
                 <div> 份 <span class="form-tip">（每份20元）</span></div>
             </div>
         </div>
-        <div class="person-form">            
+        <div class="person-form">
             <div class="btn-box">
                 <div class="btn-person" @click="addItem">添加乘机人</div>
                 <div class="btn-person" v-if="personAllList.length" @click="showPerson = true">常用乘机人</div>
@@ -87,6 +87,7 @@
                         <td><div></div></td>
                         <td>乘机人姓名</td>
                         <td>证件号码</td>
+                        <td>护照号码</td>
                         <td>乘机人手机</td>
                         <td>紧急人手机</td>
                         <td>操作</td>
@@ -97,6 +98,7 @@
                         <td><div :class='"check-box" + (selPerson.indexOf(item.id) > -1? " el-icon-check":"")' @click="checkPerson(i, item.id)"></div></td>
                         <td><input type="text" :readonly="isEdit===i ? false : 'readonly'" maxlength="50" v-model="item.name" /></td>
                         <td><input type="text" :readonly="isEdit===i ? false : 'readonly'" maxlength="50" v-model="item.idcard" /></td>
+                        <td><input type="text" :readonly="isEdit===i ? false : 'readonly'" maxlength="50" v-model="item.hzh" /></td>
                         <td><input type="text" :readonly="isEdit===i ? false : 'readonly'" maxlength="50" v-model="item.phone" /></td>
                         <td><input type="text" :readonly="isEdit===i ? false : 'readonly'" maxlength="50" v-model="item.jjphone" /></td>
                         <td><span v-if="isEdit===i" @click="savePerson(i)" class="btn-save">保存</span><span v-else class="btn-edit" @click="isEdit = i">修改</span></td>
@@ -119,6 +121,7 @@ export default {
     name: 'WriteInfo',
     data () {
         return {
+            loading: false,
             search: {},
             flight: {},
             seat: {},
@@ -126,16 +129,16 @@ export default {
             yingerPrice: 0,
             status: false,
             personType: ['成人', '儿童', '婴儿'],
-            cardType: ['身份证', '军官证', '港澳通行证'],
+            cardType: [],
             person: {
                 id: '',
                 type: '成人',
                 name: '',
-                cardtype: '身份证',
+                cardtype: 1,
                 idcard: '',
                 phone: '',
                 jjphone: '',
-                safenum: 1
+                safenum: '0'
             },
             selPersonList: [],
             personAllList: [],
@@ -164,6 +167,19 @@ export default {
                 this.isCheckAll = true
             }
         },
+        changeCardType (item) {
+            if (item.id) {
+                for (let i in this.personAllList) {
+                    if (this.personAllList[i].id === item.id) {
+                        if (item.cardtype === 1) {
+                            item.idcard = this.personAllList[i].idcard
+                        } else if (item.cardtype === 2) {
+                            item.idcard = this.personAllList[i].hzh
+                        }
+                    }
+                }
+            }
+        },
         checkPerson (v, id) {
             let _index = this.selPerson.indexOf(id)
             if (_index > -1) {
@@ -183,15 +199,21 @@ export default {
                 }
                 if (this.selPerson.length) {
                     let obj = this.personAllList[v]
+                    let _no = obj.idcard
+                    let _t = 1
+                    if (_no.trim() === '' && obj.hzh.trim() !== '') {
+                        _no = obj.hzh
+                        _t = 2
+                    }
                     let p = {
                         id: obj.id,
                         type: obj.type == 1? "成人": "儿童",
                         name: obj.name,
-                        cardtype: "身份证",
-                        idcard: obj.idcard,
+                        cardtype: _t,
+                        idcard: _no,
                         phone: obj.phone,
                         jjphone: obj.jjphone,
-                        safenum: 1
+                        safenum: 0
                     }
                     if (this.selPersonList.length < 2 && this.selPersonList[0].name === '') {
                         this.selPersonList = []
@@ -246,6 +268,7 @@ export default {
             .then(res => {
                 if (res && res.data && res.data.status != 0) {
                     this.personAllList = res.data.data
+                    console.log(res.data.data)
                 }
             });
         },
@@ -270,6 +293,29 @@ export default {
                 this.isCheckAll = false
             }
         },
+        verifyPerson () {
+            let isCheck = true
+            for (let i in this.selPersonList) {
+                if (this.selPersonList[i].name.trim() == '') {
+                    isCheck = false;
+                    this.MessageBox('请输入第 ' + (Number(i) + 1) + ' 位乘机人的姓名')
+                    break;
+                } else if (this.selPersonList[i].idcard.trim() == '') {
+                    isCheck = false;
+                    this.MessageBox('请输入第 ' + (Number(i) + 1) + ' 位乘机人的证件号码')
+                    break;
+                } else if (this.selPersonList[i].phone.trim() == '') {
+                    isCheck = false;
+                    this.MessageBox('请输入第 ' + (Number(i) + 1) + ' 位乘机人的联系电话')
+                    break;
+                } else if (this.selPersonList[i].jjphone.trim() !== '' && this.selPersonList[i].jjphone.trim() === this.selPersonList[i].phone.trim()) {
+                    isCheck = false;
+                    this.MessageBox('请输入第 ' + (Number(i) + 1) + ' 位乘机人的联系电话和紧急人联系电话不能一致！')
+                    break;
+                }
+            }
+            return isCheck
+        },
         submitOrder () {
             let orderBody = {
                 cid: this.selCompany.id,
@@ -281,20 +327,26 @@ export default {
                 airbody: this.flight,
                 airseat: this.seat
             }
-            console.log(orderBody)
-            this.$http.post(this.apis + '/api/gnorder/submitordercn', orderBody)
-            .then(res => {
-                if (res && res.data && res.data.status != 0) {
-                    this.$store.state.selCompany = this.selCompany
-                    this.MessageBox("下单成功！", '温馨提示').then(()=>{
-                        this.$router.push({
-                            path: '/main/userbll'
+            if (this.verifyPerson()) {
+                console.log(orderBody)
+                this.loading = true
+                this.$http.post(this.apis + '/api/gnorder/submitordercn', orderBody)
+                .then(res => {
+                    this.loading = false
+                    if (res && res.data && res.data.status != 0) {
+                        this.$store.state.selCompany = this.selCompany
+                        this.MessageBox("下单成功！", '温馨提示').then(()=>{
+                            this.$router.push({
+                                path: '/main/userbll'
+                            })
                         })
-                    })
-                } else {
-                    this.MessageBox("下单失败，请检查数据！", '温馨提示')
-                }
-            });
+                    } else {
+                        this.MessageBox("下单失败，请检查数据！", '温馨提示')
+                    }
+                }).catch(res => {
+                    this.loading = false
+                })
+            }
         },
     },
     created () {
@@ -316,6 +368,8 @@ export default {
         this.getPersonList()
 
         this.addItem()
+
+        this.cardType = this.utils.getCardType()
     }
 }
 </script>
@@ -423,7 +477,7 @@ export default {
                 width: 130px;
                 text-align: right;
             }
-            .form-label::before{
+            .not-null::before{
                 content: '*';
                 color: #f00000;
             }
