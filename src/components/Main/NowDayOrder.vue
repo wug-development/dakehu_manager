@@ -130,7 +130,6 @@ export default {
                 'pagenum': this.pageNum
             }})
             .then(res => {
-                console.log(res)
                 if (res && res.data && res.data.status != 0) {
                     this.pageCount = res.data.data.pageCount
                     this.orderList = res.data.data.data
@@ -232,7 +231,6 @@ export default {
                     ecity: this.selEndCity,
                     sdate: this.sdate
                 });
-                console.log(_str);
                 sessionStorage.setItem('gnsearch', _str)
                 this.$router.push({
                     path: '/main/gnorderlist'
@@ -244,7 +242,6 @@ export default {
                 name: v
             }})
             .then(res => {
-                console.log(res)
                 if (res && res.data && res.data.status != 0) {
                     let arr = res.data.data
                     arr.sort((x, y) => {
@@ -255,7 +252,6 @@ export default {
             })
         },
         checkCompany: function (v) {
-            console.log(222)
             if (v != 2) {
                 this.selChildCompany = ''
             }
@@ -331,13 +327,6 @@ export default {
                 this.ecityList = JSON.parse(JSON.stringify(res.data.data))
             }
         })
-
-        // this.$http.get(this.apis + '/api/orderlist/getpnr', {params: {
-        //     oid: '112019112190417782'
-        // }})
-        // .then(res => {
-        //     console.log(res)
-        // })
     }
 }
 

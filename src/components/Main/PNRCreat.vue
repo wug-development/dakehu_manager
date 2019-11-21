@@ -4,7 +4,7 @@
         <div class="box-bg search-box">
             <div class="div-box">
                 <div>公司名称:</div>
-                <el-select v-model="selCompany" value-key="name" filterable @change="checkCompany" :remote-method="remoteMethod" placeholder="请选择企业">
+                <el-select v-model="selCompany" value-key="name" filterable :filter-method="remoteMethod" @change="checkCompany" placeholder="请选择企业">
                     <el-option v-for="item in company" :key="item.id" :label="item.name" :value="item"></el-option>
                 </el-select>
                 <el-select v-model="selChildCompany" filterable placeholder="请选择子公司">
@@ -34,7 +34,7 @@
                         <td>出发日期：</td>
                         <td><input type="text" v-model="flightInfo.sdate" /></td>
                         <td>订单状态：</td>
-                        <td><input type="text" value="出票等待" /></td>
+                        <td><input type="text" readonly value="出票等待" /></td>
                     </tr>
                     <tr>
                         <td>起落机场：</td>
@@ -157,7 +157,6 @@ export default {
                 name: v
             }})
             .then(res => {
-                console.log(res)
                 if (res && res.data && res.data.status != 0) {
                     let arr = res.data.data
                     arr.sort((x, y) => {
@@ -247,6 +246,7 @@ export default {
                             idcard: cardno[i]
                         })
                     }
+                    this.flightInfo.recordNo = arr1[0][cardno.length]
 
                 } else { //有证件信息
                     var ckarr = [];
@@ -306,7 +306,6 @@ export default {
                 this.flightInfo.airCabin = airCabin.join(' ')
                 this.flightInfo.sdate = sdate.join(' ')
             }
-            console.log(this.flightInfo)
         },
         submit () {
             if (this.selCompany) {
@@ -316,7 +315,6 @@ export default {
                         cname: this.selChildCompany.name || this.selCompany.name,
                         flightinfo: this.flightInfo
                     }
-                    console.log(orderBody)
                     this.$http.post(this.apis + '/api/gnorder/submitpnrorder', orderBody)
                     .then(res => {
                         if (res && res.data && res.data.status != 0) {
@@ -351,11 +349,11 @@ export default {
                     this.selChildCompany = _d.cc
                 }
                 this.checkCompany(2)
+
+                //获取企业列表
+                this.remoteMethod(this.selCompany.name)
             }
         }
-
-        //获取企业列表
-        this.remoteMethod('')
     }
 }
 
@@ -612,6 +610,10 @@ function transTime1(data) {
                     padding: 0 10px;
                     box-sizing: border-box;
                     text-align: center;
+                }
+                input:read-only{
+                    background-color: #f9f9f9;
+                    cursor: no-drop;
                 }
                 .flex{
                     display: flex;

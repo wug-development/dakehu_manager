@@ -347,7 +347,6 @@ export default {
         save () {
             if (!this.isChangeType) {
                 this.orderinfo.dnStatus = 1
-                console.log(this.orderinfo)
                 this.$http.post(this.apis + '/api/gnorder/editorder', this.orderinfo)
                 .then(res => {
                     if (res && res.data && res.data.status != 0) {
@@ -519,7 +518,6 @@ export default {
                 let _d = res.data.data
                 if (_d.info && _d.info.length > 0) {
                     this.orderinfo = _d.info[0]
-                    console.log(_d)
                     if (this.orderinfo.dnIsTicket > 0) {
                         this.ticketid = this.orderinfo.dcTicketNO
                         this.getTicket()

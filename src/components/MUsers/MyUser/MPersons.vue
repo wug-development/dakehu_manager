@@ -254,7 +254,6 @@ export default {
                 this.getDataList ()
                 this.uinfo.id = c.id
             }
-            console.log(this.selCompany)
         }
         this.getDataList()
     }

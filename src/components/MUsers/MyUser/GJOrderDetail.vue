@@ -470,7 +470,6 @@ export default {
             })
         },
         changeOrderType (v) {
-            console.log(this.isChangeType)
             this.orderinfo.dnOrderStatus = v
             // this.orderStatus = {key : 0, value : '等待处理'}
             this.orderinfo.dtAddTime = ''

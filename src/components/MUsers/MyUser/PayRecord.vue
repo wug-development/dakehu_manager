@@ -128,7 +128,6 @@ export default {
                     other: this.other,
                 })
                 .then(res => {
-                    console.log(res)
                     if (res && res.data && res.data.status != 0) {
                         this.MessageBox('提交成功', '温馨提示')
                         this.getPayList ()

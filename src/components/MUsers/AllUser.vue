@@ -124,7 +124,6 @@ export default {
             .then(res => {
                 if (res && res.data && res.data.status != 0) {
                     this.dataList = res.data.data.data
-                    console.log(res.data.data.data)
                     if (res.data.data.pagecount) {
                         this.pageCount = res.data.data.pagecount
                     }

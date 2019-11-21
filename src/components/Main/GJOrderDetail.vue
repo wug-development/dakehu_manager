@@ -320,7 +320,6 @@ export default {
     methods: {
         save () {
             if (!this.isChangeType) {
-                console.log('editorder')
                 this.orderinfo.dnStatus = this.orderStatus.key
                 this.$http.post(this.apis + '/api/order/editorder', this.orderinfo)
                 .then(res => {
@@ -334,7 +333,6 @@ export default {
                     }
                 })
             } else {
-                console.log('changeorder')
                 this.orderinfo.dnStatus = this.orderStatus.key
                 this.$http.post(this.apis + '/api/order/changeorder', this.orderinfo)
                 .then(res => {
@@ -466,7 +464,6 @@ export default {
             })
         },
         changeOrderType (v) {
-            console.log(this.isChangeType)
             this.orderinfo.dnOrderStatus = v
             // this.orderStatus = {key : 0, value : '等待处理'}
             this.orderinfo.dtAddTime = ''

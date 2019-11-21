@@ -229,16 +229,16 @@ export default {
             let _d = JSON.parse(obj)
             if (_d.cp) {
                 this.selCompany = _d.cp
-                console.log(this.selCompany )
                 if (_d.cc) {
                     this.selChildCompany = _d.cc
                 }
                 this.checkCompany(2)
+                
+                // 获取企业列表
+                this.remoteMethod(this.selCompany.name)
             }
         }
         
-        // 获取企业列表
-        this.remoteMethod(this.selCompany.name)
     }
 }
 </script>

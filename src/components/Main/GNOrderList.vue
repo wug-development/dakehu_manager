@@ -133,9 +133,6 @@ export default {
         }
     },
     methods: {
-        handleCurrentChange: function (v) {
-            console.log(v)
-        },
         filterScity (v) {
             let arr = this.cityList.filter(e => {
                 return e.name.includes(v) || e.airportname.includes(v) || e.code.includes(v.toUpperCase()) || e.country.includes(v) || e.enname.includes(v.toUpperCase())
@@ -189,7 +186,6 @@ export default {
             .then(res => {
                 if (res && res.data && res.data.status != 0) {
                     var _d = res.data.data
-                    console.log(_d)
                     if (_d.data.returnCode === 'S') {
                         this.airCompany = _d.airCompany
                         this.airPort = _d.airPort
@@ -277,7 +273,6 @@ export default {
                 name: v
             }})
             .then(res => {
-                console.log(res)
                 if (res && res.data && res.data.status != 0) {
                     let arr = res.data.data
                     arr.sort((x, y) => {
@@ -309,7 +304,6 @@ export default {
             let _d = JSON.parse(searchdata)
             this.selStartCity = _d.scity
             this.selEndCity = _d.ecity
-            console.log(this.selStartCity)
             this.sdate = _d.sdate
             this.selCompany = _d.selCompany
             this.checkCompany()

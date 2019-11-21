@@ -276,7 +276,6 @@ export default {
         let logindata = sessionStorage.getItem('loginData')
         if (logindata) {
             let _d = JSON.parse(logindata)
-            console.log(_d)
             let _g = _d.limits.findIndex(e => {
                 return e.name === '权限管理'
             })

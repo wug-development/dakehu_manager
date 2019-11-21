@@ -260,7 +260,6 @@ export default {
         .then(res => {
             if (res && res.data && res.data.status != 0) {
                 this.ManagerList = res.data.data
-                console.log(this.ManagerList)
             }
         })
     }

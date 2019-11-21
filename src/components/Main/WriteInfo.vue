@@ -268,14 +268,12 @@ export default {
             .then(res => {
                 if (res && res.data && res.data.status != 0) {
                     this.personAllList = res.data.data
-                    console.log(res.data.data)
                 }
             });
         },
         savePerson (i) {
             this.$http.post(this.apis + '/api/passenger/saveperson', this.personAllList[i])
             .then(res => {
-                console.log(res)
                 if (res && res.data && res.data.status != 0) {
                     this.MessageBox(res.data.msg, '温馨提示')
                 }
@@ -327,8 +325,7 @@ export default {
                 airbody: this.flight,
                 airseat: this.seat
             }
-            if (this.verifyPerson()) {
-                console.log(orderBody)
+            if (!this.loading && this.verifyPerson()) {
                 this.loading = true
                 this.$http.post(this.apis + '/api/gnorder/submitordercn', orderBody)
                 .then(res => {
@@ -341,7 +338,7 @@ export default {
                             })
                         })
                     } else {
-                        this.MessageBox("下单失败，请检查数据！", '温馨提示')
+                        this.MessageBox(res.data.msg, '温馨提示')
                     }
                 }).catch(res => {
                     this.loading = false
@@ -353,7 +350,6 @@ export default {
         this.flight = JSON.parse(sessionStorage.getItem('bookFlight'))
         this.seat = JSON.parse(sessionStorage.getItem('bookFlightSeat'))
         this.search = JSON.parse(sessionStorage.getItem('gnsearch'))
-        console.log(this.flight)
         this.selCompany = this.search.selCompany
         if (this.search.selChildCompany && this.search.selChildCompany.id) {
             this.selCompany = this.search.selChildCompany
@@ -378,7 +374,7 @@ export default {
 @import '../../assets/sass/set.scss';
 @import '../../assets/sass/table-list.scss';
 .writeinfo-box{
-    height: 100%;
+    min-height: 100%;
     .el-input{
         width: auto !important;
     }
@@ -549,6 +545,8 @@ export default {
         background-color: #e8f1f7;
         padding: 20px 60px;
         box-sizing: border-box;
+        max-height: 300px;
+        overflow: hidden auto;
         table{
             width: 100%;
             text-align: center;

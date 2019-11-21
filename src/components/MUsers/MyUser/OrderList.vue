@@ -171,7 +171,6 @@ export default {
             }
         },
         toDetail (id, cid, t) {
-            console.log(t)
             if (t == 1) {
                 this.$router.push({
                     path: '/main/userbll/gjorderdetail?id=' + id + '&cid=' + cid

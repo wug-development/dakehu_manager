@@ -37,7 +37,6 @@ export default {
                     'upass': this.password
                 }})
                 .then(res => {
-                    console.log(res)
                     this.isLogining = false
                     if (res && res.data && res.data.status != 0) {
                         let _d = res.data.data
