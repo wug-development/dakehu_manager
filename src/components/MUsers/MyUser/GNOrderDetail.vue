@@ -299,6 +299,7 @@ export default {
             orderid: '',
             cid: '',
             ticketid: '',
+            account: {},
             checkOrderStatus: '',
             OutTicket: [],
             orderinfo: {},
@@ -345,8 +346,10 @@ export default {
     },
     methods: {
         save () {
+            this.orderinfo.dnStatus = 1
+            this.orderinfo.dcAdminID = this.account.id
+            this.orderinfo.dcAdminName = this.account.uname
             if (!this.isChangeType) {
-                this.orderinfo.dnStatus = 1
                 this.$http.post(this.apis + '/api/gnorder/editorder', this.orderinfo)
                 .then(res => {
                     if (res && res.data && res.data.status != 0) {
@@ -365,7 +368,6 @@ export default {
                     }
                 })
             } else {
-                this.orderinfo.dnStatus = 1
                 this.$http.post(this.apis + '/api/order/changeorder', this.orderinfo)
                 .then(res => {
                     if (res && res.data && res.data.status != 0) {
@@ -433,7 +435,7 @@ export default {
                 this.ticketinfo.dcTicketNO = this.orderinfo.dcTicketNO
                 this.ticketinfo.dcOrderID = this.orderinfo.dcOrderID
                 this.ticketinfo.dcFlightTime = this.flightinfo.dcSTime + '-' + this.flightinfo.dcETime
-                this.ticketinfo.dcStartCity = this.flightinfo.dcSCode + '-' + this.flightinfo.dcECode
+                this.ticketinfo.dcStartCity = this.orderinfo.dcStartCity + '-' + this.orderinfo.dcBackCity
                 this.ticketinfo.dcAirCompanyName = this.flightinfo.dcCompanyCode
                 this.ticketinfo.dcCompanyName = this.orderinfo.dcCompanyName
                 this.ticketinfo.dcRakedClass = this.flightinfo.dcSeatMsg.replace('特价', '').replace('超级', '')
@@ -507,6 +509,7 @@ export default {
         }
     },
     created () {
+        this.account = JSON.parse(sessionStorage.getItem('loginData'))
         this.orderid = this.$route.query.id
         this.cid = this.$route.query.cid
         this.$http.get(this.apis + '/api/orderlist/getgjorderdetail', {params: {
