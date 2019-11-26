@@ -61,7 +61,7 @@
                         <td>{{item.dcStartCity}}{{item.dcBackCity?"-"+item.dcBackCity:""}}</td>
                         <td>{{item.dcStartDate}}</td>
                         <td>{{item.dnTotalPrice}}</td>
-                        <td>{{item.dtAddTime.replace('T', '')}}</td>
+                        <td>{{item.dtAddTime.replace('T', ' ')}}</td>
                         <td :class='item.dnStatus == 0? "deal" : ""'>{{checkstatus(item.dnStatus)}}</td>
                         <td>{{item.dcAdminName}}</td>
                     </tr>
@@ -239,7 +239,7 @@ export default {
         },
         remoteMethod: function (v) {
             this.$http.get(this.apis + '/api/company/getfiltercompany', {params: {
-                name: v
+                name: v || ''
             }})
             .then(res => {
                 if (res && res.data && res.data.status != 0) {
@@ -313,10 +313,10 @@ export default {
                     this.selChildCompany = _d.cc
                 }
                 this.checkCompany(2)
-                //获取企业列表
-                this.remoteMethod(this.selCompany.name)
             }
         }
+        //获取企业列表
+        this.remoteMethod(this.selCompany.name)
         
         //获取城市列表
         this.$http.get(this.apis + '/api/city/getcity', {params: {}})

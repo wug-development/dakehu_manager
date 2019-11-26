@@ -106,18 +106,18 @@
                         <td>{{item.dcPerName}}（成人）</td>
                         <td>{{item.dcPhone}}</td>
                         <td>身份证</td>
-                        <td>{{item.dcIDNumber}} <span class="el-icon-minus" @click="delPerson(item, i)"></span></td>
+                        <td>{{item.dcIDNumber}} <span v-if="personlist.length > 1" @click="delPerson(item, i)">—</span></td>
                     </tr>
                 </tbody>
             </table>
             <div class="btn-box">
-                <div class="btn" @click="save">保存</div>
+                <div class="btn" v-if="orderinfo.dnStatus == 0" @click="save">保存</div>
                 <div class="btn-other" v-if="checkOrderStatus == 1 && orderinfo.dnOrderStatus == 1" @click="changeOrderType(2)">改期</div>
                 <div class="btn-other" v-if="checkOrderStatus == 1 && orderinfo.dnOrderStatus == 1" @click="changeOrderType(2)">退票</div>
                 <div class="btn-other" v-if="checkOrderStatus == 1" @click="showTicket">国内出票单</div>
             </div>
         </div>
-        <div class="box-bg" v-show="orderinfo.dnIsTicket > 0">
+        <div class="box-bg" v-show="orderinfo.dnIsTicket > 0 && ticketinfo">
             <div class="trip-bill">
                 <table cellspacing="1" cellpadding="0">
                     <tbody>
@@ -334,8 +334,8 @@ export default {
                 dnSafePrice: '',
                 dcSendTicketType: '不送',
                 dcCPDXX: '支付宝',
-                dcPaymentMethod1: '',
-                dcPaymentMethod2: '',
+                dcPaymentMethod1: '欠款',
+                dcPaymentMethod2: '欠款',
                 dcSendTicketerName: '无',
                 dnIsTicket: 0
             },
@@ -346,36 +346,40 @@ export default {
     },
     methods: {
         save () {
-            this.orderinfo.dnStatus = 1
-            this.orderinfo.dcAdminID = this.account.id
-            this.orderinfo.dcAdminName = this.account.uname
-            if (!this.isChangeType) {
-                this.$http.post(this.apis + '/api/gnorder/editorder', this.orderinfo)
-                .then(res => {
-                    if (res && res.data && res.data.status != 0) {
-                        if (this.orderStatus.key == 1) {
-                            this.checkOrderStatus = this.orderinfo.dnStatus
+            if (this.orderinfo.dcTicketNO) {
+                this.orderinfo.dnStatus = 1
+                this.orderinfo.dcAdminID = this.account.id
+                this.orderinfo.dcAdminName = this.account.uname
+                if (!this.isChangeType) {
+                    this.$http.post(this.apis + '/api/gnorder/editorder', this.orderinfo)
+                    .then(res => {
+                        if (res && res.data && res.data.status != 0) {
+                            if (this.orderStatus.key == 1) {
+                                this.checkOrderStatus = this.orderinfo.dnStatus
+                            }
+                            if (this.delPP) {
+                                this.$http.get(this.apis + '/api/order/delperson', {params: {
+                                    id: this.delPP
+                                }})
+                                .then(res => {})
+                            }
+                            this.MessageBox('保存成功！').then(() => {
+                                this.backPage()
+                            })
                         }
-                        if (this.delPP) {
-                            this.$http.get(this.apis + '/api/order/delperson', {params: {
-                                id: this.delPP
-                            }})
-                            .then(res => {})
+                    })
+                } else {
+                    this.$http.post(this.apis + '/api/order/changeorder', this.orderinfo)
+                    .then(res => {
+                        if (res && res.data && res.data.status != 0) {
+                            this.MessageBox('保存成功！').then(() => {
+                                this.backPage()
+                            })
                         }
-                        this.MessageBox('保存成功！').then(() => {
-                            this.backPage()
-                        })
-                    }
-                })
+                    })
+                }
             } else {
-                this.$http.post(this.apis + '/api/order/changeorder', this.orderinfo)
-                .then(res => {
-                    if (res && res.data && res.data.status != 0) {
-                        this.MessageBox('保存成功！').then(() => {
-                            this.backPage()
-                        })
-                    }
-                })
+                this.MessageBox('请输入票号！')
             }
         },
         delPerson (item, i) {
@@ -442,6 +446,10 @@ export default {
                 this.ticketinfo.dcFlightNumber = this.flightinfo.dcAirCode
                 this.ticketinfo.dcStartDate = this.orderinfo.dcStartDate
                 this.ticketinfo.dnDiscount = this.orderinfo.dnDiscount * 10
+                this.ticketinfo.dnSellPrice = this.orderinfo.dnTotalPrice
+                this.ticketinfo.dnTax = this.orderinfo.dnTax
+                this.ticketinfo.dnServicePrice = this.orderinfo.dnServicePrice * this.personlist.length
+
                 let _n = ''
                 for (const key in this.personlist) {
                     if (key > 0) {
@@ -522,7 +530,7 @@ export default {
                 if (_d.info && _d.info.length > 0) {
                     this.orderinfo = _d.info[0]
                     if (this.orderinfo.dnIsTicket > 0) {
-                        this.ticketid = this.orderinfo.dcTicketNO
+                        this.ticketid = this.orderinfo.dcOrderID
                         this.getTicket()
                         this.getOutTicket()
                         this.getSendTicketer()

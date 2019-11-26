@@ -20,28 +20,29 @@
                 <dt>
                     <div>
                         <span class="w2"></span>
-                        <span class="w20 wleft">用户简称</span>
+                        <span class="w12 wleft">用户简称</span>
                         <span class="w10">登录密码</span>
                         <span class="w10">业务负责人</span>
-                        <span class="w15">联系电话</span>
+                        <span class="w12">联系电话</span>
                         <span class="w10">信用金</span>
                         <span class="w10">欠款</span>
-                        <span class="w20">操作</span>
+                        <span class="w30">操作</span>
                         <span class="w2"></span>
                     </div>
                 </dt>
                 <dd>
                     <ul v-for="(item, i) in dataList" :key="i">
                         <li class="w2"></li>
-                        <li class="active wleft w20"><span @click="toPage(item)">{{item.name}}</span> <div v-if="item.childnum > 0"  @click="showSubCompany(item.id, i)" :class="showSub == item.id?'el-icon-arrow-up' : 'el-icon-arrow-down'"></div></li>
+                        <li class="active wleft w12"><span @click="toPage(item)">{{item.name}}</span> <div v-if="item.childnum > 0"  @click="showSubCompany(item.id, i)" :class="showSub == item.id?'el-icon-arrow-up' : 'el-icon-arrow-down'"></div></li>
                         <li class="w10">{{item.pass}}</li>
                         <li class="w10">{{item.linkman}}</li>
-                        <li class="w15">{{item.phone}}</li>
+                        <li class="w12">{{item.phone}}</li>
                         <li class="w10">{{item.xinyong}}</li>
                         <li class="w10">{{item.qiankuan}}</li>
-                        <li class="w20">
+                        <li class="w30">
                             <div class="btns-box">
                                 <div class="btn-del"><router-link :to="'/main/edituser?id=' + item.id ">详情</router-link></div>
+                                <div :class='item.isUse==1?"btn-success":"btn-default"' @click="setUse(item)">{{item.isUse==1?'不常用':'常用'}}</div>
                                 <div class="btn-warn">前台</div>
                                 <div class="btn-danger" v-if="isLimitDel" @click="del(item.id)">删除</div>
                             </div>
@@ -50,13 +51,13 @@
                         <li v-if="item.childnum > 0 && showSub == item.id" class="w100 dl-list-item-box">
                             <ul v-for="(s, index) in item.subCompany" :key="index">
                                 <li class="w2"></li>
-                                <li class="active wleft w20"  @click="toPage(s)">{{s.name}}</li>
+                                <li class="active wleft w15"  @click="toPage(s)">{{s.name}}</li>
                                 <li class="w10">{{s.pass}}</li>
                                 <li class="w10">{{s.linkman}}</li>
-                                <li class="w15">{{s.phone}}</li>
+                                <li class="w12">{{s.phone}}</li>
                                 <li class="w10">{{s.xinyong}}</li>
                                 <li class="w10">{{s.qiankuan}}</li>
-                                <li class="w20">
+                                <li class="w30">
                                     <div class="btns-box">
                                         <div class="btn-warn">前台</div>
                                     </div>
@@ -192,6 +193,17 @@ export default {
                 })
             }).catch((e) => {
                 console.log('取消删除')
+            })
+        },
+        setUse (item) {
+            this.$http.get(this.apis + '/api/company/setcompanyuse', {params: {
+                id: item.id,
+                use: item.isUse === 1? 0 : 1
+            }})
+            .then(res => {
+                if (res && res.data && res.data.status != 0) {
+                    item.isUse = item.isUse === 1? 0 : 1
+                }
             })
         },
         toPage (v) {
