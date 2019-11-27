@@ -39,7 +39,7 @@
                 <li class="flight-item" v-for="(item, i) in dataList" :key="i">
                     <div class="flight-info flight-shadow">
                         <div class="air-no company-no company-site-no">
-                            <div><img :src="apath + '/static/icons/' + (item.flightNo.substr(0,2)) + '.gif'" alt=""></div>
+                            <div><img :src="apath + '/icons/' + (item.flightNo.substr(0,2)) + '.gif'" alt=""></div>
                             <div class="div_company">
                                 <div class="air-company"><span>{{checkAirCompany(item.flightNo.substr(0,2))}}</span>{{item.flightNo}}</div>
                                 <div class="air-type">机型：<span>{{item.planeType}}</span> （{{item.seatItems[0].seatMsg.replace("特价舱","特价经济舱")}}）</div>

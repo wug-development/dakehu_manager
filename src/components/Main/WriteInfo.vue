@@ -8,7 +8,7 @@
             </div>
             <div class="info-box">
                 <div class="air-no">
-                    <div><img :src="apath + '/static/icons/' + (flight.flightNo.substr(0,2)) + '.gif'" alt=""></div>
+                    <div><img :src="apath + '/icons/' + (flight.flightNo.substr(0,2)) + '.gif'" alt=""></div>
                     <div class="div_company">
                         <div class="air-company"><span>{{flight.airCompanyName}}</span>{{flight.flightNo}}</div>
                         <div class="air-type">机型：<span>{{flight.planeType}}</span> （{{seat.seatMsg.replace("特价舱","特价经济舱")}}）</div>
