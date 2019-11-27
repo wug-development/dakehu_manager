@@ -43,7 +43,7 @@
                             <div class="btns-box">
                                 <div class="btn-del"><router-link :to="'/main/edituser?id=' + item.id ">详情</router-link></div>
                                 <div :class='item.isUse==1?"btn-success":"btn-default"' @click="setUse(item)">{{item.isUse==1?'不常用':'常用'}}</div>
-                                <div class="btn-warn">前台</div>
+                                <div class="btn-warn"><a target="_blank" :href='pcPath + "?uname=" + item.name + "&upass=" + item.pass'>前台</a></div>
                                 <div class="btn-danger" v-if="isLimitDel" @click="del(item.id)">删除</div>
                             </div>
                         </li>
@@ -95,7 +95,8 @@ export default {
             page: 1,
             pageNum: 5,
             pageCount: 1,
-            isLimitDel: false
+            isLimitDel: false,
+            pcPath: 'http://vip.airkx.cn/#/'
         }
     },
     created () {

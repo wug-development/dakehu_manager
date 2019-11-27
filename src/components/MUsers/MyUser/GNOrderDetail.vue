@@ -117,7 +117,7 @@
                 <div class="btn-other" v-if="checkOrderStatus == 1" @click="showTicket">国内出票单</div>
             </div>
         </div>
-        <div class="box-bg" v-show="orderinfo.dnIsTicket > 0 && ticketinfo">
+        <div class="box-bg">
             <div class="trip-bill">
                 <table cellspacing="1" cellpadding="0">
                     <tbody>
@@ -285,7 +285,7 @@
                     </tbody>
                 </table>
             </div>
-            <div class="btn" v-if="ticketinfo.dnIsTicket < 1" @click="submitTicket">提交</div>
+            <div class="btn" @click="submitTicket">提交</div>
         </div>
     </div>
 </template>
@@ -438,17 +438,18 @@ export default {
                 this.ticketinfo.dcOrderCode = this.orderinfo.dcOrderCode
                 this.ticketinfo.dcTicketNO = this.orderinfo.dcTicketNO
                 this.ticketinfo.dcOrderID = this.orderinfo.dcOrderID
-                this.ticketinfo.dcFlightTime = this.flightinfo.dcSTime + '-' + this.flightinfo.dcETime
-                this.ticketinfo.dcStartCity = this.orderinfo.dcStartCity + '-' + this.orderinfo.dcBackCity
+                this.ticketinfo.dcFlightTime = (this.flightinfo.dcSTime || '') + '-' + (this.flightinfo.dcETime || '')
+                this.ticketinfo.dcStartCity = (this.orderinfo.dcStartCity || '') + '-' + (this.orderinfo.dcBackCity || '')
                 this.ticketinfo.dcAirCompanyName = this.flightinfo.dcCompanyCode
                 this.ticketinfo.dcCompanyName = this.orderinfo.dcCompanyName
-                this.ticketinfo.dcRakedClass = this.flightinfo.dcSeatMsg.replace('特价', '').replace('超级', '')
+                this.ticketinfo.dcRakedClass = (this.flightinfo.dcSeatMsg || '').replace('特价', '').replace('超级', '')
                 this.ticketinfo.dcFlightNumber = this.flightinfo.dcAirCode
                 this.ticketinfo.dcStartDate = this.orderinfo.dcStartDate
                 this.ticketinfo.dnDiscount = this.orderinfo.dnDiscount * 10
-                this.ticketinfo.dnSellPrice = this.orderinfo.dnTotalPrice
+                this.ticketinfo.dnSellPrice = this.orderinfo.dnPrice
                 this.ticketinfo.dnTax = this.orderinfo.dnTax
                 this.ticketinfo.dnServicePrice = this.orderinfo.dnServicePrice * this.personlist.length
+                this.ticketinfo.dnYingShouPrice = this.orderinfo.dnTotalPrice
 
                 let _n = ''
                 for (const key in this.personlist) {
@@ -534,6 +535,8 @@ export default {
                         this.getTicket()
                         this.getOutTicket()
                         this.getSendTicketer()
+                    } else {
+                        this.showTicket()
                     }
 
                     this.orderStatus = {

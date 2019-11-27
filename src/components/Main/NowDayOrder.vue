@@ -295,12 +295,33 @@ export default {
             } else {
                 this.MessageBox('请选择企业', '温馨提示')
             }
+        },
+        getVersion () {            
+            this.$http.get('http://www.airkx.cn/dakehu/static/version.json', { params: {}})
+            .then((res) => {
+                let _v = res.data
+                if (typeof(_v) === 'string') {
+                    _v = JSON.parse(_v)
+                }
+                
+                let _lv = sessionStorage.getItem('version')
+                if (_lv) {
+                    if (_v.v != Number(_lv)) {
+                        window.location.href = 'http://www.airkx.cn/dakehu/?v=' + _v.v + '/#/main'
+                    }
+                } else {
+                    sessionStorage.setItem('version', _v.v)
+                    window.location.href = 'http://www.airkx.cn/dakehu/?v=' + _v.v + '/#/main'
+                }
+            })
         }
     },
     components: {
         SiteMap
     },
     created () {
+        this.getVersion()
+
         // 获取订单列表
         this.getOrderList()
 

@@ -38,11 +38,11 @@
                         <td>{{item.dcFlightNumber}}</td>
                         <td>{{item.dcStartDate}}</td>
                         <td>{{item.dcRakedClass}}</td>
-                        <td>{{item.dnTotalPrice}}</td>
+                        <td>{{item.dnSellPrice}}</td>
                         <td>{{item.dnTax}}</td>
                         <td>{{item.dnCountPrice}}</td>
                         <td>{{item.dcTicketNO}}</td>
-                        <td>{{item.dnDiscount}}</td>
+                        <td>{{checkDiscount(item.dnDiscount)}}</td>
                         <td style="word-break: break-all;">{{item.dcOther}}</td>
                     </tr>
                 </tbody>
@@ -263,6 +263,13 @@ export default {
             return this.filedList.findIndex(e => {
                 return e.name === v
             })
+        },
+        checkDiscount (v) {
+            if (v === 10) {
+                return "全价"
+            } else {
+                return v + "折"
+            }
         }
     },
     created () {
