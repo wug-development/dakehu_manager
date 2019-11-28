@@ -7,28 +7,25 @@
                 <tbody>
                     <tr>
                         <td>订单号：</td>
-                        <td><span class="blue">{{orderinfo.dcOrderID}}</span> <span class="orange">{{orderinfo.dcLinkName}}</span></td>
+                        <td><span class="blue">{{orderinfo.dcOrderID}}</span> <span v-if="orderinfo.dnStatus == 1" class="orange">{{orderinfo.dcAdminName}}</span></td>
                         <td>预订时间：</td>
                         <td>{{orderinfo.dtAddTime && orderinfo.dtAddTime.replace('T', ' ')}}</td>
                     </tr>
                     <tr>
                         <td>出发日期：</td>
                         <td>
-                            <input class="txt" type="text" v-model="orderinfo.dcStartDate">
+                            <input class="txt" type="text" :disabled="orderinfo.dnStatus==1" v-model="orderinfo.dcStartDate">
                         </td>
                         <td>订单状态：</td>
                         <td> 
-                            {{orderStatus.value}}
-                            <!-- <el-select v-model="orderStatus" value-key="value" placeholder="请选择">
-                                <el-option v-for="item in ddlOrderStatus" :key="item.key" :label="item.value" :value="item"></el-option>
-                            </el-select> -->
+                            {{utils.checkStatus(orderinfo.dnStatus)}}
                         </td>
                     </tr>
                     <tr>
                         <td>起落机场：</td>
                         <td>{{orderinfo.dcStartCity}} - {{orderinfo.dcBackCity}}</td>
                         <td>票号：</td>
-                        <td><input class="txt" type="text" v-model="orderinfo.dcTicketNO"></td>
+                        <td><input class="txt" type="text" :disabled="orderinfo.dnStatus==1" v-model="orderinfo.dcTicketNO"></td>
                     </tr>
                     <tr>
                         <td>航班号：</td>
@@ -40,54 +37,36 @@
                         <td>起落时间：</td>
                         <td>{{flightinfo.dcSTime}} - {{flightinfo.dcETime}}</td>
                         <td>CTCM：</td>
-                        <td><input class="txt" type="text" v-model="orderinfo.dcPhone" ></td>
+                        <td><input class="txt" type="text" :disabled="orderinfo.dnStatus==1" v-model="orderinfo.dcPhone" ></td>
                     </tr>
                     <tr>
                         <td>舱位：</td>
                         <td>{{flightinfo.dcSeatMsg}}</td>
                         <td>CTCT：</td>
-                        <td><input class="txt" type="text" v-model="orderinfo.dcCTCT" ></td>
+                        <td><input class="txt" type="text" :disabled="orderinfo.dnStatus==1" v-model="orderinfo.dcCTCT" ></td>
                     </tr>
                     <tr>
                         <td>折扣：</td>
-                        <td><input class="txt" type="text" v-model="orderinfo.dnDiscount" ></td>
+                        <td><input class="txt" type="text" :disabled="orderinfo.dnStatus==1" v-model="orderinfo.dnDiscount" ></td>
                         <td>记录编号：</td>
-                        <td><input class="txt" type="text" v-model="orderinfo.dcOrderCode" ></td>
+                        <td><input class="txt" type="text" :disabled="orderinfo.dnStatus==1" v-model="orderinfo.dcOrderCode" ></td>
                     </tr>
-                    <tr v-if="orderinfo.dnOrderStatus == 1">
+                    <tr>
                         <td>订单金额：</td>
                         <td colspan="3">
                             <div class="div-price">
-                                <input type="text" class="txt small" v-model="orderinfo.dnTotalPrice">&nbsp;（&nbsp;&nbsp;
-                                <input type="text" class="txt small" v-model="orderinfo.dnPrice">&nbsp;+&nbsp;税金&nbsp;
-                                <input type="text" class="txt small" v-model="orderinfo.dnTax">&nbsp;+&nbsp;服务费&nbsp;
-                                <input type="text" class="txt small" v-model="orderinfo.dnServicePrice">&nbsp;+&nbsp;保险&nbsp;
-                                <input type="text" class="txt small" v-model="orderinfo.dnSafePrice">&nbsp;&nbsp;）* 
+                                <input type="text" class="txt small" :disabled="orderinfo.dnStatus==1" v-model="orderinfo.dnTotalPrice">&nbsp;（&nbsp;&nbsp;
+                                <input type="text" class="txt small" :disabled="orderinfo.dnStatus==1" v-model="orderinfo.dnPrice">&nbsp;+&nbsp;税金&nbsp;
+                                <input type="text" class="txt small" :disabled="orderinfo.dnStatus==1" v-model="orderinfo.dnTax">&nbsp;+&nbsp;服务费&nbsp;
+                                <input type="text" class="txt small" :disabled="orderinfo.dnStatus==1" v-model="orderinfo.dnServicePrice">&nbsp;+&nbsp;保险&nbsp;
+                                <input type="text" class="txt small" :disabled="orderinfo.dnStatus==1" v-model="orderinfo.dnSafePrice">&nbsp;&nbsp;）* 
                                 {{personlist.length}}人
                             </div>
                         </td>
                     </tr>
-                    <tr v-if="orderinfo.dnOrderStatus == 2">
-                        <td class="orange">实退金额：</td>
-                        <td colspan="3">
-                            <div class="div-price">
-                                <input type="text" class="txt small" v-model="orderinfo.dnTotalPrice">
-                            </div>
-                        </td>
-                    </tr>
-                    <tr v-if="orderinfo.dnOrderStatus == 3">
-                        <td class="orange">改期金额：</td>
-                        <td colspan="3">
-                            <div class="div-price">
-                                <input type="text" class="txt small" v-model="orderinfo.dnTotalPrice">&nbsp;（&nbsp;&nbsp;
-                                改期费&nbsp;<input type="text" class="txt small" v-model="orderinfo.dnChangeDatePrice">&nbsp;+&nbsp;
-                                差价&nbsp;<input type="text" class="txt small" v-model="orderinfo.dnChaPrice">&nbsp;&nbsp;）
-                            </div>
-                        </td>
-                    </tr>
-                    <tr>                        
+                    <tr>
                         <td>备注：</td>
-                        <td colspan="3"><input class="txt" type="text" v-model="orderinfo.dcContent" ></td>
+                        <td colspan="3"><input class="txt" :disabled="orderinfo.dnStatus==1" type="text" v-model="orderinfo.dcContent" ></td>
                     </tr>
                 </tbody>
             </table>
@@ -111,13 +90,131 @@
                 </tbody>
             </table>
             <div class="btn-box">
-                <div class="btn" v-if="orderinfo.dnStatus == 0" @click="save">保存</div>
-                <div class="btn-other" v-if="checkOrderStatus == 1 && orderinfo.dnOrderStatus == 1" @click="changeOrderType(2)">改期</div>
-                <div class="btn-other" v-if="checkOrderStatus == 1 && orderinfo.dnOrderStatus == 1" @click="changeOrderType(2)">退票</div>
-                <div class="btn-other" v-if="checkOrderStatus == 1" @click="showTicket">国内出票单</div>
+                <div class="btn-other" v-if="!isChangeType && orderinfo.dnOrderStatus == 1" @click="changeOrderType(3)">改期</div>
+                <div class="btn-other" v-if="!isChangeType && orderinfo.dnOrderStatus == 1" @click="changeOrderType(2)">退票</div>
+                <div class="btn-other" style="display:none;">国内出票单</div>
             </div>
         </div>
-        <div class="box-bg">
+        
+        <div class="box-bg detail-info change-info" v-if="isChangeType">
+            <div class="title">{{changeOrderInfo.dnOrderStatus==2?'退票':'改期'}}</div>
+            <table class="table-info" cellspacing="1" cellpadding="0">
+                <tbody>
+                    <tr>
+                        <td>订单号：</td>
+                        <td><span class="blue">{{changeOrderInfo.dcOrderID}}</span> <span v-if="changeOrderInfo.dnStatus == 1" class="orange">{{changeOrderInfo.dcAdminName}}</span></td>
+                        <td>预订时间：</td>
+                        <td>{{changeOrderInfo.dtAddTime && changeOrderInfo.dtAddTime.replace('T', ' ')}}</td>
+                    </tr>
+                    <tr>
+                        <td>出发日期：</td>
+                        <td>
+                            <input class="txt" type="text" :disabled="changeOrderInfo.dnStatus==1" v-model="changeOrderInfo.dcStartDate">
+                        </td>
+                        <td>订单状态：</td>
+                        <td> 
+                            {{utils.checkStatus(changeOrderInfo.dnStatus)}}
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>起落机场：</td>
+                        <td>
+                            <div class="div-price">
+                                <input class="txt middle" type="text" :disabled="changeOrderInfo.dnStatus==1" v-model="changeOrderInfo.dcStartCity" >&nbsp;&nbsp;-&nbsp;&nbsp;<input class="txt middle" type="text" :disabled="changeOrderInfo.dnStatus==1" v-model="changeOrderInfo.dcBackCity" >
+                            </div>
+                        </td>
+                        <td>票号：</td>
+                        <td><input class="txt" type="text" :disabled="changeOrderInfo.dnStatus==1" v-model="changeOrderInfo.dcTicketNO"></td>
+                    </tr>
+                    <tr>
+                        <td>航班号：</td>
+                        <td><input class="txt" type="text" :disabled="changeOrderInfo.dnStatus==1" v-model="changeFlightInfo.dcAirCode" ></td>
+                        <td>航站楼：</td>
+                        <td><input class="txt" type="text" :disabled="changeOrderInfo.dnStatus==1" v-model="changeFlightInfo.dcSJetquay" ></td>
+                    </tr>
+                    <tr>
+                        <td>起落时间：</td>
+                        <td>
+                            <div class="div-price">
+                                <input type="text" class="txt small" :disabled="changeOrderInfo.dnStatus==1" v-model="changeFlightInfo.dcSTime">&nbsp;&nbsp;-&nbsp;&nbsp;<input type="text" class="txt small" :disabled="changeOrderInfo.dnStatus==1" v-model="changeFlightInfo.dcETime">
+                            </div>
+                        </td>
+                        <td>CTCM：</td>
+                        <td><input class="txt" type="text" :disabled="changeOrderInfo.dnStatus==1" v-model="changeOrderInfo.dcPhone" ></td>
+                    </tr>
+                    <tr>
+                        <td>舱位：</td>
+                        <td><input class="txt" type="text" :disabled="changeOrderInfo.dnStatus==1" v-model="changeOrderInfo.dcSeatMsg" ></td>
+                        <td>CTCT：</td>
+                        <td><input class="txt" type="text" :disabled="changeOrderInfo.dnStatus==1" v-model="changeOrderInfo.dcCTCT" ></td>
+                    </tr>
+                    <tr>
+                        <td>折扣：</td>
+                        <td><input class="txt" type="text" :disabled="changeOrderInfo.dnStatus==1" v-model="changeOrderInfo.dnDiscount" ></td>
+                        <td>记录编号：</td>
+                        <td><input class="txt" type="text" :disabled="changeOrderInfo.dnStatus==1" v-model="changeOrderInfo.dcOrderCode" ></td>
+                    </tr>
+                    <tr v-if="changeOrderInfo.dnOrderStatus == 1">
+                        <td>订单金额：</td>
+                        <td colspan="3">
+                            <div class="div-price">
+                                <input type="text" class="txt small" :disabled="changeOrderInfo.dnStatus==1" v-model="changeOrderInfo.dnTotalPrice">&nbsp;（&nbsp;&nbsp;
+                                <input type="text" class="txt small" :disabled="changeOrderInfo.dnStatus==1" v-model="changeOrderInfo.dnPrice">&nbsp;+&nbsp;税金&nbsp;
+                                <input type="text" class="txt small" :disabled="changeOrderInfo.dnStatus==1" v-model="changeOrderInfo.dnTax">&nbsp;+&nbsp;服务费&nbsp;
+                                <input type="text" class="txt small" :disabled="changeOrderInfo.dnStatus==1" v-model="changeOrderInfo.dnServicePrice">&nbsp;+&nbsp;保险&nbsp;
+                                <input type="text" class="txt small" :disabled="changeOrderInfo.dnStatus==1" v-model="changeOrderInfo.dnSafePrice">&nbsp;&nbsp;）* 
+                                {{personlist.length}}人
+                            </div>
+                        </td>
+                    </tr>
+                    <tr v-if="changeOrderInfo.dnOrderStatus == 2">
+                        <td class="orange">实退金额：</td>
+                        <td colspan="3">
+                            <div class="div-price">
+                                <input type="text" class="txt small" :disabled="changeOrderInfo.dnStatus==1" v-model="changeOrderInfo.dnTotalPrice">
+                            </div>
+                        </td>
+                    </tr>
+                    <tr v-if="changeOrderInfo.dnOrderStatus == 3">
+                        <td class="orange">改期金额：</td>
+                        <td colspan="3">
+                            <div class="div-price">
+                                <input type="text" class="txt small" :disabled="changeOrderInfo.dnStatus==1" v-model="changeOrderInfo.dnTotalPrice">&nbsp;（&nbsp;&nbsp;
+                                改期费&nbsp;<input type="text" class="txt small" :disabled="changeOrderInfo.dnStatus==1" v-model="changeOrderInfo.dnChangeDatePrice">&nbsp;+&nbsp;
+                                差价&nbsp;<input type="text" class="txt small" :disabled="changeOrderInfo.dnStatus==1" v-model="changeOrderInfo.dnChaPrice">&nbsp;&nbsp;）
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>                        
+                        <td>备注：</td>
+                        <td colspan="3"><input class="txt" type="text" :disabled="changeOrderInfo.dnStatus==1" v-model="changeOrderInfo.dcContent" ></td>
+                    </tr>
+                </tbody>
+            </table>
+            <div class="btn-other" style="display:none;">+添加乘机人</div>
+            <table class="table-persons" cellspacing="1" cellpadding="0">
+                <thead>
+                    <tr>
+                        <th>乘机人</th>
+                        <th>联系电话（CTCM)</th>
+                        <th>证件类型</th>
+                        <th>证件号码</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr v-for="(item, i) in changePersonList" :key="i">
+                        <td>{{item.dcPerName}}（成人）</td>
+                        <td>{{item.dcPhone}}</td>
+                        <td>身份证</td>
+                        <td>{{item.dcIDNumber}} <span v-if="changePersonList.length > 1" @click="delPerson(item, i)">—</span></td>
+                    </tr>
+                </tbody>
+            </table>
+            <div class="btn-box">
+                <div class="btn" v-if="changeOrderInfo.dnStatus == 0" @click="changeOrder">保存</div>
+            </div>
+        </div>
+        <div class="box-bg" v-if="!isChangeType || changeOrderInfo.dcOrderID !== ''">
             <div class="trip-bill">
                 <table cellspacing="1" cellpadding="0">
                     <tbody>
@@ -285,7 +382,7 @@
                     </tbody>
                 </table>
             </div>
-            <div class="btn" @click="submitTicket">提交</div>
+            <div class="btn" v-if="ticketinfo.dnIsTicket" @click="submitTicket">提交</div>
         </div>
     </div>
 </template>
@@ -300,7 +397,6 @@ export default {
             cid: '',
             ticketid: '',
             account: {},
-            checkOrderStatus: '',
             OutTicket: [],
             orderinfo: {},
             flightinfo: {},
@@ -339,6 +435,9 @@ export default {
                 dcSendTicketerName: '无',
                 dnIsTicket: 0
             },
+            changeOrderInfo: '',
+            changePersonList: '',
+            changeFlightInfo: ''
         }
     },
     components: {
@@ -350,45 +449,44 @@ export default {
                 this.orderinfo.dnStatus = 1
                 this.orderinfo.dcAdminID = this.account.id
                 this.orderinfo.dcAdminName = this.account.uname
-                if (!this.isChangeType) {
-                    this.$http.post(this.apis + '/api/gnorder/editorder', this.orderinfo)
-                    .then(res => {
-                        if (res && res.data) {
-                            if (res.data.status == 1){
-                                if (this.orderStatus.key == 1) {
-                                    this.checkOrderStatus = this.orderinfo.dnStatus
-                                }
-                                if (this.delPP) {
-                                    this.$http.get(this.apis + '/api/order/delperson', {params: {
-                                        id: this.delPP
-                                    }})
-                                    .then(res => {})
-                                }
-                                this.MessageBox('保存成功！').then(() => {
-                                    this.backPage()
-                                })
-                            } else if (res.data.status == -1){
-                                this.MessageBox(res.data.msg).then(() => {
-                                    this.backPage()
-                                })
-                            } else {
-                                this.MessageBox(res.data.msg)
+                this.$http.post(this.apis + '/api/gnorder/editorder', this.orderinfo)
+                .then(res => {
+                    if (res && res.data) {
+                        if (res.data.status == 1){
+                            if (this.delPP) {
+                                this.$http.get(this.apis + '/api/order/delperson', {params: {
+                                    id: this.delPP
+                                }})
+                                .then(res => {})
                             }
-                        }
-                    })
-                } else {
-                    this.$http.post(this.apis + '/api/order/changeorder', this.orderinfo)
-                    .then(res => {
-                        if (res && res.data && res.data.status != 0) {
                             this.MessageBox('保存成功！').then(() => {
                                 this.backPage()
                             })
+                        } else if (res.data.status == -1){
+                            this.MessageBox(res.data.msg).then(() => {
+                                this.backPage()
+                            })
+                        } else {
+                            this.MessageBox(res.data.msg)
                         }
-                    })
-                }
+                    }
+                })
             } else {
                 this.MessageBox('请输入票号！')
             }
+        },
+        changeOrder () {
+            this.$http.post(this.apis + '/api/order/changeorder', {
+                orderinfo: this.changeOrderInfo,
+                personlist: this.changePersonList,
+                flightinfo: this.changeFlightInfo
+            }).then(res => {
+                if (res && res.data && res.data.status != 0) {
+                    this.MessageBox('保存成功！').then(() => {
+                        this.backPage()
+                    })
+                }
+            })
         },
         delPerson (item, i) {
             this.delPP = this.delPP + ',' + item.dcOPID
@@ -413,9 +511,18 @@ export default {
             })
         },
         changeOrderType (v) {
-            this.orderinfo.dnOrderStatus = v
-            this.orderinfo.dtAddTime = ''
             this.isChangeType = true
+            this.changeOrderInfo = JSON.parse(JSON.stringify(this.orderinfo))
+            this.changeOrderInfo.dnOrderStatus = v
+            this.changeOrderInfo.dcAdminID = ''
+            this.changeOrderInfo.dcAdminName = ''
+            this.changeOrderInfo.dtAddTime = ''
+            this.changeOrderInfo.dnStatus = 0
+            this.changeOrderInfo.dcOrderID = ''
+            this.changeOrderInfo.dnTotalPrice = 0
+            this.changeOrderInfo.dcLiantuoOrderNo = this.orderinfo.dcOrderID
+            this.changePersonList = JSON.parse(JSON.stringify(this.personlist))
+            this.changeFlightInfo = JSON.parse(JSON.stringify(this.flightinfo))
         },
         getOutTicket () {
             //获取出票点
@@ -467,23 +574,7 @@ export default {
                     _n += this.personlist[key].dcPerName
                 }
                 this.ticketinfo.dcPersonName = _n
-
-                this.getOutTicket()
-                this.getSendTicketer()
             }
-        },
-        getOutTicket () {
-            //获取出票点
-            this.$http.get(this.apis + '/api/ticket/getgjoutticket', {params: {}})
-            .then(res => {
-                if (res && res.data && res.data.status != 0) {
-                    let arr = res.data.data
-                    arr.sort((x, y) => {
-                        return x.name.charCodeAt(0) - y.name.charCodeAt(0)
-                    })
-                    this.OutTicket = arr
-                }
-            })
         },
         countAutoPrice () {
             let sprice = this.ticketinfo.dnSellPrice || 0
@@ -523,39 +614,60 @@ export default {
                     })
                 }
             })
+        },
+        getOrderInfo (id, callback) {
+            this.$http.get(this.apis + '/api/orderlist/getgjorderdetail', {params: {
+                id: id,
+                cid: this.cid
+            }})
+            .then(res => {
+                if (res && res.data && res.data.status != 0) {
+                    callback(res.data.data)
+                }
+            })
         }
     },
     created () {
         this.account = JSON.parse(sessionStorage.getItem('loginData'))
         this.orderid = this.$route.query.id
         this.cid = this.$route.query.cid
-        this.$http.get(this.apis + '/api/orderlist/getgjorderdetail', {params: {
-            id: this.orderid,
-            cid: this.cid
-        }})
-        .then(res => {
-            if (res && res.data && res.data.status != 0) {
-                let _d = res.data.data
-                if (_d.info && _d.info.length > 0) {
+        this.getOrderInfo(this.orderid, (res) => {
+            let _d = res
+            if (_d.info && _d.info.length > 0) {
+                if(_d.info[0].dcLiantuoOrderNo.length > 1) {
+                    this.changeOrderInfo = _d.info[0]
+                    if (this.changeOrderInfo.dnIsTicket > 0) {
+                        this.ticketid = this.changeOrderInfo.dcOrderID
+                        this.getTicket()
+                    } else {
+                        this.showTicket()
+                        this.countAutoPrice()
+                    }
+
+                    this.changeFlightInfo = _d.flight[0]
+                    this.changePersonList = _d.person
+
+                    this.getOrderInfo(_d.info[0].dcLiantuoOrderNo, (result) => {
+                        this.orderinfo = result.info[0]
+
+                        this.flightinfo = result.flight[0]
+                        this.personlist = result.person
+                    })
+                } else {
                     this.orderinfo = _d.info[0]
                     if (this.orderinfo.dnIsTicket > 0) {
                         this.ticketid = this.orderinfo.dcOrderID
-                        this.getTicket()
-                        this.getOutTicket()
-                        this.getSendTicketer()
+                        this.getTicket(this.ticketid)
                     } else {
                         this.showTicket()
+                        this.countAutoPrice()
                     }
-
-                    this.orderStatus = {
-                        key: this.orderinfo.dnStatus,
-                        value: this.utils.checkStatus(this.orderinfo.dnStatus)
-                    }
-                    this.checkOrderStatus = this.orderinfo.dnStatus
                     this.flightinfo = _d.flight[0]
                     this.personlist = _d.person
                 }
             }
+            this.getOutTicket()
+            this.getSendTicketer()
         })
     }
 }
@@ -601,11 +713,21 @@ export default {
                     box-sizing: border-box;
                     padding-left: 10px;
                 }
+                .txt:disabled{
+                    background-color: #fff;
+                    border: 0;
+                    padding-left: 0;
+                }
                 .div-price{
                     display: flex;
                     align-items: center;
                     .small{
                         width: 60px;
+                        text-align: center;
+                        padding: 0;
+                    }
+                    .middle{
+                        width: 120px;
                         text-align: center;
                         padding: 0;
                     }
@@ -668,6 +790,15 @@ export default {
             .btn-other{
                 margin: 0 0 0 20px;
             }
+        }
+    }
+    .change-info{
+        margin-top: 20px;
+        padding-top: 20px;
+        .title{
+            color: #fe7122;
+            font-size: 20px;
+            margin-bottom: 10px;
         }
     }
     .detail-info-back{

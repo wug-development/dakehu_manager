@@ -299,7 +299,12 @@ export default {
             }
         },
         getVersion () {
-            this.$http.get('http://www.airkx.cn/dakehu/static/version.json?v=' + Math.random(), { params: {}})
+            let _hn = window.location.hostname
+            if (window.location.port) {
+                _hn += ":" + window.location.port
+            }
+            _hn += window.location.pathname
+            this.$http.get('http://' + _hn + 'static/version.json?v=' + Math.random(), { params: {}})
             .then((res) => {
                 console.log(res)
                 let _v = res.data
@@ -311,11 +316,11 @@ export default {
                 if (_lv) {
                     if (_v.v != Number(_lv)) {
                         sessionStorage.setItem('version', _v.v)
-                        window.location.href = 'http://www.airkx.cn/dakehu/?v=' + _v.v + '/#/main'
+                        window.location.href = 'http://' + _hn + '?v=' + _v.v + '/#/main'
                     }
                 } else {
                     sessionStorage.setItem('version', _v.v)
-                    window.location.href = 'http://www.airkx.cn/dakehu/?v=' + _v.v + '/#/main'
+                    window.location.href = 'http://' + _hn + '?v=' + _v.v + '/#/main'
                 }
             })
         }
@@ -361,10 +366,8 @@ export default {
 @import '../../assets/sass/set.scss';
 @import '../../assets/sass/table-list.scss';
 .nowdayorder-box{
-    height: 100%;
     display: flex;
     flex-direction: column;
-    overflow: hidden;
     .search-box{
         padding: 22px 35px;
         min-width: 800px;

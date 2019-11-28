@@ -196,7 +196,7 @@ export default {
             }).catch(() => {})
         },
         addData () {
-            if (this.uinfo.CjrName != '' && this.uinfo.phone != ''){
+            if (this.uinfo.CjrName != '' && this.uinfo.phone != '' && this.uinfo.jingji != ''){
                 if (this.uinfo.idcard === '' && this.uinfo.HZH === '') {
                     this.MessageBox('请输入证件号码')
                 } else if (this.uinfo.jingji != '' && this.uinfo.jingji === this.uinfo.phone) {
@@ -221,7 +221,7 @@ export default {
                     })
                 }
             } else {
-                this.MessageBox('请输入姓名和手机号')
+                this.MessageBox('请输入姓名、手机号、紧急人手机')
             }
         },
         showAddPerson () {
