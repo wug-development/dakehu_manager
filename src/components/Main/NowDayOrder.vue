@@ -71,7 +71,7 @@
                 <div class="btns">
                     <div class="btn-label btn-del" @click="delOrder">删除</div>
                 </div>
-                <el-pagination v-if="(pageCount > 1)" background layout="prev, pager, next" :page-size="pageNum" @current-change="handleCurrentChange" :total="pageCount"></el-pagination>
+                <el-pagination background layout="prev, pager, next" :page-size="pageNum" @current-change="handleCurrentChange" :total="pageCount"></el-pagination>
             </div>
         </div>
     </div>
@@ -97,7 +97,7 @@ export default {
             sdate: '',
             isCheckAll: false,
             page: 1,
-            pageNum: 5,
+            pageNum: 10,
             pageCount: 1,
             orderList: [],
             checkOrder: []
@@ -131,8 +131,10 @@ export default {
             }})
             .then(res => {
                 if (res && res.data && res.data.status != 0) {
-                    this.pageCount = res.data.data.pageCount
                     this.orderList = res.data.data.data
+                    if (res.data.data.pagecount) {
+                        this.pageCount = res.data.data.pagecount
+                    }
                 }
             })
         },
@@ -296,9 +298,10 @@ export default {
                 this.MessageBox('请选择企业', '温馨提示')
             }
         },
-        getVersion () {            
-            this.$http.get('http://www.airkx.cn/dakehu/static/version.json', { params: {}})
+        getVersion () {
+            this.$http.get('http://www.airkx.cn/dakehu/static/version.json?v=' + Math.random(), { params: {}})
             .then((res) => {
+                console.log(res)
                 let _v = res.data
                 if (typeof(_v) === 'string') {
                     _v = JSON.parse(_v)
@@ -307,6 +310,7 @@ export default {
                 let _lv = sessionStorage.getItem('version')
                 if (_lv) {
                     if (_v.v != Number(_lv)) {
+                        sessionStorage.setItem('version', _v.v)
                         window.location.href = 'http://www.airkx.cn/dakehu/?v=' + _v.v + '/#/main'
                     }
                 } else {
