@@ -353,19 +353,27 @@ export default {
                 if (!this.isChangeType) {
                     this.$http.post(this.apis + '/api/gnorder/editorder', this.orderinfo)
                     .then(res => {
-                        if (res && res.data && res.data.status != 0) {
-                            if (this.orderStatus.key == 1) {
-                                this.checkOrderStatus = this.orderinfo.dnStatus
+                        if (res && res.data) {
+                            if (res.data.status == 1){
+                                if (this.orderStatus.key == 1) {
+                                    this.checkOrderStatus = this.orderinfo.dnStatus
+                                }
+                                if (this.delPP) {
+                                    this.$http.get(this.apis + '/api/order/delperson', {params: {
+                                        id: this.delPP
+                                    }})
+                                    .then(res => {})
+                                }
+                                this.MessageBox('保存成功！').then(() => {
+                                    this.backPage()
+                                })
+                            } else if (res.data.status == -1){
+                                this.MessageBox(res.data.msg).then(() => {
+                                    this.backPage()
+                                })
+                            } else {
+                                this.MessageBox(res.data.msg)
                             }
-                            if (this.delPP) {
-                                this.$http.get(this.apis + '/api/order/delperson', {params: {
-                                    id: this.delPP
-                                }})
-                                .then(res => {})
-                            }
-                            this.MessageBox('保存成功！').then(() => {
-                                this.backPage()
-                            })
                         }
                     })
                 } else {
