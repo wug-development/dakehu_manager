@@ -24,7 +24,7 @@
                     <el-option v-for="item in ecityList" :key="item.id" :label="item.name" :value="item"></el-option>
                 </el-select>
                 <div>出发日期:</div>
-                <el-date-picker v-model="sdate" type="date" value-format="yyyy-MM-dd" placeholder="请选择"></el-date-picker>
+                <el-date-picker v-model="sdate" type="date" :picker-options="pickerOptions" value-format="yyyy-MM-dd" placeholder="请选择"></el-date-picker>
                 <div class="btn-search" @click="gnsearch">
                     国内查询
                 </div>
@@ -62,7 +62,7 @@
                         <td>{{item.dcStartDate}}</td>
                         <td>{{item.dnTotalPrice}}</td>
                         <td>{{item.dtAddTime.replace('T', ' ')}}</td>
-                        <td :class='item.dnStatus == 0? "deal" : ""'>{{checkstatus(item.dnStatus)}}</td>
+                        <td :class='item.dnStatus == 0? "deal" : ""'>{{utils.checkStatus(item.dnStatus)}} <span class="status">{{checkStatus(item.dnOrderStatus)}}</span></td>
                         <td>{{item.dcAdminName}}</td>
                     </tr>
                 </tbody>
@@ -93,7 +93,13 @@ export default {
             cityList: [],
             scityList: [],
             ecityList: [],
-            pickerOptions: {},
+            pickerOptions: {
+                disabledDate(time) {
+                    let date = new Date()
+                    date.setDate(date.getDate() - 1)
+                    return time.getTime() <= date.getTime()
+                }
+            },
             sdate: '',
             isCheckAll: false,
             page: 1,
@@ -158,13 +164,12 @@ export default {
                 this.checkOrder = []
             }
         },
-        checkstatus: function (v) {
-            let txt = ''
-            switch (v) {
-                case 0: txt = '未处理'; break;
-                default: txt = '处理完成'; break;
+        checkStatus (v) {
+            if (v == 2) {
+                return '(退票)'
+            } else if(v == 3){
+                return '(改期)'
             }
-            return txt
         },
         delOrder: function () {
             if (this.checkOrder.length > 0) {
@@ -178,7 +183,8 @@ export default {
                     }})
                     .then(res => {
                         if (res && res.data && res.data.status != 0) {
-                            if (res.data.data > 0) {                            
+                            if (res.data.data > 0) {
+                                this.getOrderList()
                                 this.Notification({
                                     title: '删除成功',
                                     message: '',
@@ -409,6 +415,9 @@ export default {
         margin-top: 20px;
         height: 100%;
         overflow: hidden;
+        .status{
+            color: #fe7122;
+        }
     }
 }
 </style>

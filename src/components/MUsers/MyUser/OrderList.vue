@@ -42,7 +42,7 @@
                         <td>{{item.sdate}}</td>
                         <td>{{item.totalprice}}</td>
                         <td>{{item.addtime.substr(0,10)}}</td>
-                        <td :class='item.status == "0"? "deal" : (item.status == "1"? "" : "wait")'>{{utils.checkStatus(item.status)}}</td>
+                        <td :class='item.status == "0"? "deal" : (item.status == "1"? "" : "wait")'>{{utils.checkStatus(item.status)}} <span class="status">{{checkStatus(item.orderstatus)}}</span></td>
                         <td>{{item.adminname}}</td>
                     </tr>
                 </tbody>
@@ -200,6 +200,13 @@ export default {
                     }
                 })
             }
+        },
+        checkStatus (v) {
+            if (v == 2) {
+                return '退票'
+            } else if(v == 3){
+                return '改期'
+            }
         }
     },
     components: {
@@ -282,6 +289,9 @@ export default {
     .noworder-box{
         margin-top: 20px;
         min-height: 150px;
+        .status{
+            color: #fe7122;
+        }
     }
 }
 </style>
