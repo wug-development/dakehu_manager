@@ -128,15 +128,15 @@
                     </tr>
                     <tr>
                         <td>航班号：</td>
-                        <td><input class="txt" type="text" @change="showChangeTicket" :disabled="changeOrderInfo.dcOrderID || changeOrderInfo.dnStatus==1" v-model="changeFlightInfo.dcAirCode" ></td>
+                        <td><input class="txt" type="text" @change="showChangeTicket" :disabled="changeOrderInfo.dnStatus==1" v-model="changeFlightInfo.dcAirCode" ></td>
                         <td>航站楼：</td>
-                        <td><input class="txt" type="text" @change="showChangeTicket" :disabled="changeOrderInfo.dcOrderID || changeOrderInfo.dnStatus==1" v-model="changeFlightInfo.dcSJetquay" ></td>
+                        <td><input class="txt" type="text" @change="showChangeTicket" :disabled="changeOrderInfo.dnStatus==1" v-model="changeFlightInfo.dcSJetquay" ></td>
                     </tr>
                     <tr>
                         <td>起落时间：</td>
                         <td>
                             <div class="div-price">
-                                <input type="text" class="txt small" @change="showChangeTicket" :disabled="changeOrderInfo.dcOrderID || changeOrderInfo.dnStatus==1" v-model="changeFlightInfo.dcSTime">&nbsp;&nbsp;-&nbsp;&nbsp;<input type="text" class="txt small" @change="showChangeTicket" :disabled="changeOrderInfo.dcOrderID || changeOrderInfo.dnStatus==1" v-model="changeFlightInfo.dcETime">
+                                <input type="text" class="txt small" @change="showChangeTicket" :disabled="changeOrderInfo.dnStatus==1" v-model="changeFlightInfo.dcSTime">&nbsp;&nbsp;-&nbsp;&nbsp;<input type="text" class="txt small" @change="showChangeTicket" :disabled="changeOrderInfo.dnStatus==1" v-model="changeFlightInfo.dcETime">
                             </div>
                         </td>
                         <td>CTCM：</td>
@@ -144,7 +144,7 @@
                     </tr>
                     <tr>
                         <td>舱位：</td>
-                        <td><input class="txt" type="text" @change="showChangeTicket" :disabled="changeOrderInfo.dcOrderID || changeOrderInfo.dnStatus==1" v-model="changeFlightInfo.dcSeatMsg" ></td>
+                        <td><input class="txt" type="text" @change="showChangeTicket" :disabled="changeOrderInfo.dnStatus==1" v-model="changeFlightInfo.dcSeatMsg" ></td>
                         <td>CTCT：</td>
                         <td><input class="txt" type="text" @change="showChangeTicket" :disabled="changeOrderInfo.dnStatus==1" v-model="changeOrderInfo.dcCTCT" ></td>
                     </tr>
