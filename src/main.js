@@ -9,6 +9,7 @@ import ElementUI from 'element-ui';
 import 'element-ui/lib/theme-chalk/index.css';
 import Notification from 'element-ui/lib/notification'
 import MessageBox from 'element-ui/lib/message-box'
+import IScroll from 'element-ui/lib/infiniteScroll'
 
 import common from '../common/common'
 
@@ -22,6 +23,8 @@ Vue.prototype.Notification = Notification
 Vue.prototype.MessageBox = MessageBox
 
 Vue.use(ElementUI)
+Vue.use(IScroll)
+Vue.component(IScroll.name, IScroll)
 
 /* eslint-disable no-new */
 new Vue({

@@ -81,31 +81,33 @@
         </div>
 
         <div class="table-persons" v-show="showPerson && personAllList.length">
-            <table>
-                <thead>
-                    <tr>
-                        <td><div></div></td>
-                        <td>乘机人姓名</td>
-                        <td>证件号码</td>
-                        <td>护照号码</td>
-                        <td>乘机人手机</td>
-                        <td>紧急人手机</td>
-                        <td>操作</td>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr v-for="(item, i) in personAllList" :key="i" :class="isEdit===i?'cur':''">
-                        <td><div :class='"check-box" + (selPerson.indexOf(item.id) > -1? " el-icon-check":"")' @click="checkPerson(i, item.id)"></div></td>
-                        <td><input type="text" :readonly="isEdit===i ? false : 'readonly'" maxlength="50" v-model="item.name" /></td>
-                        <td><input type="text" :readonly="isEdit===i ? false : 'readonly'" maxlength="50" v-model="item.idcard" /></td>
-                        <td><input type="text" :readonly="isEdit===i ? false : 'readonly'" maxlength="50" v-model="item.hzh" /></td>
-                        <td><input type="text" :readonly="isEdit===i ? false : 'readonly'" maxlength="50" v-model="item.phone" /></td>
-                        <td><input type="text" :readonly="isEdit===i ? false : 'readonly'" maxlength="50" v-model="item.jjphone" /></td>
-                        <td><span v-if="isEdit===i" @click="savePerson(i)" class="btn-save">保存</span><span v-else class="btn-edit" @click="isEdit = i">修改</span></td>
-                    </tr>
-                </tbody>
-            </table>
-            <div class="btn">确定</div>
+            <div class="div-persearch"><input type="text" v-model="searchKey" class="txt-search" placeholder="请输入乘机人姓名或手机号" /> <div class="btn" @click="searchPer">搜索</div></div>
+            <div class="scroll-table" v-infinite-scroll="loadMorePer" infinite-scroll-immediate="false">
+                <table>
+                    <thead>
+                        <tr>
+                            <td><div></div></td>
+                            <td>乘机人姓名</td>
+                            <td>证件号码</td>
+                            <td>护照号码</td>
+                            <td>乘机人手机</td>
+                            <td>紧急人手机</td>
+                            <td>操作</td>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr v-for="(item, i) in personAllList" :key="i" :class="isEdit===i?'cur':''">
+                            <td><div :class='"check-box" + (selPerson.indexOf(item.id) > -1? " el-icon-check":"")' @click="checkPerson(i, item.id)"></div></td>
+                            <td><input type="text" class="w30" :readonly="isEdit===i ? false : 'readonly'" maxlength="50" v-model="item.name" /></td>
+                            <td><input type="text" class="w15" :readonly="isEdit===i ? false : 'readonly'" maxlength="50" v-model="item.idcard" /></td>
+                            <td><input type="text" class="w10" :readonly="isEdit===i ? false : 'readonly'" maxlength="50" v-model="item.hzh" /></td>
+                            <td><input type="text" class="w10" :readonly="isEdit===i ? false : 'readonly'" maxlength="50" v-model="item.phone" /></td>
+                            <td><input type="text" class="w10" :readonly="isEdit===i ? false : 'readonly'" maxlength="50" v-model="item.jjphone" /></td>
+                            <td><span v-if="isEdit===i" @click="savePerson(i)" class="btn-save">保存</span><span v-else class="btn-edit" @click="isEdit = i">修改</span></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
         </div>
 
         <div class="div_btn">
@@ -146,7 +148,11 @@ export default {
             isEdit: '',
             isCheckAll: false,
             showPerson: false,
-            selCompany: {}
+            selCompany: {},
+            page: 0,
+            searchKey: '',
+            isMorePer: false,
+            morePerLoading: false
         }
     },
     components: {
@@ -263,12 +269,27 @@ export default {
         },
         getPersonList () {
             this.$http.get(this.apis + '/api/passenger/GetPersonList', {params: {
-                cid: this.selCompany.id
+                cid: this.selCompany.id,
+                page: this.page,
+                pagenum: 20,
+                key: this.searchKey
             }})
             .then(res => {
+                console.log(res)
                 if (res && res.data && res.data.status != 0) {
-                    this.personAllList = res.data.data
+                    if (res.data.data.data.length > 0) {
+                        if (res.data.data.pagecount) {
+                            this.personAllList = res.data.data.data
+                        } else {
+                            for (let i in res.data.data.data) {
+                                this.personAllList.push(res.data.data.data[i])
+                            }
+                        } 
+                    } else {
+                        this.isMorePer = true
+                    }            
                 }
+                this.morePerLoading = false
             });
         },
         savePerson (i) {
@@ -345,6 +366,18 @@ export default {
                 })
             }
         },
+        loadMorePer () {
+            if (!this.morePerLoading && !this.isMorePer) {
+                this.page += 1
+                this.morePerLoading = true
+                this.getPersonList()
+            }
+        },
+        searchPer () {
+            this.page = 0
+            this.isMorePer = false
+            this.loadMorePer()
+        }
     },
     created () {
         this.flight = JSON.parse(sessionStorage.getItem('bookFlight'))
@@ -361,7 +394,7 @@ export default {
         // 通过计算获取经济舱Y的儿童价
         this.getCountYChildPrice()
 
-        this.getPersonList()
+        this.loadMorePer()
 
         this.addItem()
 
@@ -543,73 +576,99 @@ export default {
     }
     .table-persons{
         background-color: #e8f1f7;
-        padding: 20px 60px;
         box-sizing: border-box;
+        padding: 0;
         max-height: 300px;
-        overflow: hidden auto;
-        table{
-            width: 100%;
-            text-align: center;
-            tr{
-                td{
-                    height: 30px;
-                    line-height: 30px;
-                    .check-box{
-                        cursor: pointer;
-                        margin: 0 auto;
-                        width: 16px;
-                        height: 16px;
-                        border: 1px solid #8f8d8d;
-                        box-sizing: border-box;
-                    }
-                    .el-icon-check{
-                        border: 1px solid $pubcolor;
-                        background-color: $pubcolor;
-                        color: #fff;
-                    }
-                    .btn-edit{
-                        display: block;
-                        width: 40px;
-                        height: 20px;
-                        line-height: 20px;
-                        cursor: pointer;
-                        margin: 0 auto;
-                    }
-                    .btn-save{
-                        width: 40px;
-                        height: 20px;
-                        line-height: 20px;
-                        cursor: pointer;
-                        margin: 0 auto;
-                    }
-                    input{
-                        text-align: center;
-                        border: 1px solid #d5dce0;
-                        background-color: #fff;
-                    }
-                    input:read-only{
-                        background-color: #e8f1f7;
-                        border: 1px solid #e8f1f7;
-                    }
-                }
-                td:first-child{
-                    width: 30px;
-                }
+        .div-persearch{
+            display: flex;
+            padding: 5px 0 0 60px;
+            .txt-search{
+                border: 0;
+                padding-left: 10px;
+                width: 200px;
+                height: 30px;
+                line-height: 30px;
             }
-            .cur{
-                .btn-save{
-                    display: block;
-                    background-color: #fe7122;
-                    color: #fff;
-                }
+            .btn{
+                display: block;
+                width: 80px;
+                height: 30px;
+                line-height: 30px;
+                margin-left: 15px;
             }
         }
-        .btn{
-            display: none;
-            margin: 20px 0 0 40px;
-            width: 80px;
-            height: 30px;
-            line-height: 30px;
+        .scroll-table{
+            max-height: 240px;
+            padding: 5px 20px;
+            box-sizing: border-box;
+            overflow: hidden auto;
+            table{
+                width: 100%;
+                text-align: center;
+                tr{
+                    td{
+                        height: 30px;
+                        line-height: 30px;
+                        .check-box{
+                            cursor: pointer;
+                            margin: 0 auto;
+                            width: 16px;
+                            height: 16px;
+                            border: 1px solid #8f8d8d;
+                            box-sizing: border-box;
+                        }
+                        .el-icon-check{
+                            border: 1px solid $pubcolor;
+                            background-color: $pubcolor;
+                            color: #fff;
+                        }
+                        .btn-edit{
+                            display: block;
+                            width: 40px;
+                            height: 20px;
+                            line-height: 20px;
+                            cursor: pointer;
+                            margin: 0 auto;
+                        }
+                        .btn-save{
+                            width: 40px;
+                            height: 20px;
+                            line-height: 20px;
+                            cursor: pointer;
+                            margin: 0 auto;
+                        }
+                        input{
+                            width: 150px;
+                            text-align: center;
+                            border: 0;
+                            background-color: #fff;
+                        }
+                        input:read-only{
+                            background-color: #e8f1f7;
+                            border: 1px solid #e8f1f7;
+                        }
+                        .w30{
+                            width: 300px;
+                        }
+                        .w15{
+                            width: 150px;
+                        }
+                        .w10{
+                            width: 100px;
+                        }
+                    }
+                    td:first-child{
+                        width: 30px;
+                    }
+                }
+                .cur{
+                    .btn-save{
+                        display: block;
+                        background-color: #fe7122;
+                        color: #fff;
+                    }
+                }
+            }
         }
     }
     .div_btn{
