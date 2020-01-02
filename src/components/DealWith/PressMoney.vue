@@ -68,7 +68,7 @@ export default {
             box-sizing: border-box;
             box-shadow: 2px 2px 5px #ddd;
             padding-top: 8px;
-            background: linear-gradient(left, #abdbe6, #7ac6d7);
+            background: linear-gradient(to left, #abdbe6, #7ac6d7);
             margin: 0 30px 60px 0;
             >div{
                 width: 100%;
@@ -106,25 +106,25 @@ export default {
             }
         }
         li:nth-child(5n+1){
-            background: linear-gradient(left, #abdbe6, #7ac6d7);
+            background: linear-gradient(to left, #abdbe6, #7ac6d7);
             .div_company::before{
                 background-color: #7ac6d7;
             }
         }
         li:nth-child(5n+2),li:nth-child(5n+5){
-            background: linear-gradient(left, #ffc6bd, #ffa89a);
+            background: linear-gradient(to left, #ffc6bd, #ffa89a);
             .div_company::before{
                 background-color: #ffa89a;
             }
         }
         li:nth-child(5n+3){
-            background: linear-gradient(left, #d7ccf3, #8362d9);
+            background: linear-gradient(to left, #d7ccf3, #8362d9);
             .div_company::before{
                 background-color: #8362d9;
             }
         }
         li:nth-child(5n+4){
-            background: linear-gradient(left, #b4d9fc, #8bc4fa);
+            background: linear-gradient(to left, #b4d9fc, #8bc4fa);
             .div_company::before{
                 background-color: #8bc4fa;
             }
