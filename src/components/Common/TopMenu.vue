@@ -9,7 +9,7 @@
             </el-dropdown-menu>
         </el-dropdown> -->
         <div class="el-dropdown-link">
-            {{selCompany.name}}
+            {{selCompany.shortname}}
         </div>
         <div id="index" :class='$store.state.topmenu == "index"? "cur" : ""'>机票订单</div>
         <div id="payrecord" :class='$store.state.topmenu == "payrecord"? "cur" : ""'>付款记录</div>

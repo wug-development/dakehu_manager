@@ -3,7 +3,7 @@
         <SiteMap></SiteMap>
         <ul class="xuser-list">
             <li v-for="(item, i) in dataList" :key="i">
-                <div class="title">{{item.name}}<span>({{item.credit}})</span></div>
+                <div class="title">{{item.shortname}}<span>({{item.credit}})</span></div>
                 <div class="count-money">
                     <span>结算金额：</span>
                     <div>&yen;{{item.price}}</div>

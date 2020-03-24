@@ -10,7 +10,7 @@
                 reserve-keyword
                 placeholder="请输入用户简称"
                 :remote-method="remoteMethod">
-                <el-option v-for="item in options" :key="item.firstletter" :label="item.name" :value="item.name"></el-option>
+                <el-option v-for="item in options" :key="item.firstletter" :label="item.shortname" :value="item.shortname"></el-option>
             </el-select>
             <div class="btn" @click="searchData">搜索</div>
         </div>
@@ -33,7 +33,7 @@
                 <dd>
                     <ul v-for="(item, i) in dataList" :key="i">
                         <li class="w2"></li>
-                        <li class="active wleft w12"><span @click="toPage(item)">{{item.name}}</span> <div v-if="item.childnum > 0"  @click="showSubCompany(item.id, i)" :class="showSub == item.id?'el-icon-arrow-up' : 'el-icon-arrow-down'"></div></li>
+                        <li class="active wleft w12"><span @click="toPage(item)">{{item.shortname}}</span> <div v-if="item.childnum > 0"  @click="showSubCompany(item.id, i)" :class="showSub == item.id?'el-icon-arrow-up' : 'el-icon-arrow-down'"></div></li>
                         <li class="w10">{{item.pass}}</li>
                         <li class="w10">{{item.linkman}}</li>
                         <li class="w12">{{item.phone}}</li>
@@ -43,7 +43,7 @@
                             <div class="btns-box">
                                 <div class="btn-del"><router-link :to="'/main/edituser?id=' + item.id ">详情</router-link></div>
                                 <div :class='item.isUse==1?"btn-success":"btn-default"' @click="setUse(item)">{{item.isUse==1?'不常用':'常用'}}</div>
-                                <div class="btn-warn"><a target="_blank" :href='pcPath + "?uname=" + item.name + "&upass=" + item.pass'>前台</a></div>
+                                <div class="btn-warn"><a target="_blank" :href='pcPath + "?uname=" + item.shortname + "&upass=" + item.pass'>前台</a></div>
                                 <div class="btn-danger" v-if="isLimitDel" @click="del(item.id)">删除</div>
                             </div>
                         </li>
@@ -210,7 +210,8 @@ export default {
         toPage (v) {
             this.$store.state.selCompany = {
                 id: v.id,
-                name: v.name
+                name: v.name,
+                shortname: v.shortname
             }
             sessionStorage.setItem('selCompany', JSON.stringify(v))
             this.$router.push({
