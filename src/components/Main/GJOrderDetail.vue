@@ -346,7 +346,7 @@ export default {
         },
         submitTicket () {
             this.ticketinfo.dcCompanyID = this.selCompany.id
-            this.ticketinfo.dcCompany = this.selCompany.name
+            this.ticketinfo.dcCompany = this.selCompany.shortname
             if (this.selOutTicket) {
                 this.ticketinfo.dcOutTicketID = this.selOutTicket.id
                 this.ticketinfo.dcOutTicketName = this.selOutTicket.name

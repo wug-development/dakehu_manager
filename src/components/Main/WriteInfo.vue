@@ -341,7 +341,7 @@ export default {
                 scity: this.search.scity,
                 ecity: this.search.ecity,
                 sdate: this.search.sdate,
-                cname: this.selCompany.name,
+                cname: this.selCompany.shortname,
                 personlist: this.selPersonList,
                 airbody: this.flight,
                 airseat: this.seat
