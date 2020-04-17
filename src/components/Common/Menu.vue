@@ -26,7 +26,7 @@ export default {
     name: 'Menu',
     data () {
         return {
-            OpenNode: ['1'],
+            OpenNode: ['0'],
             isCheck: 'index',
             menuList: []
         }

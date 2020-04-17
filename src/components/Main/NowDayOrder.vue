@@ -335,6 +335,8 @@ export default {
         SiteMap
     },
     created () {
+        this.$store.state.menuCur = 'index'
+
         this.getVersion()
 
         // 获取订单列表

@@ -7,7 +7,7 @@
         
         <div class="btn-box">
             <div class="btn-other" @click="sendEmail">发送密码重置页面</div>
-            <span>至 （{{email}}）</span>
+            <span>至 <input type="text" class="txt-email" v-model="email"></span>
         </div>
     </div>
 </template>
@@ -18,7 +18,7 @@ export default {
     name: 'SendEmail',
     data () {
         return {
-            email: 'guangwu@roseonly.com'
+            email: ''
         }
     },
     components: {
@@ -37,7 +37,7 @@ export default {
         }
     },
     created () {
-        //this.email = sessionStorage.getItem('sendemail')
+        this.email = sessionStorage.getItem('sendemail')
     }
 }
 </script>
@@ -57,6 +57,15 @@ export default {
             margin-left: 15px;
             line-height: 40px;
             color: $pubbtncolor;
+        }
+        .txt-email{
+            border: 1px solid #aaa;
+            height: 40px;
+            box-sizing: border-box;
+            text-indent: 1em;
+            width: 260px;
+            margin-left: 10px;
+            color: #333;
         }
     }
 }
