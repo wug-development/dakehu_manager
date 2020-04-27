@@ -6,7 +6,7 @@
         </div>
         
         <div class="btn-box">
-            <div class="btn-other" @click="sendEmail">发送密码重置页面</div>
+            <div class="btn-other" @click="sendEmail">发送密码重置页面 <i v-if="isLogining" class="el-icon-loading"></i></div>
             <span>至 <input type="text" class="txt-email" v-model="email"></span>
         </div>
     </div>
@@ -18,18 +18,21 @@ export default {
     name: 'SendEmail',
     data () {
         return {
-            email: ''
+            email: '',
+            isLogining: false
         }
     },
     components: {
         SiteMap
     },
     methods : {
-        sendEmail: function () {            
+        sendEmail: function () {         
+            this.isLogining = true   
             this.$http.get(this.apis + '/api/company/sendemail', {params: {
                 email: this.email
             }})
             .then(res => {
+                this.isLogining = false
                 if (res && res.data && res.data.status != 0) {
                     this.MessageBox('发送成功', '温馨提示')
                 }
@@ -66,6 +69,9 @@ export default {
             width: 260px;
             margin-left: 10px;
             color: #333;
+        }
+        .el-icon-loading{
+            color: #fe7122;
         }
     }
 }
