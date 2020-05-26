@@ -20,10 +20,11 @@
                     <tr>
                         <th></th>
                         <th>姓名</th>
-                        <th>公司名称</th>
+                        <th>性别</th>
                         <th>乘机人手机</th>
                         <th>紧急人手机</th>
                         <th>证件号码</th>
+                        <th>出生日期</th>
                         <th>护照号</th>
                         <th>护照到期日</th>
                         <th>操作</th>
@@ -33,10 +34,11 @@
                     <tr v-for="(item, i) in dataList" :key="i">
                         <td></td>
                         <td><input type="text" :readonly="isedit == item.id ? false : 'readonly'" maxlength="50" v-model="item.CjrName"></td>
-                        <td><input type="text" :readonly="isedit == item.id ? 'readonly' : 'readonly'" maxlength="50" v-model="item.cname"></td>
+                        <td><input type="text" :readonly="isedit == item.id ? false : 'readonly'" maxlength="50" v-model="item.Sex"></td>
                         <td><input type="text" :readonly="isedit == item.id ? false : 'readonly'" maxlength="50" v-model="item.phone"></td>
                         <td><input type="text" :readonly="isedit == item.id ? false : 'readonly'" maxlength="50" v-model="item.jingji"></td>
                         <td><input type="text" style="width:150px;" :readonly="isedit == item.id ? false : 'readonly'" maxlength="50" v-model="item.idcard"></td>
+                        <td><input type="text" :readonly="isedit == item.id ? false : 'readonly'" maxlength="50" v-model="item.CSRQ"></td>
                         <td><input type="text" :readonly="isedit == item.id ? false : 'readonly'" maxlength="50" v-model="item.HZH"></td>
                         <td><input type="text" :readonly="isedit == item.id ? false : 'readonly'" maxlength="50" v-model="item.HZYXQ"></td>
                         <td>
