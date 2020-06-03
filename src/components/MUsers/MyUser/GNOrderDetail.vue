@@ -721,6 +721,7 @@ export default {
         }
     },
     created () {
+        this.$store.state.topmenu = 'index'
         this.account = JSON.parse(sessionStorage.getItem('loginData'))
         this.orderid = this.$route.query.id
         this.cid = this.$route.query.cid

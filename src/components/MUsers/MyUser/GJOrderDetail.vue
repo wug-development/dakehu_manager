@@ -477,6 +477,7 @@ export default {
         }
     },
     created () {
+        this.$store.state.topmenu = 'index'
         this.orderid = this.$route.query.id
         this.cid = this.$route.query.cid
         this.$http.get(this.apis + '/api/orderlist/getgjorderdetail', {params: {

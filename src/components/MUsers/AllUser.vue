@@ -135,7 +135,7 @@ export default {
         remoteMethod: function (v) {
             if (v.length > 0) {
                 this.$http.get(this.apis + '/api/company/getfiltercompany', {params: {
-                    name: v
+                    name: v.toLocaleUpperCase()
                 }})
                 .then(res => {
                     if (res && res.data && res.data.status != 0) {

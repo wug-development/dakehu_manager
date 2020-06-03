@@ -275,7 +275,8 @@ export default {
         toDetail (item) {
             let v = {
                 id: item.dcCompanyID,
-                name: item.dcCompanyName
+                name: item.dcCompanyName,
+                shortname: item.dcCompanyName
             }
             this.$store.state.selCompany = v
             sessionStorage.setItem('selCompany', JSON.stringify(v))
