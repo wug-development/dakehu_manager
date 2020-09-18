@@ -1,20 +1,5 @@
 import Vue from 'vue'
 import Router from 'vue-router'
-import Login from '@/components/Login'
-import Index from '@/components/Index'
-import NowDayOrder from '@/components/Main/NowDayOrder'
-import GJOrderList from '@/components/Main/GJOrderList'
-import GNOrderList from '@/components/Main/GNOrderList'
-import PNRCreat from '@/components/Main/PNRCreat'
-import WriteInfo from '@/components/Main/WriteInfo'
-import ManagerList from '@/components/Manager/ManagerList'
-import Register from '@/components/MUsers/Register'
-import SendEmail from '@/components/MUsers/SendEmail'
-import AllUser from '@/components/MUsers/AllUser'
-import UserList from '@/components/MUsers/UserList'
-import EditUser from '@/components/MUsers/EditUser'
-import NotPurchased from '@/components/DealWith/NotPurchased'
-import PressMoney from '@/components/DealWith/PressMoney'
 
 import MyUser from './muser'
 
@@ -25,12 +10,16 @@ export default new Router({
         {
             path: '/',
             name: 'Login',
-            component: Login
+            component (resolve) {
+                require(['@/components/Login'], resolve)
+            }
         },
         {
             path: '/main',
             name: '',
-            component: Index,
+            component (resolve) {
+                require(['@/components/Index'], resolve)
+            },
             meta: {
                 keepAlive: true,// 此组件需要被缓存                
                 isBack: false// 用于判断上一个页面是哪个
@@ -39,68 +28,94 @@ export default new Router({
                 {
                     path: '',
                     name: '今日订单',
-                    component: NowDayOrder,
+                    component (resolve) {
+                        require(['@/components/Main/NowDayOrder'], resolve)
+                    }
                 },
                 {
                     path: 'gjorderlist',
                     name: '国际航班预定',
-                    component: GJOrderList,
+                    component (resolve) {
+                        require(['@/components/Main/GJOrderList'], resolve)
+                    }
                 },
                 {
                     path: 'gnorderlist',
                     name: '国内航班查询',
-                    component: GNOrderList,
+                    component (resolve) {
+                        require(['@/components/Main/GNOrderList'], resolve)
+                    }
                 },
                 {
                     path: 'pnrcreat',
                     name: 'PNR生成',
-                    component: PNRCreat,
+                    component (resolve) {
+                        require(['@/components/Main/PNRCreat'], resolve)
+                    }
                 },
                 {
                     path: 'writeinfo',
                     name: '填写信息',
-                    component: WriteInfo,
+                    component (resolve) {
+                        require(['@/components/Main/WriteInfo'], resolve)
+                    }
                 },
                 {
                     path: 'manager',
                     name: '管理员管理',
-                    component: ManagerList,
+                    component (resolve) {
+                        require(['@/components/Manager/ManagerList'], resolve)
+                    }
                 },
                 {
                     path: 'register',
                     name: '用户注册',
-                    component: Register,
+                    component (resolve) {
+                        require(['@/components/MUsers/Register'], resolve)
+                    }
                 },
                 {
                     path: 'sendemail',
                     name: '发送邮件',
-                    component: SendEmail,
+                    component (resolve) {
+                        require(['@/components/MUsers/SendEmail'], resolve)
+                    }
                 },
                 {
                     path: 'muser',
                     name: '用户管理',
-                    component: AllUser
+                    component (resolve) {
+                        require(['@/components/MUsers/AllUser'], resolve)
+                    }
                 },
                 {
                     path: 'userbll',
                     name: '',
-                    component: UserList,
+                    component (resolve) {
+                        require(['@/components/MUsers/UserList'], resolve)
+                    },
                     children: MyUser
                 },
                 {
                     path: 'edituser',
                     name: '编辑用户',
-                    component: EditUser
+                    component (resolve) {
+                        require(['@/components/MUsers/EditUser'], resolve)
+                    }
                 },
                 {
                     path: 'card',
                     name: '需要催款客户',
-                    component: NotPurchased,
+                    component (resolve) {
+                        require(['@/components/DealWith/NotPurchased'], resolve)
+                    }
                 },
                 {
                     path: 'nuser',
                     name: '连续30天未出票客户',
-                    component: PressMoney,
+                    component (resolve) {
+                        require(['@/components/DealWith/PressMoney'], resolve)
+                    }
                 }
             ]
         }

@@ -78,5 +78,10 @@ module.exports = {
     net: 'empty',
     tls: 'empty',
     child_process: 'empty'
+  },
+  // 表示不需要webpack打包的文件 
+  externals: {
+    'vue': 'Vue',
+    'element-ui': 'ElementUI'
   }
 }

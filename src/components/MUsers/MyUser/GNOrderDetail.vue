@@ -629,8 +629,8 @@ export default {
             let fprice = this.ticketinfo.dnFandianPrice || 0
             let safeprice = this.ticketinfo.dnSafePrice || 0
 
-            this.ticketinfo.dnJieSuanPrice = (parseFloat(sprice) * (1 - parseFloat(r1) / 100) + parseFloat(r2) + parseFloat(tax)) * parseFloat(p);
-            this.ticketinfo.dnCountPrice = parseFloat(yingshou) + parseFloat(servicep)
+            this.ticketinfo.dnJieSuanPrice = (parseFloat(sprice) * (1 - parseFloat(r1) / 100) + parseFloat(r2) + parseFloat(tax)) * parseFloat(p)
+            this.ticketinfo.dnCountPrice = parseFloat(yingshou) // + parseFloat(servicep)
             if (p1 + p2 < 1) {
                 this.ticketinfo.dnShiJiDaoZhang = (parseFloat(this.ticketinfo.dnCountPrice) * (1 - parseFloat(0) / 100)).toFixed(2)
             } else {
