@@ -45,7 +45,7 @@ export default {
 @import '../../assets/sass/set.scss';
 .header-box{
     height: 84px;
-    background: url('../../assets/images/logo.png') no-repeat left center;
+    background: url($imguri + 'logo.png') no-repeat left center;
     background-color: $pubcolor;
     background-position: 30px 20px;
     box-shadow: 0 4px 5px #ccc;

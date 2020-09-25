@@ -2,7 +2,7 @@
     <div class="sendemail-box">
         <SiteMap></SiteMap>
         <div>
-            <img src="../../assets/images/userregister.png" alt="">
+            <img :src='imguri + "userregister.png"' alt="">
         </div>
         
         <div class="btn-box">

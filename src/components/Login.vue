@@ -74,7 +74,7 @@ export default {
     position: relative;
     width: 100%;
     height: 100%;
-    background: url('../assets/images/login_bg.png') no-repeat center;
+    background: url($imguri + 'login_bg.png') no-repeat center;
     .formbox{
         position: absolute;
         left: 50%;
@@ -84,7 +84,7 @@ export default {
         margin-left: -530px;
         margin-top: -321px;
         box-shadow: 0 5px 5px #333;
-        background: url('../assets/images/login_left.png') no-repeat left center;
+        background: url($imguri + 'login_left.png') no-repeat left center;
         background-color: #fff;
         .login-form-body{
             width: 572px;
@@ -124,19 +124,19 @@ export default {
                     box-sizing: border-box;
                 }        
                 .txt-acount{
-                    background: url('../assets/images/icon_login_account.png') no-repeat center;
+                    background: url($imguri + 'icon_login_account.png') no-repeat center;
                     background-position-x: 15px;
                 }
                 .txt-password{
-                    background: url('../assets/images/icon_login_pass.png') no-repeat center;
+                    background: url($imguri + 'icon_login_pass.png') no-repeat center;
                     background-position-x: 15px;
                 }
                 .txt-acount:focus{
-                    background: url('../assets/images/icon_login_account_focus.png') no-repeat center;
+                    background: url($imguri + 'icon_login_account_focus.png') no-repeat center;
                     background-position-x: 15px;
                 }
                 .txt-password:focus{
-                    background: url('../assets/images/icon_login_pass_focus.png') no-repeat center;
+                    background: url($imguri + 'icon_login_pass_focus.png') no-repeat center;
                     background-position-x: 15px;
                 }
                 .txt-form:focus{

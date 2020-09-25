@@ -66,7 +66,7 @@ export default {
             box-sizing: border-box;
             border-radius: 10px;
             box-shadow: 2px 2px 5px #ddd;
-            background: url('../../assets/images/bg_cards.png') no-repeat right bottom;
+            background: url($imguri + 'bg_cards.png') no-repeat right bottom;
             background-color: #e74e3c;
             color: #fff;
             margin: 0 30px 60px 0; 
