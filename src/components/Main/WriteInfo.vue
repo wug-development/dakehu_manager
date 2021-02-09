@@ -57,7 +57,7 @@
                 <el-select v-model="item.cardtype" value-key="value" @change="changeCardType(item)" placeholder="身份证">
                     <el-option v-for="item in cardType" :key="item.key" :label="item.value" :value="item.key"></el-option>
                 </el-select>
-                <el-input v-model="item.idcard" class="form-input" placeholder="请输入证件号码"></el-input>
+                <el-input v-model="item.idcard" :maxlength="getLen(item.cardtype)" class="form-input" placeholder="请输入证件号码"></el-input>
             </div>
             <div>
                 <div class="form-label not-null">乘机人手机：</div>
@@ -159,6 +159,17 @@ export default {
         SiteMap
     },
     methods: {
+        getLen (v) {
+            let _len = 18
+            switch (v) {
+                case 1: _len = 18; break
+                case 2: _len = 15; break
+                case 3: _len = 12; break
+                case 4: _len = 12; break
+                default: _len = 18; break
+            }
+            return _len
+        },
         addItem () {
             this.selPersonList.push(JSON.parse(JSON.stringify(this.person)))
         },

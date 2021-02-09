@@ -310,8 +310,7 @@ export default {
             if (window.location.port) {
                 _hn += ":" + window.location.port
             }
-            _hn += window.location.pathname
-            this.$http.get('http://' + _hn + 'static/version.json?v=' + Math.random(), { params: {}})
+            this.$http.get('http://' + _hn + '/static/version.json?v=' + Math.random(), { params: {}})
             .then((res) => {
                 console.log(res)
                 let _v = res.data
@@ -320,6 +319,7 @@ export default {
                 }
                 
                 let _lv = sessionStorage.getItem('version')
+                _hn += window.location.pathname
                 if (_lv) {
                     if (_v.v != Number(_lv)) {
                         sessionStorage.setItem('version', _v.v)
@@ -327,7 +327,7 @@ export default {
                     }
                 } else {
                     sessionStorage.setItem('version', _v.v)
-                    window.location.href = 'http://' + _hn + '?v=' + _v.v + '/#/main'
+                    // window.location.href = 'http://' + _hn + '?v=' + _v.v + '/#/main'
                 }
             })
         }
