@@ -42,14 +42,13 @@
                 <span>填写乘机人信息</span>(请准确填写乘客信息,以免在办理登记手续时发生问题)
             </div>
         </div>
-
         <div :class='"box-bg person-form" + (i > 0? " person-mTop": "")' v-for="(item, i) in selPersonList" :key="i">
             <div>
                 <div class="form-label not-null">乘客姓名：</div>
                 <el-select v-model="item.type" placeholder="成人">
                     <el-option v-for="item in personType" :key="item" :label="item" :value="item"></el-option>
                 </el-select>
-                <el-input v-model="item.name" class="form-input" placeholder="请输入乘客姓名"></el-input>
+                <el-input v-model.trim="item.name" class="form-input" placeholder="请输入乘客姓名"></el-input>
                 <div class="btn-del el-icon-minus" @click="del(i)"></div>
             </div>
             <div>
@@ -73,6 +72,7 @@
                 <div> 份 <span class="form-tip">（每份20元）</span></div>
             </div>
         </div>
+        </el-form>
         <div class="person-form">
             <div class="btn-box">
                 <div class="btn-person" @click="addItem">添加乘机人</div>
@@ -358,23 +358,23 @@ export default {
                 airseat: this.seat
             }
             if (!this.loading && this.verifyPerson()) {
-                this.loading = true
-                this.$http.post(this.apis + '/api/gnorder/submitordercn', orderBody)
-                .then(res => {
-                    this.loading = false
-                    if (res && res.data && res.data.status != 0) {
-                        this.$store.state.selCompany = this.selCompany
-                        this.MessageBox("下单成功！", '温馨提示').then(()=>{
-                            this.$router.push({
-                                path: '/main/userbll'
-                            })
-                        })
-                    } else {
-                        this.MessageBox(res.data.msg, '温馨提示')
-                    }
-                }).catch(res => {
-                    this.loading = false
-                })
+                // this.loading = true
+                // this.$http.post(this.apis + '/api/gnorder/submitordercn', orderBody)
+                // .then(res => {
+                //     this.loading = false
+                //     if (res && res.data && res.data.status != 0) {
+                //         this.$store.state.selCompany = this.selCompany
+                //         this.MessageBox("下单成功！", '温馨提示').then(()=>{
+                //             this.$router.push({
+                //                 path: '/main/userbll'
+                //             })
+                //         })
+                //     } else {
+                //         this.MessageBox(res.data.msg, '温馨提示')
+                //     }
+                // }).catch(res => {
+                //     this.loading = false
+                // })
             }
         },
         loadMorePer () {
@@ -507,6 +507,9 @@ export default {
     }
     .person-form{
         padding: 20px 0;
+        .el-form-item__content{
+            display: flex;
+        }
         >div{
             display: flex;
             height: 40px;

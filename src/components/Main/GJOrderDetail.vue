@@ -3,6 +3,7 @@
         <SiteMap></SiteMap>
         <div class="box-bg detail-info">
             <div class="title" @click="backPage"><span class="icon-back el-icon-back"></span></div>
+            <el-form :rules="rules">
             <table cellspacing="0" cellpadding="0" v-if="orderinfo && orderinfo.dcOrderID">
                 <tbody>
                     <tr>
@@ -76,6 +77,7 @@
                     </tr>
                 </tbody>
             </table>
+            </el-form>
             <div class="btn-box">
                 <div class="btn" @click="save">保存</div>
                 <div class="btn-other" v-if="checkOrderStatus == 1 && orderinfo.dnOrderStatus == 1" @click="changeOrderType(2)">退票</div>

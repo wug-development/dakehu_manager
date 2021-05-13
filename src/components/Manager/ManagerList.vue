@@ -1,19 +1,23 @@
 <template>
     <div class="managerlist-box">
         <SiteMap></SiteMap>
-        <div class="box-bg add-box">
-            <div>管理员姓名:</div>
-            <el-input v-model="mname" placeholder="请输入姓名" maxlength="20"></el-input>
-            <div>登录密码:</div>
-            <el-input v-model="mpass" placeholder="请输入密码" maxlength="20"></el-input>
-            <div>手机号:</div>
-            <el-input v-model="mphone" placeholder="请输入手机号" show-word-limit maxlength="11"></el-input>
-            <div>QQ号:</div>
-            <el-input v-model="mqq" placeholder="请输入QQ号" maxlength="15"></el-input>
+        <el-form ref="elform" class="box-bg add-box" :model="elform" :rules="formRules">
+            <el-form-item label="管理员姓名" class="form-item" prop="mname">
+                <el-input v-model="elform.mname" placeholder="请输入姓名" maxlength="20"></el-input>
+            </el-form-item>
+            <el-form-item label="登录密码" class="form-item" prop="mpass">
+                <el-input v-model="elform.mpass" placeholder="请输入密码" maxlength="20"></el-input>
+            </el-form-item>
+            <el-form-item label="手机号" class="form-item" prop="mphone">
+                <el-input v-model="elform.mphone" placeholder="请输入手机号" show-word-limit maxlength="11"></el-input>
+            </el-form-item>
+            <el-form-item label="QQ号" class="form-item" prop="mqq">
+                <el-input v-model="elform.mqq" placeholder="请输入QQ号" maxlength="15"></el-input>
+            </el-form-item>
             <div class="btn-search" @click="addItem">
                 +添加
             </div>
-        </div>
+        </el-form>
         
         <div class="box-bg list-box">
             <table class="table-list" cellspacing="0" cellpadding="0">
@@ -75,15 +79,18 @@
 
 <script>
 import SiteMap from '../Common/SiteMap.vue'
+import {validatePhone, isInteger} from '@/utils/validator.js'
 
 export default {
     name: 'ManagerList',
     data () {
         return {
-            mname: '',
-            mpass: '',
-            mphone: '',
-            mqq: '',
+            elform: {
+                mname: '',
+                mpass: '',
+                mphone: '',
+                mqq: '',
+            },
             isedit: '',
             islimit: false,
             isLimitSet: false,
@@ -97,21 +104,19 @@ export default {
             page: 1,
             pageNum: 5,
             pageCount: 1,
-            dataList: []
+            dataList: [],
+            formRules: {
+                mname: [{required: true, message: '请输入姓名', trigger: 'blur'}],
+                mpass: [{required: true, message: '请输入密码', trigger: 'blur'}],
+                mphone: [{trigger: 'blur', validator: validatePhone}],
+                mqq: [{trigger: 'blur', validator: isInteger}]
+            }
         }
     },
     methods: {
         addItem: function () {
-            if (this.mname == "") {
-                this.MessageBox('请输入姓名', '温馨提示')
-            } else if (this.mpass == "") {
-                this.MessageBox('请输入密码', '温馨提示')
-            } else if (this.mphone == "") {
-                this.MessageBox('请输入手机号', '温馨提示')
-            } else if (this.mqq == "") {
-                this.MessageBox('请输入QQ号码', '温馨提示')
-            } else {
-                this.$http.get(this.apis + '/api/manager/adduser', {params: {
+            this.$refs['elform'].validate((valid) => {
+                valid && this.$http.get(this.apis + '/api/manager/adduser', {params: {
                     name: this.mname,
                     pass: this.mpass,
                     phone: this.mphone,
@@ -144,7 +149,7 @@ export default {
                         })
                     }
                 })
-            } 
+            })
         },
         savedata: function (id, i) {
             if (this.dataList[i].name == "") {
@@ -301,9 +306,11 @@ export default {
         display: flex;
         height: 82px;
         line-height: 40px;
-        div{
+        .form-item{
             margin-right: 20px;
             white-space: nowrap;
+            display: flex;
+            height: 40px;
         }
         .btn-search{
             background-color: $pubcolor;
