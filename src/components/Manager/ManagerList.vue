@@ -292,7 +292,7 @@ export default {
 }
 </script>
 
-<style lang="scss">
+<style lang="scss" scoped>
 @import '../../assets/sass/set.scss';
 @import '../../assets/sass/table-list.scss';
 .managerlist-box{
@@ -311,6 +311,10 @@ export default {
             white-space: nowrap;
             display: flex;
             height: 40px;
+            /deep/ .el-form-item__content {
+                height: 40px;
+                border: 0;
+            }
         }
         .btn-search{
             background-color: $pubcolor;
